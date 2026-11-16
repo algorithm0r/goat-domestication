@@ -1,0 +1,25 @@
+{
+  "_doc": "stage B: herd cap on/off (body-size attribution)",
+  "H5cap30": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "herdTarget": 30
+  },
+  "H5nocap": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "herdTarget": 1000000000.0
+  }
+}

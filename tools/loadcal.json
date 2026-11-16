@@ -1,0 +1,43 @@
+{
+  "_doc": "Calibration of the gene-load delays (2026-11-03): loadFirstBreed = loadRecovery = k days per unit of load, k 0/15/30/60, on H0 and H1.",
+  "H0k0": {
+    "humansPerCamp": 0,
+    "loadFirstBreed": 0,
+    "loadRecovery": 0
+  },
+  "H1k0": {
+    "herdingAt": 1000000000,
+    "loadFirstBreed": 0,
+    "loadRecovery": 0
+  },
+  "H0k15": {
+    "humansPerCamp": 0,
+    "loadFirstBreed": 15,
+    "loadRecovery": 15
+  },
+  "H1k15": {
+    "herdingAt": 1000000000,
+    "loadFirstBreed": 15,
+    "loadRecovery": 15
+  },
+  "H0k30": {
+    "humansPerCamp": 0,
+    "loadFirstBreed": 30,
+    "loadRecovery": 30
+  },
+  "H1k30": {
+    "herdingAt": 1000000000,
+    "loadFirstBreed": 30,
+    "loadRecovery": 30
+  },
+  "H0k60": {
+    "humansPerCamp": 0,
+    "loadFirstBreed": 60,
+    "loadRecovery": 60
+  },
+  "H1k60": {
+    "herdingAt": 1000000000,
+    "loadFirstBreed": 60,
+    "loadRecovery": 60
+  }
+}

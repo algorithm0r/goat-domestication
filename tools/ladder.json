@@ -1,0 +1,29 @@
+{
+ "_doc": "Anchor ladder pilot (2026-11-11, with Chris): wild type 2 (humans hunt and forage from 300, never herd) and minimal herding (the factorial's all-off corner: random cull, no pen, no guarding, fodder, shelter, buck management, tethering, milking or exchange), new base, to year 4000, 4 seeds. Wild type 1 (WT) and maximal herding (S0) come from results/settle.",
+ "WT2": {
+  "herdingAt": 1000000000,
+  "twinMax": 1,
+  "tripletMax": 0.2,
+  "leanBuffer": 12000,
+  "herdRange": 8,
+  "herdTravel": 2
+ },
+ "Hmin": {
+  "herdingAt": 400,
+  "cullRule": "random",
+  "penning": 0,
+  "offtakeRate": 0.1,
+  "guarding": 0,
+  "provision": 0,
+  "kidShelter": 0,
+  "buckManagement": 0,
+  "tetherNew": 0,
+  "milkIntensity": 0,
+  "exchangeN": 0,
+  "twinMax": 1,
+  "tripletMax": 0.2,
+  "leanBuffer": 12000,
+  "herdRange": 8,
+  "herdTravel": 2
+ }
+}

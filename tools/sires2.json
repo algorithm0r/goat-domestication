@@ -1,0 +1,68 @@
+{
+  "_doc": "Sire selection profiles, second form (2026-11-04, Chris): as tools/sires.json, but sires are culled like any goat (random cull) unless the herd is down to keepSires adult bucks; the sire rule re-ranks daily, so a better (or, for random, a preferred) younger buck replaces a sire. Only the sire rule differs.",
+  "S2oldest": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepLastSires": 1,
+    "sireRule": "oldest"
+  },
+  "S2random": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepLastSires": 1,
+    "sireRule": "random"
+  },
+  "S2calm": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepLastSires": 1,
+    "sireRule": "calm"
+  },
+  "S2gentle": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepLastSires": 1,
+    "sireRule": "gentle"
+  },
+  "S2large": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepLastSires": 1,
+    "sireRule": "large"
+  }
+}

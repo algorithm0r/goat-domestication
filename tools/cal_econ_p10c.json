@@ -1,0 +1,39 @@
+{
+  "_doc": "feed signal = hungry goats",
+  "E2pv100": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.0,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  },
+  "E2pv75": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 0.75,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  },
+  "E2pv125": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.25,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  },
+  "E2pv150": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.5,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  }
+}

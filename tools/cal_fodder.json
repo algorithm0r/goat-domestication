@@ -1,0 +1,105 @@
+{
+  "_doc": "Fodder from the economy work (EXPLOG 2026-10-31): H1-H6 as tools/conditions.json; f = storeWindows 1 (cut fodder keeps fodderDays 270, then lost; was fodderSpoil 0.005/day) + forageLoad 36000 (was 72000); H5L36 = H5 + forageLoad 36000 only. shotChance 0 (stalking) throughout.",
+  "H1": {
+    "herdingAt": 1000000000
+  },
+  "H1f": {
+    "herdingAt": 1000000000,
+    "storeWindows": 1,
+    "forageLoad": 36000
+  },
+  "H2": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1
+  },
+  "H2f": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "storeWindows": 1,
+    "forageLoad": 36000
+  },
+  "H3": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1
+  },
+  "H3f": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "storeWindows": 1,
+    "forageLoad": 36000
+  },
+  "H4": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1
+  },
+  "H4f": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "storeWindows": 1,
+    "forageLoad": 36000
+  },
+  "H5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1
+  },
+  "H5f": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "storeWindows": 1,
+    "forageLoad": 36000
+  },
+  "H6": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "flightCost": 1,
+    "offtakeRate": 0.1
+  },
+  "H6f": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "flightCost": 1,
+    "offtakeRate": 0.1,
+    "storeWindows": 1,
+    "forageLoad": 36000
+  },
+  "H5L36": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "forageLoad": 36000
+  }
+}

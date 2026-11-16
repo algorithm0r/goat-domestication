@@ -1,0 +1,52 @@
+{
+  "_doc": "Milk batch (2026-11-05, Chris): H5 with twins and triplets on, milked at a fixed share of capacity before the kids drink (milkIntensity 0, 0.25, 0.5); FH4 = TH4 re-run with the lactation fix (a7c2895).",
+  "FH4": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "twinMax": 1,
+    "tripletMax": 0.2
+  },
+  "M0": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2
+  },
+  "M25": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.25
+  },
+  "M50": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5
+  }
+}

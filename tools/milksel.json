@@ -1,0 +1,63 @@
+{
+  "_doc": "Doe-side milk selection (2026-11-09, Chris): H5 with twins, milked at 0.5; the opportunity cull values a doe's milk record at milkValue x its food energy (0, 0.25, 1); S1M adds sireRule 'milk' (sons of the best-milking dams). S0 = milk3 M50 on the same code.",
+  "S0": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5
+  },
+  "S025": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "milkValue": 0.25
+  },
+  "S1": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "milkValue": 1
+  },
+  "S1M": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "milkValue": 1,
+    "sireRule": "milk"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "_doc": "E2: does surplus go to herding?",
+  "E2pv75": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 0.75,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  },
+  "E2pv100": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.0,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  }
+}

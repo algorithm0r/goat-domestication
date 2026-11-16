@@ -1,0 +1,19 @@
+{
+  "_doc": "does the R gap need full H5 husbandry or only fodder?",
+  "H4prov_off": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "provision": 0.6
+  },
+  "H4prov_a0.02": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "provision": 0.6,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.02
+  }
+}

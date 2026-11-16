@@ -1,0 +1,55 @@
+{
+  "_doc": "keep horizon test",
+  "H5o20k3": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.2,
+    "keepHorizon": 3
+  },
+  "H5o20k5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.2,
+    "keepHorizon": 5
+  },
+  "H3o10k3": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "keepHorizon": 3
+  },
+  "H3o10k5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "keepHorizon": 5
+  },
+  "H3o20k3": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.2,
+    "keepHorizon": 3
+  },
+  "H3o20k5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.2,
+    "keepHorizon": 5
+  }
+}

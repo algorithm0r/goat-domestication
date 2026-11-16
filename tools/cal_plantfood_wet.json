@@ -1,0 +1,41 @@
+{
+  "_doc": "plant food placed by wetness",
+  "E1p60": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "foodPatches": 60
+  },
+  "E2p60": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "foodPatches": 60,
+    "herderAlarm": 0.02
+  },
+  "E1p120": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "foodPatches": 120
+  },
+  "E2p120": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "foodPatches": 120,
+    "herderAlarm": 0.02
+  }
+}

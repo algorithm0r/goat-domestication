@@ -1,0 +1,38 @@
+{
+  "_doc": "land competition + crop damage; slower dump heap",
+  "E2crop_h2e-5": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "heapSeed": 2e-05
+  },
+  "E2crop_h0": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "heapSeed": 0
+  },
+  "E2nocrop_h2e-5": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "heapSeed": 2e-05,
+    "cropDamage": 0,
+    "siteGrass": 1
+  }
+}

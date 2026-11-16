@@ -1,0 +1,25 @@
+{
+  "_doc": "alarm-fear, constant learning: alarmLearn 0.2, fearLearnR 0",
+  "H0": {
+    "humansPerCamp": 0,
+    "alarmLearn": 0.2,
+    "fearLearnR": 0
+  },
+  "H1": {
+    "herdingAt": 1000000000,
+    "alarmLearn": 0.2,
+    "fearLearnR": 0
+  },
+  "H5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "alarmLearn": 0.2,
+    "fearLearnR": 0
+  }
+}

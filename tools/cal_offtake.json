@@ -1,0 +1,71 @@
+{
+  "_doc": "offtake calibration after audit fixes",
+  "H3o00": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0
+  },
+  "H3o10": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1
+  },
+  "H3o20": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.2
+  },
+  "H3o30": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.3
+  },
+  "H5o00": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0
+  },
+  "H5o10": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1
+  },
+  "H5o20": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.2
+  },
+  "H5o30": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.3
+  }
+}

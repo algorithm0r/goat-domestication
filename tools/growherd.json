@@ -1,0 +1,35 @@
+{
+  "_doc": "Gene load on growth in herds (2026-11-03): H5 and STAGED as in tools/staged.json, plus loadGrowth. Baselines: results/staged H5, STAGED (same seeds).",
+  "H5c033": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "loadGrowth": 0.33
+  },
+  "H5c1": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "loadGrowth": 1
+  },
+  "STAGEDc1": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "schedule": "700:cullRule=opportunity;1000:penning=1;1300:guarding=1,provision=2160,kidShelter=1,buckManagement=1,tetherNew=1",
+    "loadGrowth": 1
+  }
+}

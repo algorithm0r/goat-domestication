@@ -1,0 +1,41 @@
+{
+  "_doc": "plant food resource: patch density",
+  "E1p60": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "foodPatches": 60
+  },
+  "E1p120": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "foodPatches": 120
+  },
+  "E2p120_a0.02": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "foodPatches": 120,
+    "herderAlarm": 0.02
+  },
+  "E2p120_a0.05": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "foodPatches": 120,
+    "herderAlarm": 0.05
+  }
+}

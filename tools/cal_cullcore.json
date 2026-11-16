@@ -1,0 +1,37 @@
+{
+  "_doc": "cull and last-breeder value, E2 (replace settings)",
+  "E2boost": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "lastBreederValue": 2
+  },
+  "E2cull": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "econCull": 1
+  },
+  "E2both": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "lastBreederValue": 2,
+    "econCull": 1
+  }
+}

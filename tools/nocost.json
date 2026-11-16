@@ -1,0 +1,35 @@
+{
+  "_doc": "No genome cost (2026-11-03, Chris: turn off all genetic costs): tools/staged.json conditions with reproCostGrowth 0 and reproCostFertility 0 (loadFirstBreed, loadRecovery, loadGrowth already 0 by default). Trait-specific costs (milk kcal, growth kcal per size, display and contact kcal, contest injury) stay: they are what each trait does.",
+  "H0nc": {
+    "humansPerCamp": 0,
+    "reproCostGrowth": 0,
+    "reproCostFertility": 0
+  },
+  "H1nc": {
+    "herdingAt": 1000000000,
+    "reproCostGrowth": 0,
+    "reproCostFertility": 0
+  },
+  "H5nc": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "reproCostGrowth": 0,
+    "reproCostFertility": 0
+  },
+  "STAGEDnc": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "schedule": "700:cullRule=opportunity;1000:penning=1;1300:guarding=1,provision=2160,kidShelter=1,buckManagement=1,tetherNew=1",
+    "reproCostGrowth": 0,
+    "reproCostFertility": 0
+  }
+}

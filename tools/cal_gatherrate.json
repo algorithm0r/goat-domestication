@@ -1,0 +1,69 @@
+{
+  "_doc": "plantValue 1; gathering rate as the surplus lever",
+  "E1x15": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "forageCut": 6,
+    "forageLoad": 30
+  },
+  "E2x15_a0.02": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "forageCut": 6,
+    "forageLoad": 30,
+    "herderAlarm": 0.02
+  },
+  "E2x15_a0.05": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "forageCut": 6,
+    "forageLoad": 30,
+    "herderAlarm": 0.05
+  },
+  "E1x2": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "forageCut": 8,
+    "forageLoad": 40
+  },
+  "E2x2_a0.02": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "forageCut": 8,
+    "forageLoad": 40,
+    "herderAlarm": 0.02
+  },
+  "E2x2_a0.05": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "forageCut": 8,
+    "forageLoad": 40,
+    "herderAlarm": 0.05
+  }
+}

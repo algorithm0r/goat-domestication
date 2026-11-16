@@ -1,0 +1,27 @@
+{
+  "_doc": "The staged ladder (2026-11-02): H2 from herdingAt 400, then H3 (opportunity cull) at 700, H4 (penning) at 1000, H5 (husbandry) at 1300, via the schedule parameter. Controls H0, H1, H5 as in conditions.json.",
+  "STAGED": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "schedule": "700:cullRule=opportunity;1000:penning=1;1300:guarding=1,provision=2160,kidShelter=1,buckManagement=1,tetherNew=1"
+  },
+  "H0": {
+    "humansPerCamp": 0
+  },
+  "H1": {
+    "herdingAt": 1000000000
+  },
+  "H5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1
+  }
+}

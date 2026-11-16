@@ -1,0 +1,42 @@
+{
+  "_doc": "10 people per camp: E1 plantValue sweep; E2 with herding sub-roles",
+  "E1p10pv75": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 0.75,
+    "humansPerCamp": 10
+  },
+  "E1p10pv100": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 1.0,
+    "humansPerCamp": 10
+  },
+  "E1p10pv150": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 1.5,
+    "humansPerCamp": 10
+  },
+  "E2p10pv100": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.0,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  },
+  "E2p10pv150": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.5,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  }
+}

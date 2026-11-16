@@ -1,0 +1,25 @@
+{
+  "_doc": "need-relative returns (EXPLOG 2026-10-28), on the windows conditions",
+  "E1n": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "storeWindows": 1,
+    "needScore": 1
+  },
+  "E2n": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02,
+    "storeWindows": 1,
+    "storeCredit": 0.0011,
+    "needScore": 1
+  }
+}

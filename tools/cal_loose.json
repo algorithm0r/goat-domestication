@@ -1,0 +1,85 @@
+{
+  "_doc": "loose run-offs (refetchRunOffs 2)",
+  "H5loose_a0.05": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 2,
+    "herderAlarm": 0.05
+  },
+  "E2pv100loose_a0.05": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.0,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "refetchRunOffs": 2,
+    "herderAlarm": 0.05
+  },
+  "E2pv150loose_a0.05": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.5,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "refetchRunOffs": 2,
+    "herderAlarm": 0.05
+  },
+  "H5loose_a0.02": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 2,
+    "herderAlarm": 0.02
+  },
+  "E2pv100loose_a0.02": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.0,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "refetchRunOffs": 2,
+    "herderAlarm": 0.02
+  },
+  "E2pv150loose_a0.02": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.5,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "refetchRunOffs": 2,
+    "herderAlarm": 0.02
+  },
+  "H5off": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "_doc": "10 people, groupSink 0, distance-vs-yield gathering",
+  "E1pv75": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 0.75,
+    "humansPerCamp": 10
+  },
+  "E2pv75": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 0.75,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  },
+  "E1pv100": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 1.0,
+    "humansPerCamp": 10
+  },
+  "E2pv100": {
+    "economy": 1,
+    "herdingAt": 400,
+    "plantValue": 1.0,
+    "humansPerCamp": 10,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity"
+  }
+}

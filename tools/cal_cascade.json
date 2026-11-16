@@ -1,0 +1,20 @@
+{
+  "_doc": "spoilage cascade (store \u2192 slop \u2192 dump heap)",
+  "E1c": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000
+  },
+  "E2c": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02
+  }
+}

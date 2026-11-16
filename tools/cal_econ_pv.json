@@ -1,0 +1,21 @@
+{
+  "_doc": "E1 calibration: plantValue so gathering + hunting meet demand",
+  "E1pv50": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 0.5
+  },
+  "E1pv75": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 0.75
+  },
+  "E1pv100": {
+    "economy": 1,
+    "econHerd": 0,
+    "herdingAt": 1000000000,
+    "plantValue": 1.0
+  }
+}

@@ -1,0 +1,110 @@
+{
+  "_doc": "H5 ablation (2026-11-04, Chris): H5 = H4 (opportunity cull, penning, offtake 10%) + guarding, provision, kidShelter, buckManagement, tetherNew. AH4 and AH5 are the ends; L* = H5 less one component; P* = H4 plus one component. Genome costs off (default).",
+  "AH4": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1
+  },
+  "AH5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1
+  },
+  "Lguard": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 0,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1
+  },
+  "Lprov": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 0,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1
+  },
+  "Lshelter": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 0,
+    "buckManagement": 1,
+    "tetherNew": 1
+  },
+  "Lbuck": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 0,
+    "tetherNew": 1
+  },
+  "Ltether": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 0
+  },
+  "Pguard": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1
+  },
+  "Pprov": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "provision": 2160
+  },
+  "Pshelter": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "kidShelter": 1
+  },
+  "Pbuck": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "buckManagement": 1
+  },
+  "Ptether": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "tetherNew": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "_doc": "Twinning batch (2026-11-05, Chris): AH4 and AH5 of tools/ablate.json with twins and triplets on (twinMax 1, tripletMax 0.2). Controls are results/ablate AH4 and AH5 (same seeds; twins off reproduces that code exactly).",
+  "TH4": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "twinMax": 1,
+    "tripletMax": 0.2
+  },
+  "TH5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2
+  }
+}

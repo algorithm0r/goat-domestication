@@ -1,0 +1,44 @@
+{
+  "_doc": "Herder presence against wolves (2026-10-31): H2p-H6p = tools/conditions.json H2-H6 + herderProtection 0.6 (a wolf's kill chance on a herd goat within 1 cell of its herder x 0.4).",
+  "H2p": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "herderProtection": 0.6
+  },
+  "H3p": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "herderProtection": 0.6
+  },
+  "H4p": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "herderProtection": 0.6
+  },
+  "H5p": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "herderProtection": 0.6
+  },
+  "H6p": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "flightCost": 1,
+    "offtakeRate": 0.1,
+    "herderProtection": 0.6
+  }
+}

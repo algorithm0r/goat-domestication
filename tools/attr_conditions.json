@@ -1,0 +1,24 @@
+{
+  "_doc": "rebuild attribution: v1 condition overrides (11f9f07), applied to every code point",
+  "H0": {
+    "humansPerCamp": 0
+  },
+  "H1": {
+    "herdingAt": 1000000000
+  },
+  "H3": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0
+  },
+  "H5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "_doc": "Lineage-isolation test (2026-11-10, Chris; the grain paper's causal test): milksel S0 (H5 + twins, milked at 0.5, milkValue 0) with sires chosen by generations since the wild alone, no trait. Lrandom the control, Ldeep most generations since the wild, Lshallow fewest. Reference: results/milksel S0 (oldest).",
+  "Lrandom": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "sireRule": "random"
+  },
+  "Ldeep": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "sireRule": "deep"
+  },
+  "Lshallow": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "sireRule": "shallow"
+  }
+}

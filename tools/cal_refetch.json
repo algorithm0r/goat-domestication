@@ -1,0 +1,55 @@
+{
+  "_doc": "refetch run-offs on/off",
+  "H3r0": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  },
+  "H3r1": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1
+  },
+  "H4r0": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  },
+  "H4r1": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1
+  },
+  "H5r0": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  },
+  "H5r1": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1
+  }
+}

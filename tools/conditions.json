@@ -1,0 +1,45 @@
+{
+  "_doc": "DESIGN \u00a72 condition table. Param overrides on params.js. Humans from humansAt (300); herding from herdingAt (400). H2+ meat offtake 10%/y (experimental variable); H3+ cull by opportunity (keep value, 3-y horizon); H5 adds husbandry; H6 adds a flightiness cost.",
+  "H0": {
+    "humansPerCamp": 0
+  },
+  "H1": {
+    "herdingAt": 1000000000
+  },
+  "H2": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1
+  },
+  "H3": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1
+  },
+  "H4": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1
+  },
+  "H5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1
+  },
+  "H6": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "flightCost": 1,
+    "offtakeRate": 0.1
+  }
+}

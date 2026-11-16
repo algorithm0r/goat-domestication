@@ -1,0 +1,51 @@
+{
+  "_doc": "Herder chases wolves off (2026-11-01): H2c-H6c = tools/conditions.json H2-H6 + herderChase 1 (every wolf that strikes at a herd goat within 1 cell of its herder is driven off: bout over, pushed 5 cells away); H2h = H2 + herderChase 0.5.",
+  "H2c": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "herderChase": 1
+  },
+  "H3c": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "herderChase": 1
+  },
+  "H4c": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "herderChase": 1
+  },
+  "H5c": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "herderChase": 1
+  },
+  "H6c": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "flightCost": 1,
+    "offtakeRate": 0.1,
+    "herderChase": 1
+  },
+  "H2h": {
+    "herdingAt": 400,
+    "cullRule": "random",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "herderChase": 0.5
+  }
+}

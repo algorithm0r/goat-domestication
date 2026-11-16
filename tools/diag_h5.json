@@ -1,0 +1,14 @@
+{
+  "_doc": "diagnose H5 herd R: fixed code, no offtake",
+  "H5o0": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0
+  }
+}

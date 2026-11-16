@@ -1,0 +1,27 @@
+{
+  "_doc": "Long runs (2026-11-04, Chris): does the herd size - R gap correlation fall off with time? The two random controls: Prand (tools/profiles.json) and Srandom (tools/sires.json), 8 seeds, 2400 years.",
+  "Prand": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random"
+  },
+  "Srandom": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepChosenSires": 1,
+    "sireRule": "random"
+  }
+}

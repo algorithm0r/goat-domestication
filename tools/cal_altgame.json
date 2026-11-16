@@ -1,0 +1,9 @@
+{
+  "_doc": "other game for hunters and low-chance ranged shots (EXPLOG 2026-10-29), on the seen-gathering conditions E1g, E2g",
+  "E1a": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "econHerd": 0, "herdingAt": 1000000000, "storeWindows": 1, "needScore": 1, "gatherSee": 1, "altGame": 0.03 },
+  "E2a": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "needScore": 1, "gatherSee": 1, "altGame": 0.03 },
+  "E1s": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "econHerd": 0, "herdingAt": 1000000000, "storeWindows": 1, "needScore": 1, "gatherSee": 1, "shotChance": 0.01 },
+  "E2s": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "needScore": 1, "gatherSee": 1, "shotChance": 0.01 },
+  "E1as": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "econHerd": 0, "herdingAt": 1000000000, "storeWindows": 1, "needScore": 1, "gatherSee": 1, "altGame": 0.03, "shotChance": 0.01 },
+  "E2as": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "needScore": 1, "gatherSee": 1, "altGame": 0.03, "shotChance": 0.01 }
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Goat genes</title>
+<link rel="stylesheet" href="vendor/claude-basic/claude-basic.css">
+<script src="vendor/claude-basic/claude-basic.js"></script>
+<style>
+  /* page-only: the top line and the arm picker. Everything under them is the kit's sim chart grid. */
+  .top { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 14px var(--cb-gap) 0; }
+  .top .spacer { flex: 1; }
+  .top h1 { margin: 0; font-size: 20px; }
+  .top .note { color: var(--cb-muted); font-size: 12px; }
+  .pick { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 18px; margin: 12px var(--cb-gap) 0; }
+  .pick .cb-field { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--cb-muted); }
+  .pick .cb-select { min-width: 180px; max-width: 100%; }
+  .pick .cb-field { max-width: 100%; }
+  .about { margin: 10px var(--cb-gap) 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; max-width: 980px; }
+  .about .exp { color: var(--cb-text-2); }
+  .about .cond { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+  .about .cond b { font-size: 15px; }
+  .about .diff { color: var(--cb-muted); font-size: 12px; }
+  .about .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .about .cb-disclosure .body { font-size: 12px; color: var(--cb-text-2); }
+  .about .raw { margin-top: 6px; color: var(--cb-muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+  .intro { margin: 10px var(--cb-gap) 0; max-width: 980px; font-size: 13px; }
+  .intro .body p { margin: 0 0 6px; }
+  .cb-sim-group > .cb-label { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; justify-content: flex-start; text-transform: none; letter-spacing: 0; font-size: 14px; }
+  .cb-sim-charts { padding: var(--cb-gap); }
+  .cb-sim-group > .cb-label .name, .depth > .cb-label .name { color: var(--cb-muted); font-weight: 400; font-size: 12px; }
+  .depth > .cb-label { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; justify-content: flex-start; text-transform: none; letter-spacing: 0; font-size: 14px; }
+  .depth .cb-select { min-width: 0; padding: 2px 6px; font-size: 12px; }
+  .depth-charts { padding: 6px 0 0; }
+  .depth-key { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); font-size: 10px; color: var(--cb-muted); text-align: center; line-height: 1.25; margin-top: 2px; padding: 0 11px; }
+  .depth-key .grp { border-bottom: var(--cb-border-w) solid var(--cb-border); margin: 0 2px 2px; color: var(--cb-text-2); }
+  .depth-key .first-herd, .depth-key .grp.herd { border-left: var(--cb-border-w) solid var(--cb-border); }
+  .depth-key b { color: var(--cb-text-2); font-weight: 500; font-variant-numeric: tabular-nums; }
+  @media (max-width: 760px) { .cb-sim-charts > .cb-sim-group { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<div class="top">
+  <h1 class="cb-title">Goat genes<span class="cb-dot">.</span></h1>
+  <span class="note">how herding changes goat genes, in simulation · <span id="built"></span></span>
+  <span class="spacer"></span>
+  <span id="picker"></span>
+</div>
+<div class="pick">
+  <label class="cb-field">Experiment <select class="cb-select" id="folder"></select></label>
+  <label class="cb-field">Condition <select class="cb-select" id="arm"></select></label>
+  <label class="cb-field">Show <select class="cb-select" id="show">
+    <option value="all">every experiment</option>
+    <option value="new">current settings only</option>
+  </select></label>
+</div>
+<details class="cb-disclosure intro"><summary>How to read this page</summary><div class="body">
+  <p>Each experiment runs the goat simulation under several <b>conditions</b>: different herding practices, or none. A
+  condition is run several times with different random seeds, and the charts pool those runs.</p>
+  <p><b>Herd goats</b> are goats a camp owns: captured from the wild, born to a herd mother, or traded in. <b>Wild
+  goats</b> are all the others, including the descendants of herd goats that escaped. Where a goat is doesn't matter.</p>
+  <p>Every goat carries ten genes, each a value from 0 to 1. Each gene section shows the spread of that gene's values
+  over time as a <b>heatmap</b>: time runs left to right, the gene value runs from 0 at the bottom to 1 at the top,
+  and the brighter a cell, the larger the share of goats with that value then. The line chart beside it gives the
+  average value, wild and herd. Hover over any chart to read its values.</p>
+  <p><b>Current settings</b> means runs made with the model's standard settings from 2026-11-11 on; runs on
+  <b>older settings</b> are kept for comparison and may differ in other ways.</p>
+</div></details>
+<div class="about" id="about"></div>
+<div class="cb-sim-charts" id="charts"></div>
+<script src="labels.js"></script>
+<script src="dashboard.js"></script>
+</body>
+</html>

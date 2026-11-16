@@ -1,0 +1,58 @@
+{
+  "_doc": "Cull selection profiles (2026-11-03, with Chris): H5 husbandry (genome costs off, the default since 0c78b72) with the cull rule as the only difference. Prand = random (control), Pmeat = opportunity (keep value in meat), Pflight / Preturn / Pattack = ranked by how often the herder saw the goat run off / come back on its own / butt him, per year watched; ties at random.",
+  "Prand": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random"
+  },
+  "Pmeat": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "opportunity"
+  },
+  "Pflight": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "flight"
+  },
+  "Preturn": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "return"
+  },
+  "Pattack": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "attack"
+  }
+}

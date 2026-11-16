@@ -1,0 +1,36 @@
+{
+  "_doc": "Corner pilot R3 addendum (2026-11-10, Chris: queue the next 6 runs on cpuslot to test the queue): R3 (b) captures stop at year 800, and (c) that plus no wild sires, under random sires; to year 4000, 3 seeds.",
+  "R3bRandom": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "sireRule": "random",
+    "captureUntil": 800
+  },
+  "R3cRandom": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "twinMax": 1,
+    "tripletMax": 0.2,
+    "milkIntensity": 0.5,
+    "sireRule": "random",
+    "captureUntil": 800,
+    "wildSireBlock": 1
+  }
+}

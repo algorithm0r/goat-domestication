@@ -1,0 +1,7 @@
+{
+  "_doc": "Stalk vs shot, fixed policy (EXPLOG 2026-10-30). H1/H5 as tools/conditions.json; S = ranged shots at 1% (shotChance 0.01, shotRange 2). Hunting effort is the same in each pair.",
+  "H1": { "herdingAt": 1000000000 },
+  "H1S": { "herdingAt": 1000000000, "shotChance": 0.01 },
+  "H5": { "herdingAt": 400, "cullRule": "opportunity", "penning": 1, "guarding": 1, "provision": 2160, "kidShelter": 1, "buckManagement": 1, "tetherNew": 1, "offtakeRate": 0.1 },
+  "H5S": { "herdingAt": 400, "cullRule": "opportunity", "penning": 1, "guarding": 1, "provision": 2160, "kidShelter": 1, "buckManagement": 1, "tetherNew": 1, "offtakeRate": 0.1, "shotChance": 0.01 }
+}

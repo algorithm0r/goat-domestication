@@ -1,0 +1,27 @@
+{
+  "_doc": "Calibration of the load growth cost (2026-11-03): loadGrowth c 0.1/0.33/1 on H0 and H1; c 0 baseline is results/loadcal H0k0, H1k0 (same seeds).",
+  "H0c01": {
+    "humansPerCamp": 0,
+    "loadGrowth": 0.1
+  },
+  "H1c01": {
+    "herdingAt": 1000000000,
+    "loadGrowth": 0.1
+  },
+  "H0c033": {
+    "humansPerCamp": 0,
+    "loadGrowth": 0.33
+  },
+  "H1c033": {
+    "herdingAt": 1000000000,
+    "loadGrowth": 0.33
+  },
+  "H0c1": {
+    "humansPerCamp": 0,
+    "loadGrowth": 1
+  },
+  "H1c1": {
+    "herdingAt": 1000000000,
+    "loadGrowth": 1
+  }
+}

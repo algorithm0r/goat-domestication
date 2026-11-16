@@ -1,0 +1,20 @@
+{
+  "_doc": "sites redrawn yearly; cascade without heap; no crop damage",
+  "E1r": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "econHerd": 0,
+    "herdingAt": 1000000000
+  },
+  "E2r": {
+    "economy": 1,
+    "plantValue": 1,
+    "humansPerCamp": 10,
+    "herdingAt": 400,
+    "penning": 1,
+    "provision": 0.6,
+    "cullRule": "opportunity",
+    "herderAlarm": 0.02
+  }
+}

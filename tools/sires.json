@@ -1,0 +1,68 @@
+{
+  "_doc": "Sire selection profiles (2026-11-03, with Chris): H5 husbandry, genome costs off, random cull that spares the chosen sires; the sire rule is the only difference. Soldest = the current rule (two oldest adult bucks), Srandom = a fixed random preference per buck (control), Scalm / Sgentle / Slarge = fewest seen run-offs / fewest seen butts per year watched / biggest now; ties at the random preference.",
+  "Soldest": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepChosenSires": 1,
+    "sireRule": "oldest"
+  },
+  "Srandom": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepChosenSires": 1,
+    "sireRule": "random"
+  },
+  "Scalm": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepChosenSires": 1,
+    "sireRule": "calm"
+  },
+  "Sgentle": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepChosenSires": 1,
+    "sireRule": "gentle"
+  },
+  "Slarge": {
+    "herdingAt": 400,
+    "penning": 1,
+    "guarding": 1,
+    "provision": 2160,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "cullRule": "random",
+    "keepChosenSires": 1,
+    "sireRule": "large"
+  }
+}

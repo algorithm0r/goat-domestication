@@ -1,0 +1,14 @@
+{
+  "_doc": "H5 with loose run-offs off (refetchRunOffs 0), today's code",
+  "H5": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "refetchRunOffs": 0
+  }
+}

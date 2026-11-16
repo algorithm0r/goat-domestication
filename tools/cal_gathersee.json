@@ -1,0 +1,5 @@
+{
+  "_doc": "seen gathering (EXPLOG 2026-10-28), on the kcal conditions",
+  "E1g": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "econHerd": 0, "herdingAt": 1000000000, "storeWindows": 1, "needScore": 1, "gatherSee": 1 },
+  "E2g": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "needScore": 1, "gatherSee": 1 }
+}

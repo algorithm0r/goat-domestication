@@ -1,0 +1,10 @@
+{
+  "_doc": "kcal units (EXPLOG 2026-10-28): the windows conditions rescaled, then data values at the goat-human coupling points",
+  "E1k": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "econHerd": 0, "herdingAt": 1000000000, "storeWindows": 1 },
+  "E1kM": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "econHerd": 0, "herdingAt": 1000000000, "storeWindows": 1, "meatYield": 30000 },
+  "E2k": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011 },
+  "E2kM": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "meatYield": 30000 },
+  "E2kS": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "slopValue": 1 },
+  "E2kF": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "forageLoad": 36000 },
+  "E2kd": { "economy": 1, "plantValue": 1, "humansPerCamp": 10, "herdingAt": 400, "penning": 1, "provision": 2160, "cullRule": "opportunity", "herderAlarm": 0.02, "storeWindows": 1, "storeCredit": 0.0011, "meatYield": 30000, "slopValue": 1, "forageLoad": 36000 }
+}

@@ -1,0 +1,203 @@
+{
+  "_doc": "spook-rate sweep with refetch on; 0 = refetch off reference",
+  "H3_off": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  },
+  "H3_a0.002": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.002
+  },
+  "H3_a0.005": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.005
+  },
+  "H3_a0.01": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.01
+  },
+  "H3_a0.02": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.02
+  },
+  "H3_a0.03": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.03
+  },
+  "H3_a0.05": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 0,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.05
+  },
+  "H4_off": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  },
+  "H4_a0.002": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.002
+  },
+  "H4_a0.005": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.005
+  },
+  "H4_a0.01": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.01
+  },
+  "H4_a0.02": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.02
+  },
+  "H4_a0.03": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.03
+  },
+  "H4_a0.05": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.05
+  },
+  "H5_off": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 0
+  },
+  "H5_a0.002": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.002
+  },
+  "H5_a0.005": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.005
+  },
+  "H5_a0.01": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.01
+  },
+  "H5_a0.02": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.02
+  },
+  "H5_a0.03": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.03
+  },
+  "H5_a0.05": {
+    "herdingAt": 400,
+    "cullRule": "opportunity",
+    "penning": 1,
+    "guarding": 1,
+    "provision": 0.6,
+    "kidShelter": 1,
+    "buckManagement": 1,
+    "tetherNew": 1,
+    "offtakeRate": 0.1,
+    "refetchRunOffs": 1,
+    "herderAlarm": 0.05
+  }
+}
