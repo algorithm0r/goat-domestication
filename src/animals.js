@@ -426,8 +426,8 @@ var Goat = class Goat {
       if (P.economy && this.E < P.growCondition * cap) c.sd.feed += P.meatYield * this.size;   // a hungry goat: the feeders' signal (fu at risk)
       // slop (spoiling plant food) first, then cut fodder
       if (P.storeWindows) {                                    // shelf-life stores: soonest to expire first
-        const fromSlop = want > 0 && c.slop > 0 ? world.draw(c, 'slop', want) : 0;
-        const ration = fromSlop + (want - fromSlop > 0 && c.fodder > 0 ? world.draw(c, 'fodder', want - fromSlop) : 0);
+        const fromSlop = want > 0 && c.slop > 0 ? world.takeStore(c, 'slop', want) : 0;
+        const ration = fromSlop + (want - fromSlop > 0 && c.fodder > 0 ? world.takeStore(c, 'fodder', want - fromSlop) : 0);
         if (ration > 0) { this.E += ration; world.ys.fodder += ration; if (spring) world.ys.fodderSpring += ration; if (this.isKid()) this.kidLife(world).fodder += ration; }
       } else {
         const fromSlop = Math.min(want, c.slop), ration = fromSlop + Math.min(want - fromSlop, c.fodder);

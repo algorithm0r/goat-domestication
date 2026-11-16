@@ -530,7 +530,7 @@ var World = class World {
     c[f] = s;
   }
   // take up to x fu from store k, soonest to expire first; returns what was taken
-  draw(c, k, x) {
+  takeStore(c, k, x) {
     const q = c.q[k]; let got = 0;
     while (x - got > 1e-12 && q.length) { const b = q[0], t = Math.min(b[1], x - got); b[1] -= t; got += t; if (b[1] <= 1e-12) q.shift(); }
     this.storeSum(c, k); return got;
