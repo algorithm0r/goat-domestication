@@ -65,8 +65,11 @@ var PARAMETERS = {
   maleBirthSize: 1,       // a male newborn's size × this (birth size stays a share of the sex-neutral target; 1.1 = bezoar)
   growthCurve: 'linear',  // 'linear' (growthAbs a day) | 'vb': von Bertalanffy in mass, dM/dt = 3k(T^(1/3) M^(2/3) - M)
                           // | 'ogm': ontogenetic growth model, dM/dt = a M^(3/4) (1 - (M/T)^(1/4)), time to grow ~ T^(1/4)
+                          // | 'curved': one daily chunk for every goat, (1 - birthSize) / (growYearsF x yearDays), bent by
+                          //   curveExp: ds = chunk k ((T - M) / (T - b))^((k - 1) / k), time to grow ~ T - b (Chris, 2026-11-16)
   growYearsF: 2, growYearsM: 4,   // 'vb': years at the full rate from birth (birthSize of target) to 95% of target, per sex
                           // ('ogm': the same for a goat of target 1 x the sex's size multiplier)
+  curveExp: 2,            // 'curved': 1 = the straight line; 2 = twice its speed at birth, slowing to 0 at the target
   growSD: 0,              // 'ogm': each goat's rate a x exp(growSD z), z ~ N(0,1) drawn at birth (rand4), not inherited
   adultAge: 720,          // days: counted as adult (growth continues while size < target)
   weanAge: 120,           // days

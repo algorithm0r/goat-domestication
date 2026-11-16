@@ -152,6 +152,27 @@ var Goat = class Goat {
     const u = 1 - (1 - u0) * Math.exp(-this.ogmA() * this.growMult * days / (4 * Math.pow(this.target, 0.25)));
     return Math.max(0, this.target * u * u * u * u - this.size);
   }
+  // Curved linear growth (growthCurve 'curved', Chris 2026-11-16): every goat, either sex, advances one chunk a day along
+  // the straight line from its birth size b to its target T, and the line is bent into a curve: a single follows
+  // size = b + (T - b)(1 - (1 - x)^k), x = chunk t / (T - b), so it reaches T at (T - b) / chunk. The rate form below acts
+  // on the current size, so stalls, twins born small (who start faster) and any size are handled.
+  curveChunk() { const P = PARAMETERS; return (1 - P.birthSize) / (P.growYearsF * P.yearDays); }
+  curveRate() {
+    const P = PARAMETERS, k = P.curveExp, b = this.birthShare() * this.target;
+    const left = Math.max(0, (this.target - this.size) / (this.target - b));
+    return this.curveChunk() * k * (k === 1 ? 1 : Math.pow(left, (k - 1) / k));
+  }
+  curveSizeAt(age) {                                            // a single of its target on the curve, full rate
+    const k = PARAMETERS.curveExp, b = this.birthShare() * this.target;
+    const x = Math.min(1, this.curveChunk() * age / (this.target - b));
+    return b + (this.target - b) * (1 - Math.pow(1 - x, k));
+  }
+  curveGain(days) {                                             // gain over the next days on the curve, full rate
+    const k = PARAMETERS.curveExp, b = this.birthShare() * this.target, span = this.target - b;
+    const y = Math.min(1, Math.max(0, (this.size - b) / span));
+    const x = Math.min(1, 1 - Math.pow(1 - y, 1 / k) + this.curveChunk() * days / span);
+    return Math.max(0, b + span * (1 - Math.pow(1 - x, k)) - Math.max(this.size, b));
+  }
   // An immigrant takes this goat's place, sex and age (World.immigrate): a new individual with the given genome and
   // learned fears, unrelated to every local goat (fresh lineage ids), with no herd ancestry, at its adult size.
   becomeImmigrant(genome, fearOfWolves, fearOfHumans) {
@@ -460,6 +481,7 @@ var Goat = class Goat {
       const rate = P.growthCurve === 'vb'
         ? 3 * this.vbK() * (Math.cbrt(this.target) * Math.pow(this.size, 2 / 3) - this.size)
         : P.growthCurve === 'ogm' ? this.ogmA() * this.growMult * Math.pow(this.size, 0.75) * (1 - Math.pow(this.size / this.target, 0.25))
+        : P.growthCurve === 'curved' ? this.curveRate()
         : P.growthAbs;
       const ds = Math.min(rate * gm, this.target - this.size);
       this.size += ds; this.E -= P.growthCost * ds;
@@ -524,6 +546,7 @@ var Goat = class Goat {
       let m = 1;
       if (P.juvSizeExp > 0) m = Math.pow((P.growthCurve === 'vb' ? this.vbSizeAt(this.age)
         : P.growthCurve === 'ogm' ? this.ogmSizeAt(this.age)
+        : P.growthCurve === 'curved' ? this.curveSizeAt(this.age)
         : Math.min(this.target, this.birthShare() * this.target + P.growthAbs * this.age)) / this.size, P.juvSizeExp);
       // (linear: born at its sex's birth share since 2026-11-16; birthSize before, which with sexSize 1.7 made the
       // reference newborn buck 1.5x his real birth size; identical at sexSize 1 and maleBirthSize 1)

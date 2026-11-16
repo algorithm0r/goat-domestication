@@ -4491,6 +4491,92 @@ F:M 0.18), R15O0 0/4, W50O 2/4 (F:M 1.74, >=4 0.15), W50O0 1/4.
 - B gaps of R15O and R15O0 within 0.15: met (+0.02 and +0.02).
 - R gap of R15O within 0.1 of -0.56: met (-0.59).
 
+## [PRE-REGISTERED 2026-11-16] Curved linear growth: one daily growth chunk for every goat, bent into a curve
+**Question:** Chris (2026-11-16), on the ogm curve of the coupled-growth batch (above): bucks were 1.7x and also had a
+sex-specific a that made them take longer, "this is just building the linear model into this model". His
+specification: every day a goat is above growCondition it grows a fixed chunk, as in the linear model, the same for
+every goat; the chunk is set so a doe takes 2 years from birth size to target; a function turns that line into a
+curve that gives the actual daily growth; a buck, with about twice the target, takes about twice as long; no a and no
+g. So time to grow is proportional to (target - birth size) within and between sexes. He holds the within-sex link
+plausible without direct evidence, given the cross-species and cross-sex evidence; the cattle result I reported
+(within breeds, growth rate does not clearly predict puberty) is about growth rate, not mature size. Does the size-time
+link of linear growth, with growth slower and curved, bring back the B gap of linear growth (R15 -0.82)?
+Fixes since the coupled-growth batch (7bba221): vb k and ogm a now use each sex's birth share (bucks had taken 1507
+days, not 1440, to 95% under ogm); the linear juvenile-hazard reference newborn uses it too. Defaults unchanged
+(0 of 600 year records differ). The browser view's World.draw crash is fixed (9d405a8, rename only, 0 differ).
+**Settings:** code of the commit building this entry (after the commit registering it). New options, default off:
+- growthCurve 'curved': on a growing day, ds = chunk x gm x k x ((T - size) / (T - b))^((k - 1) / k), capped at T -
+  size, where chunk = (1 - birthSize) / (growYearsF x yearDays) (a doe of target 1 crosses from birth to target in
+  growYearsF on the straight line), b = the sex's birth share x T (a single newborn), and k = curveExp. A single then
+  follows size = b + (T - b) (1 - (1 - x)^k), x = chunk t / (T - b), reaching T at (T - b) / chunk. k = 1 is the
+  straight line at the slower chunk; k = 2 starts at twice the line's speed and slows to 0 at the target. A twin
+  born smaller starts faster (catch-up). growYearsM, growSD and the per-goat multiplier are not used.
+- curveExp (default 2).
+- Juvenile hazard reference: a single of its target on this curve at its age. Keep value: its gain over the next year
+  on this curve from its current size.
+With chunk 0.00118 a day (growthAbs is 0.0035), at the full rate (k = 2; k = 1 in brackets):
+| goat | target | to target | to 80% |
+|---|---|---|---|
+| doe | 0.6 | 432 d | 239 d (346) |
+| doe | 1.0 | 720 d | 398 d (576) |
+| doe | 1.31 (wild mean B) | 943 d | 521 d (755) |
+| doe | 1.4 | 1008 d | 557 d (806) |
+| buck | 1.7 | 1300 d | 719 d (1040) |
+| buck | 2.23 | 1706 d | 943 d (1364) |
+| buck | 2.38 | 1820 d | 1006 d (1456) |
+A doe cannot conceive before femaleMinAge (480 d), so at the full rate a doe of target above about 1.1 (k = 2) is still
+short of breeding size then, and size delays first conception even without food stalls.
+Base settings for every arm: sexSize 1.7, maleBirthSize 1.1, cullSizeNeutral sex, growYearsF 2, growthCurve curved.
+Arms: H0C, H0C1 (humansPerCamp 0, 600 years); R15C, R15C1, W50C, W50C1 (R15 and W50 as in the sex-differences batch,
+1600 years); C = curveExp 2, C1 = curveExp 1. 4 seeds, 24 runs. References: results/sexsize H0, R15, W50 (linear,
+same-size sexes) and H0SD, R15SD, W50SD (vb, run before the birth-share fix). Check before the batch: R15 seed 1, 600
+years, defaults, against results/ogm_verify/off_R15_s1: 0 year records differ.
+**Method:** `cpuslot submit --tag animal-domestication --out results/curved/logs --list tools/curved.jsonl`. Tables:
+tools/sexsize_tab.py, tools/ogm_tab.py, scratchpad husb_tab.py (years 801-900 and 1501-1600); B spread from hist and
+histHerd. Wild arms read at years 501-600.
+**Prediction** (written before any curved run):
+- Wild: H0C goats 0.80-1.05 of H0SD (537.7); wild adult male size 1.6-1.8 x female; wild mean B 0.75 or above.
+- Coupling: in H0C the pooled correlation of a wild doe's B with her age at first kid is above +0.10.
+- B gap (years 1501-1600) returns: R15C at -0.30 or below; |B gap| in R15C at least that in W50C.
+- Curve against line: |B gap| in R15C1 at least that in R15C (the line spreads breeding ages over more days).
+- R gap holds: R15C within 0.1 of -0.56.
+
+## [RESULTS 2026-11-16] Curved linear growth: one daily growth chunk for every goat, bent into a curve (raw)
+24 runs, all exit 0 (results/curved). Check before the batch (results/curved_verify): R15 seed 1, 600 years, defaults,
+0 of 600 year records differ from results/ogm_verify/off_R15_s1 (69 shared keys). Smoke R15C seed 1, 600 years, ran.
+Discrepancy with the registered table: its "to 80%" column is 80% of the way from birth size to target; breeding needs
+80% of the target (breedSizeFrac x T), which the code uses. Correct full-rate days to 80% of target, k = 2 (k = 1):
+does 0.6 / 1.0 / 1.31 / 1.4: 223 / 371 / 486 / 520 (331 / 551 / 722 / 771); bucks 1.7 / 2.23 / 2.38: 689 / 903 / 964
+(1013 / 1328 / 1418). Days to target match the table within 4. So at the full rate (k = 2) does of target above about
+1.30, not 1.1, are short of breeding size at femaleMinAge.
+Tables: results/curved/tab_wild.txt, tab_1501.txt (tools/sexsize_tab.py; H0, R15, W50 rows are results/sexsize
+linear, same-size sexes), fk_wild.txt, fk_herd.txt (tools/ogm_tab.py), husb.txt (scratchpad husb_tab.py).
+Wild, years 501-600, 4 seeds:
+| arm | goats | M:F size 5+ | B mean (sd) | first kids/yr | age q25/q50/q75 | r(age, B) |
+|---|---|---|---|---|---|---|
+| H0 (linear) | 560.1 | 1.00 | - | - | - | - |
+| H0SD (vb) | 537.7 | 1.69 | - | - | - | - |
+| H0C | 524.3 | 1.70 | 0.878 (0.054) | 31.9 | 970/1062/1090 | +0.178 |
+| H0C1 | 539.8 | 1.69 | 0.858 (0.067) | 28.7 | 1117/1248/1385 | +0.280 |
+Husbandry, years 1501-1600, 4 seeds (first-kid ages and r for herd does; B for herd goats):
+| arm | herd | herd starv | B gap | R gap | R>=0.40 | breadth | herd B mean (sd) | herd first kid q50 | r(age, B) herd |
+|---|---|---|---|---|---|---|---|---|---|
+| R15 (linear) | 303.3 | 49.2 | -0.82 | -0.61 | 0.005 | 6 | - | - | - |
+| R15C | 228.0 | 49.3 | +0.03 | -0.57 | 0.017 | 5 | 0.931 (0.037) | 931 | +0.074 |
+| R15C1 | 230.9 | 42.2 | +0.02 | -0.61 | 0.011 | 5 | 0.906 (0.049) | 1145 | +0.118 |
+| W50 (linear) | 212.1 | 1.5 | -0.40 | -0.57 | 0.029 | 5 | - | - | - |
+| W50C | 170.1 | 0.3 | -0.01 | -0.53 | 0.050 | 3 | 0.882 (0.058) | 712 | +0.208 |
+| W50C1 | 190.7 | 0.3 | -0.02 | -0.58 | 0.023 | 4 | 0.865 (0.061) | 993 | +0.448 |
+Years 801-900 B gaps: R15 -0.47, R15C -0.00, R15C1 -0.00, W50 -0.23, W50C +0.01, W50C1 -0.01. Herd size at 5+ years
+F/M: R15C 1.35/2.28, R15C1 1.33/2.22, W50C 1.31/2.22, W50C1 1.30/2.20 (R15 linear 0.65/0.63). Ganj Dareh, slaughter
+only: R15C 1/4, R15C1 0/4, W50C 2/4, W50C1 2/4; all causes: R15C1 2/4, W50C 2/4, W50C1 2/4.
+**Predictions:** 3 of 5 met.
+- Wild, H0C goats 0.80-1.05 of H0SD, M:F 1.6-1.8, wild mean B 0.75 or above: met (0.98; 1.70; 0.878).
+- Coupling, r(age, B) in H0C above +0.10: met (+0.178; H0C1 +0.280).
+- B gap in R15C at -0.30 or below, |R15C| at least |W50C|: missed (+0.03).
+- |B gap| in R15C1 at least that in R15C: missed (0.02 against 0.03; both near 0).
+- R gap of R15C within 0.1 of -0.56: met (-0.57).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

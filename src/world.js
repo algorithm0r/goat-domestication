@@ -1108,6 +1108,7 @@ var World = class World {
     for (const g of m) {
       const ay = g.age / Y;
       let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain
+        : P.growthCurve === 'curved' ? g.curveGain(Y)
         : Math.max(0, Math.min(adultSize[g.sex] - g.size, yearGrowth));
       if (g.sex === SEX_F && ay < P.senescenceAge) {
         // expected kidding: her own record weighted by its length, blended with the camp's rate for
