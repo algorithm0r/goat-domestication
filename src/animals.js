@@ -112,15 +112,21 @@ var Goat = class Goat {
 
   reserveCap() { return PARAMETERS.reserveMax * this.size; }
   // Sex differences in size and growth (2026-11-14): the sex's size multiplier, and von Bertalanffy growth in mass
-  // (growthCurve 'vb'). k is set so a goat born at birthSize of its target reaches 95% of it in growYears at the full
-  // rate: M(t) = T (1 - A e^(-kt))^3, A = 1 - (birth share)^(1/3).
+  // (growthCurve 'vb'). k is set so a goat born as a single at its sex's birth share of its target reaches 95% of it in
+  // growYears at the full rate: M(t) = T (1 - A e^(-kt))^3, A = 1 - (birth share)^(1/3). Until 2026-11-16 k and the
+  // ogm a were set from birthSize for both sexes, so with maleBirthSize / sexSize below 1 a buck took longer than
+  // growYearsM (1507 days, not 1440, at sexSize 1.7 and maleBirthSize 1.1 under ogm).
   sexMult() { return this.sex === SEX_M ? PARAMETERS.sexSize : 1; }
+  birthShare() {                                                // a single newborn's size as a share of its target
+    const P = PARAMETERS;
+    return P.birthSize * (this.sex === SEX_M ? P.maleBirthSize / P.sexSize : 1);
+  }
   vbK() {
-    const P = PARAMETERS, A = 1 - Math.cbrt(P.birthSize);
+    const P = PARAMETERS, A = 1 - Math.cbrt(this.birthShare());
     return Math.log(A / (1 - Math.cbrt(0.95))) / (P.yearDays * (this.sex === SEX_M ? P.growYearsM : P.growYearsF));
   }
   vbSizeAt(age) {                                               // size at this age born as a single, grown at the full rate
-    const P = PARAMETERS, b = P.birthSize * (this.sex === SEX_M ? P.maleBirthSize / P.sexSize : 1);
+    const b = this.birthShare();
     const x = 1 - (1 - Math.cbrt(b)) * Math.exp(-this.vbK() * age);
     return this.target * x * x * x;
   }
@@ -130,14 +136,14 @@ var Goat = class Goat {
   }
   // Ontogenetic growth model (growthCurve 'ogm', 2026-11-14, with Chris: size, growth rate and maturity are coupled):
   // dM/dt = a M^(3/4) (1 - (M/T)^(1/4)), so (M/T)^(1/4) = 1 - (1 - u0) e^(-a t / (4 T^(1/4))) and time to grow ~ T^(1/4).
-  // a per sex: a goat of target 1 x the sex's multiplier, born at birthSize of target, reaches 95% in growYears.
+  // a per sex: a goat of target 1 x the sex's multiplier, born at its sex's birth share, reaches 95% in growYears.
   ogmA() {
     const P = PARAMETERS, m = this.sexMult();
-    return 4 * Math.pow(m, 0.25) * Math.log((1 - Math.pow(P.birthSize, 0.25)) / (1 - Math.pow(0.95, 0.25)))
+    return 4 * Math.pow(m, 0.25) * Math.log((1 - Math.pow(this.birthShare(), 0.25)) / (1 - Math.pow(0.95, 0.25)))
       / (P.yearDays * (this.sex === SEX_M ? P.growYearsM : P.growYearsF));
   }
   ogmSizeAt(age) {                                              // a single of its target at the sex's a, full rate
-    const P = PARAMETERS, b = P.birthSize * (this.sex === SEX_M ? P.maleBirthSize / P.sexSize : 1);
+    const b = this.birthShare();
     const u = 1 - (1 - Math.pow(b, 0.25)) * Math.exp(-this.ogmA() * age / (4 * Math.pow(this.target, 0.25)));
     return this.target * u * u * u * u;
   }
@@ -518,7 +524,9 @@ var Goat = class Goat {
       let m = 1;
       if (P.juvSizeExp > 0) m = Math.pow((P.growthCurve === 'vb' ? this.vbSizeAt(this.age)
         : P.growthCurve === 'ogm' ? this.ogmSizeAt(this.age)
-        : Math.min(this.target, P.birthSize * this.target + P.growthAbs * this.age)) / this.size, P.juvSizeExp);
+        : Math.min(this.target, this.birthShare() * this.target + P.growthAbs * this.age)) / this.size, P.juvSizeExp);
+      // (linear: born at its sex's birth share since 2026-11-16; birthSize before, which with sexSize 1.7 made the
+      // reference newborn buck 1.5x his real birth size; identical at sexSize 1 and maleBirthSize 1)
       h += P.juvMortality * m;
     }
     if (a > P.senescenceAge) h += P.senescenceRate * (a - P.senescenceAge);
