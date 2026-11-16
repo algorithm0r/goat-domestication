@@ -4577,6 +4577,44 @@ only: R15C 1/4, R15C1 0/4, W50C 2/4, W50C1 2/4; all causes: R15C1 2/4, W50C 2/4,
 - |B gap| in R15C1 at least that in R15C: missed (0.02 against 0.03; both near 0).
 - R gap of R15C within 0.1 of -0.56: met (-0.57).
 
+## [PRE-REGISTERED 2026-11-16] What removed the B gap: growth pace or sex differences
+**Question:** The B gap of linear growth (R15 -0.82, W50 -0.40) is gone in every batch with sex differences on (vb,
+ogm, curved; +0.03 to -0.02), and the curved batch (above) showed it is not the size-maturity link: on the straight
+line at the slower pace, bigger does breed later (herd W50C1 r +0.45) and B still does not move. Two differences
+remain between the runs that shrank and the ones that did not: growth pace (linear growthAbs 0.0035 a day, a target-1
+doe grown in 243 days, against 720 at the curved chunk) and the sex differences (sexSize 1.7, maleBirthSize 1.1,
+cullSizeNeutral sex). Chris (2026-11-16): "Sure" to separating them.
+**Settings:** code of 0a6a0a2 (no code change). R15 as in the sex-differences batch, 1600 years, 4 seeds, 8 runs:
+- LSD: linear growth (growthCurve linear, growthAbs 0.0035) with sexSize 1.7, maleBirthSize 1.1, cullSizeNeutral sex.
+  Bucks of target 2.23 take (2.23 - 0.216) / 0.0035 = 575 days at the full rate. The linear juvenile reference has used
+  each sex's birth share since 7bba221, so this arm has not run before in any form.
+- CNS: curved growth (curveExp 2, growYearsF 2) with sexSize 1, maleBirthSize 1, cullSizeNeutral 1 (default).
+References: results/sexsize R15 (linear, no sex differences) and results/curved R15C (curved, sex differences).
+**Method:** `cpuslot submit --tag animal-domestication --out results/ablate/logs --list tools/ablate.jsonl`. Tables as
+for the curved batch: tools/sexsize_tab.py, tools/ogm_tab.py, scratchpad husb_tab.py (years 801-900, 1501-1600), B
+mean and sd from hist and histHerd.
+**Prediction** (written before any run; a guess, since no mechanism is in hand):
+- Pace, not sex differences, removed the gap: LSD B gap at -0.30 or below; CNS B gap within +-0.15 of 0.
+- R gap holds in both: within 0.1 of -0.6.
+- Wild mean B in both arms 0.75 or above.
+
+## [RESULTS 2026-11-16] What removed the B gap: growth pace or sex differences (raw)
+8 runs, all exit 0 (results/ablate). Tables: results/ablate/tab_1501.txt (tools/sexsize_tab.py), fk.txt
+(tools/ogm_tab.py), husb.txt (scratchpad husb_tab.py). Wild B is hist minus histHerd. Years 1501-1600, 4 seeds:
+| arm | growth | sex differences | herd | herd starv | B gap | R gap | R>=0.40 | breadth | herd B mean (sd) | wild B mean (sd) | herd doe size 5+ |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| R15 | linear | off | 303.3 | 49.2 | -0.82 | -0.61 | 0.005 | 6 | - | 0.875 (0.126) | 0.65 |
+| LSD | linear | on | 277.1 | 45.8 | -0.66 | -0.60 | 0.007 | 6 | 0.180 (0.153) | 0.846 (0.133) | 0.75 |
+| CNS | curved | off | 241.0 | 47.9 | +0.02 | -0.55 | 0.020 | 3 | 0.916 (0.043) | 0.897 (0.047) | 1.33 |
+| R15C | curved | on | 228.0 | 49.3 | +0.03 | -0.57 | 0.017 | 5 | 0.931 (0.037) | 0.901 (0.047) | 1.35 |
+Years 801-900 B gaps: R15 -0.47, LSD -0.36, CNS +0.01, R15C -0.00. First kid, herd does: LSD median 712 days, r(age,
+B) +0.207; CNS 954, +0.072. Wild does: LSD 1051, r +0.369; CNS 1084, +0.037. Herd buck size 5+ LSD 1.26 (wild 2.19).
+Ganj Dareh, slaughter only: LSD 0/4 (m<2.5 0.94, f>=2.5 0.91, >=4 0.09, F:M 0.10), CNS 1/4.
+**Predictions:** 3 of 3 met.
+- Pace, not sex differences: LSD B gap at -0.30 or below, CNS within +-0.15 of 0: met (-0.66; +0.02).
+- R gap within 0.1 of -0.6 in both: met (-0.60; -0.55).
+- Wild mean B 0.75 or above in both: met (0.846; 0.897).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
