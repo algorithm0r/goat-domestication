@@ -4615,6 +4615,40 @@ Ganj Dareh, slaughter only: LSD 0/4 (m<2.5 0.94, f>=2.5 0.91, >=4 0.09, F:M 0.10
 - R gap within 0.1 of -0.6 in both: met (-0.60; -0.55).
 - Wild mean B 0.75 or above in both: met (0.846; 0.897).
 
+## [PRE-REGISTERED 2026-11-17] Chris's curve at the fast pace
+**Question:** The ablation above compared the fast straight line (LSD, -0.66) with the slow curve (CNS, R15C, about 0),
+and the straight line at the slow pace (R15C1, +0.02) is the only run that holds shape fixed. Chris's curve
+(curveExp 2) has not run at the fast pace, so whether pace alone decides the gap is shown for the straight line only.
+Chris (2026-11-17): "run my arm please".
+**Settings:** code of b890989 (no code change). R15C exactly (curved, curveExp 2, sexSize 1.7, maleBirthSize 1.1,
+cullSizeNeutral sex) with growYearsF 0.6746, so the daily chunk is (1 - 0.15) / (0.6746 x 360) = 0.0035, the linear
+growthAbs. A target-1 doe grows in 243 days (as on the line, but starting at twice its speed and slowing); a
+target-1.7 buck in 439. 1600 years, 4 seeds, 4 runs (CF). References: LSD (fast line), R15C (slow curve).
+**Method:** `cpuslot submit --tag animal-domestication --out results/curvefast/logs --list tools/curvefast.jsonl`.
+Tables as for the ablation (tools/sexsize_tab.py, tools/ogm_tab.py, scratchpad husb_tab.py), years 1501-1600.
+**Prediction** (written before any run; a guess):
+- Pace decides it on the curve too: CF B gap at -0.30 or below.
+- R gap within 0.1 of -0.6.
+- Wild mean B 0.75 or above.
+
+## [RESULTS 2026-11-17] Chris's curve at the fast pace (raw)
+4 runs, all exit 0 (results/curvefast). Tables: results/curvefast/tab_1501.txt (tools/sexsize_tab.py), fk.txt
+(tools/ogm_tab.py), husb.txt (scratchpad husb_tab.py), each with LSD and R15C beside CF. B mean (sd) from the hist and
+histHerd B histograms (bin midpoints, wild = hist - histHerd), years 1501-1600, 4 seeds:
+| arm | shape | pace | herd | herd starv | B gap | R gap | breadth | herd B mean (sd) | wild B mean (sd) | herd doe size 5+ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| LSD | line | fast | 277.1 | 45.8 | -0.66 | -0.60 | 6 | 0.183 (0.125) | 0.846 (0.130) | 0.75 |
+| CF | curve | fast | 200.7 | 26.8 | +0.00 | -0.58 | 5 | 0.901 (0.047) | 0.898 (0.045) | 1.32 |
+| R15C | curve | slow | 228.0 | 49.3 | +0.03 | -0.57 | 5 | 0.931 (0.033) | 0.901 (0.046) | 1.35 |
+R15C1 (line, slow; results/curved) B gap +0.02. Years 801-900 B gap: CF +0.01, LSD -0.36, R15C -0.00. CF size at age 1,
+herd F/M 1.21/1.41 (LSD 0.73/1.02, R15C 0.99/1.07). First kid, herd does: CF median 730 days, r(age, B) +0.044; LSD 712,
++0.207; R15C 931, +0.074. Ganj Dareh, slaughter only: CF 0/4.
+**Predictions:** 2 of 3 met.
+- Pace decides it on the curve too, CF B gap at -0.30 or below: not met (+0.00). Of the four shape-by-pace cells only
+  the fast line moves B.
+- R gap within 0.1 of -0.6: met (-0.58).
+- Wild mean B 0.75 or above: met (0.898).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
