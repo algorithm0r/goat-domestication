@@ -4879,7 +4879,7 @@ B gap by century from year 501: A3 -0.02, -0.02, -0.02, -0.02, -0.06, -0.11, -0.
 -0.03, -0.05, -0.07, -0.12, -0.18, -0.25, -0.32, -0.40, -0.51, -0.57 (still falling at 1600); CU -0.01, -0.01, -0.02,
 -0.04, -0.05, -0.07, -0.10, -0.13, -0.15, -0.16, -0.16 (level from about 1400). Slaughter is males before 2.5 years and
 share 4 years or older (Ganj Dareh 0.60-0.70 and about 0.20); Ganj Dareh slaughter count 1/4, 0/4, 0/4, 1/4, 1/4.
-**Predictions:** 2 of 4 of mine met; both shared predictions met.
+**Predictions:** 4 of 6 of mine met; both shared predictions met.
 - B gap grows with creditAge: met (-0.21, -0.26, -0.57). A4 between -0.25 and -0.45: not met (-0.57, and not level).
 - CU between -0.15 and +0.05: not met, narrowly (-0.16). Weaker than CH: met (-0.16 vs -0.21). Males before 2.5 years
   above 0.47: met (0.78). No runaway: CU levels from about year 1400.
