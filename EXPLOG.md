@@ -4946,6 +4946,36 @@ year 800, seed 2, for each arm (results/_scratch).
 - All arms: R gap within 0.1 of -0.6; wild mean B 0.75 or above.
 I expect neither change to bring young males into the Ganj Dareh band (0.60-0.70); both should move them away from it.
 
+## exp001 results (raw)
+16 runs and 4 probes, all exit 0. Mongo animalDomestication.exp001_keep-recal (8.6-8.7 MB of BSON a run);
+results/exp001_keep-recal: tab_1501.txt (tools/sexsize_tab.py), fk.txt (ogm_tab.py), husb.txt and bcentury.txt
+(husb_tab.py); probes results/_scratch/exp001_kv (keepvalue.mjs, seed 2, year 800; terms read from the sim, max |diff| 0).
+**Identity:** K0 against results/credit CH, all 4 seeds: 0 of 1600 records differ (65 shared fields).
+Years 1501-1600, 4 seeds:
+| arm | herd | herd starv | B gap | per seed | R gap | herd B | wild B | breadth | herd doe size 5+ | herd first kid (days) | m<2.5 | >=4 | GD |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| K0 | 272.1 | 48.3 | -0.21 | -0.15 -0.23 -0.31 -0.16 | -0.65 | 0.670 | 0.880 | 7 | 1.14 | 928 | 0.47 | 0.19 | 1/4 |
+| KA | 286.7 | 59.6 | -0.16 | -0.20 -0.09 -0.02 -0.33 | -0.63 | 0.720 | 0.883 | 4 | 1.17 | 956 | 0.87 | 0.09 | 0/4 |
+| KH | 293.3 | 50.6 | -0.37 | -0.59 -0.27 -0.44 -0.17 | -0.63 | 0.502 | 0.875 | 6 | 1.01 | 854 | 0.80 | 0.10 | 0/4 |
+| KAH | 149.4 | 8.4 | -0.11 | -0.02 -0.01 -0.33 -0.09 | -0.24 | 0.574 | 0.832 | 3 | 1.14 | 840 | 0.81 | 0.14 | 0/4 |
+KAH herds by seed, 1501-1600: 29.4, 35.0, 291.8, 241.3. By century from 401, seeds 1 and 2 stay at 22-41 throughout;
+seed 3 passes 100 in 901-1000, seed 4 in 1401-1500. B gap by century from 501: K0 -0.01 ... -0.21 (level); KA -0.03, -0.03,
+-0.05, -0.10, -0.16, -0.19, -0.19, -0.16, -0.13, -0.15, -0.16; KH -0.01, -0.03, -0.03, -0.09, -0.12, -0.17, -0.26, -0.30,
+-0.31, -0.34, -0.37 (still falling); KAH -0.02 ... -0.11.
+Probe, seed 2, year 800, bottom-15% share (total keep value) by class: K0 F kids 0.11 (+0.20), M kids 0.38 (+0.05), M 2-3
+0.80, M 3-5 0.67; KA F kids 0.04 (+0.37), M kids 0.63 (+0.31), M 1-2 1.00 (+0.11), no non-sire males past 3; KH M kids 0.81
+(+0.01), M 1-2 0.43, F 2-3 0.25; KAH (36 herd goats) F 5-9 0.67, M 1-2 0.50. Under 'age' a female kid's risk falls from
+-0.180 to -0.085 and her feed from -0.150 to -0.086, more than a buck kid's gains relative to bucks a year older.
+**Predictions:** 3 of 10 met.
+- K0 reproduces CH: met.
+- KA males dead before 2.5 y 0.25-0.45: not met (0.87, the other way). KA aged 4+ above 0.19: not met (0.09). KA B gap
+  within 0.08 of -0.21: met (-0.16).
+- KH B gap -0.25 to -0.45: met (-0.37, not level). KH males dead before 2.5 y below 0.47: not met (0.80).
+- KAH B gap within 0.10 of KH: not met (-0.11). KAH young males the lowest: not met (0.81; K0 0.47 lowest).
+- R gap within 0.1 of -0.6 in all arms: not met (KAH -0.24; others -0.63 to -0.65). Wild B 0.75 or above: met (0.832-0.883).
+- "Neither change brings young males into the band; both move them away": not met as worded. Both move them out of the
+  band, but past it (0.80-0.87), not away from it on the low side.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
