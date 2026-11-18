@@ -1105,11 +1105,16 @@ var World = class World {
       : m.filter(g => g.sex === SEX_M && g.age >= P.maleMinAge).sort((a, b) => b.age - a.age).slice(0, P.keepSires);
     const heirs = m.filter(g => g.sex === SEX_M && !sires.includes(g) && g.age >= P.weanAge).sort((a, b) => b.age - a.age).slice(0, P.keepHeirs);
     const yearGrowth = P.growthAbs * Y;
+    // growth credited: toward the goat's own target ('own') or the herd's mean adult size for its sex ('herd');
+    // 'model' keeps each growth rule's original choice (linear 'herd', the others 'own') (with Chris, 2026-11-17)
+    const credit = P.growthCredit === 'model' ? (P.growthCurve === 'linear' ? 'herd' : 'own') : P.growthCredit;
+    if (credit !== 'own' && credit !== 'herd') throw new Error(`unknown growthCredit ${P.growthCredit}`);
+    if (credit === 'herd' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('growthCredit herd: linear or curved only');
     for (const g of m) {
       const ay = g.age / Y;
       let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain
-        : P.growthCurve === 'curved' ? g.curveGain(Y)
-        : Math.max(0, Math.min(adultSize[g.sex] - g.size, yearGrowth));
+        : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(Y) : g.curveGainTo(adultSize[g.sex], Y))
+        : Math.max(0, Math.min((credit === 'own' ? g.target : adultSize[g.sex]) - g.size, yearGrowth));
       if (g.sex === SEX_F && ay < P.senescenceAge) {
         // expected kidding: her own record weighted by its length, blended with the camp's rate for
         // does of her age class (or the herd mean while the camp has little experience)

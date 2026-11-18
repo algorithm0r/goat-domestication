@@ -167,8 +167,9 @@ var Goat = class Goat {
     const x = Math.min(1, this.curveChunk() * age / (this.target - b));
     return b + (this.target - b) * (1 - Math.pow(1 - x, k));
   }
-  curveGain(days) {                                             // gain over the next days on the curve, full rate
-    const k = PARAMETERS.curveExp, b = this.birthShare() * this.target, span = this.target - b;
+  curveGain(days) { return this.curveGainTo(this.target, days); }   // gain over the next days on the curve, full rate
+  curveGainTo(T, days) {                                        // the same toward target T (the keep value's growthCredit 'herd')
+    const k = PARAMETERS.curveExp, b = this.birthShare() * T, span = T - b;
     const y = Math.min(1, Math.max(0, (this.size - b) / span));
     const x = Math.min(1, 1 - Math.pow(1 - y, 1 / k) + this.curveChunk() * days / span);
     return Math.max(0, b + span * (1 - Math.pow(1 - x, k)) - Math.max(this.size, b));

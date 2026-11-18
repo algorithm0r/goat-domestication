@@ -324,7 +324,10 @@ var PARAMETERS = {
   feedCost: 0.15,         // opportunity: a year's keep, × size^0.75, in meat units
   cullSizeNeutral: 1,     // opportunity: feed and meat-at-risk charged per head, so the cull rule cannot itself select on size (0 = by size;
                           // 'sex' = per head at the sex's size multiplier, sexSize for males: neutral within a sex, a buck eats more)
-  cullNoise: 0.05,        // opportunity: sd of the herder's judgement noise on keep value (0 = pure ranking)
+  growthCredit: 'model',  // opportunity: next year's growth in the keep value, toward 'own' (the goat's own target) or 'herd' (the
+                          // herd's mean adult size for its sex), on the goat's growth rule; 'model' = linear 'herd', vb/ogm/curved
+                          // 'own' (as before 2026-11-17); 'herd' needs linear or curved (Chris, 2026-11-17: the crossover test)
+  cullNoise: 0.05,       // opportunity: sd of the herder's judgement noise on keep value (0 = pure ranking)
   flightCost: 0,          // opportunity: cost of observed flightiness (R × fear of humans); H6 > 0
   rutGuard: 0,            // husbandry: chance a receptive herd doe is kept at camp each rut day; cuts wild-buck sirings by this
   keepSires: 2,           // bucks kept as sires per camp (oldest first)

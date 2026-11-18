@@ -4783,6 +4783,58 @@ bucks 8.80, 8.27. Slaughter: males before 2.5 years BW1 0.74, BW2 0.68 (Ganj Dar
 - B gap within +-0.15 of 0, R gap within 0.1 of -0.6, wild B 0.75 or above, on both: met (+0.02, +0.03; -0.66, -0.63;
   0.883, 0.903).
 
+## [PRE-REGISTERED 2026-11-17] Crossover: growth model against the keep value's growth credit
+**Question:** Only runs on the linear growth rule shrank the herd (R15 -0.82, LSD -0.66); every curved run did not,
+including the straight line at the slow pace (curveExp 1, +0.02) and the curve at the fast pace (CF, +0.00). The
+keep value (World.cullByOpportunity) credits next year's growth differently by rule: linear credits growth up to the
+herd's mean adult size for the goat's sex (adultSize, goats of adultAge 720 days or older), so a grown goat smaller
+than that mean is credited growth it will not make; vb, ogm and curved credit growth toward the goat's own target.
+Keep-value probe (tools/keepvalue.mjs, R15 seed 2, year 800): adult does' credited growth r(target, growth) -0.69,
+with none left to grow. A herder cannot see a target, so 'herd' is a belief a herder could hold, not an error.
+Chris (2026-11-17): run the old linear rule with the new credit and the new curve with the average credit; "the
+linear branch should lose body size diff and our new one should gain it."
+**Code change** (this commit): growthCredit 'model' (default; unchanged behaviour) | 'own' | 'herd'; Animal.curveGainTo(T,
+days) is curveGain toward target T. Under 'herd' on the curve the credit is a year of curve growth toward the herd mean,
+not the whole shortfall as on the line (a full-grown 1.3 doe under a 1.6 mean: 0.175 a year).
+**Settings:** 4 seeds, 1600 years, tables as for the wild-pace stage 2, years 1501-1600.
+- LH: R15 exactly (linear, growthAbs 0.0035, no sex differences, cullSizeNeutral 1), growthCredit model (= herd). The
+  original body-size result, rerun on this code.
+- LO: LH with growthCredit own.
+- CH: BW2 (curved, curveExp 2, growYearsF 3.75, breedSizeFrac 0.65, sexSize 1.7, maleBirthSize 1.1, cullSizeNeutral
+  sex) with growthCredit herd.
+- CO: BW2 itself (results/breed65r), reused if the identity check on this code passes (below).
+Identity check: LSD seed 1 and BW2 seed 1, 600 years on this code, against results/ablate and results/breed65r
+(scratchpad cmp_years.py); 0 records may differ.
+**Prediction** (Chris's hypothesis):
+- LO: B gap within +-0.15 of 0 (LH about -0.8).
+- CH: B gap -0.30 or below (CO +0.03).
+My own guess, recorded separately: CH moves less than the line did, to between -0.10 and -0.30, because the curve's
+credit is a year of slow growth rather than the whole shortfall, and the herd mean includes goats still growing.
+Both: R gap within 0.1 of -0.6 in all arms; wild mean B 0.75 or above.
+**Identity check** (done before any arm ran to the cull): LSD seed 1 and BW2 seed 1, 600 years on f4c9ca2, against
+results/ablate and results/breed65r: 0 of 600 records differ in each (69 shared keys); the same check on LSD seed 1
+against LSD seed 2 finds 600 of 600 differ. CO reuses results/breed65r BW2.
+
+## [RESULTS 2026-11-17] Crossover: growth model against the keep value's growth credit (raw)
+12 runs, all exit 0 (results/credit). Tables: tab_1501.txt, fk.txt, husb.txt (tools as for the wild-pace stage 2), with
+CO = results/breed65r BW2. B means from the hist and histHerd histograms. Years 1501-1600, 4 seeds:
+| arm | growth | credit | herd | herd starv | B gap | R gap | breadth | herd B | wild B | herd doe size 5+ | herd first kid (days) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| LH | linear fast | herd | 303.3 | 49.2 | -0.82 | -0.61 | 6 | 0.055 | 0.875 | 0.65 | 712 |
+| LO | linear fast | own | 223.0 | 37.7 | +0.02 | -0.57 | 4 | 0.921 | 0.906 | 1.34 | 781 |
+| CH | curve, wild pace | herd | 272.1 | 48.3 | -0.21 | -0.65 | 7 | 0.670 | 0.882 | 1.14 | 926 |
+| CO | curve, wild pace | own | 234.1 | 38.0 | +0.03 | -0.63 | 5 | 0.935 | 0.903 | 1.34 | 1082 |
+LH reproduces the sexsize R15 row (herd 303.3, starvation 49.2, B gap -0.82). B gap by century from year 501: LH -0.03,
+-0.17, -0.32, -0.47, -0.62, -0.73, -0.77, -0.80, -0.81, -0.82, -0.82; CH -0.01, -0.01, -0.03, -0.07, -0.11, -0.12, -0.17,
+-0.18, -0.22, -0.22, -0.21 (level from about 1300). r(first-kid age, B), herd: LH +0.145, LO +0.050, CH +0.385, CO
++0.099. Slaughter: males before 2.5 years LH 0.80, LO 0.92, CH 0.47, CO 0.68; share 4 years or older 0.13, 0.14, 0.19,
+0.49 (Ganj Dareh about 0.20); Ganj Dareh slaughter only LH 0/4, LO 0/4, CH 1/4, CO 1/4.
+**Predictions:** Chris's hypothesis 1 of 2 met; my guess met; both shared predictions met.
+- LO B gap within +-0.15 of 0: met (+0.02; LH -0.82).
+- CH B gap -0.30 or below: not met (-0.21; CO +0.03). The sign is as predicted.
+- My guess, CH between -0.10 and -0.30: met (-0.21).
+- R gap within 0.1 of -0.6 in all arms: met (-0.61, -0.57, -0.65, -0.63). Wild mean B 0.75 or above: met (0.875 to 0.906).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
