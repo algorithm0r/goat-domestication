@@ -327,7 +327,8 @@ var PARAMETERS = {
   growthCredit: 'herd',   // opportunity: next year's growth in the keep value, toward 'own' (the goat's own target), 'herd' (the
                           // herd's mean adult size for its sex: the herder's learned expectation; default from 2026-11-18, Chris)
                           // or 'cull' (running mean size of the goats of that sex the camp has slaughtered, over the last ~cullMemory;
-                          // the herd's adult mean until the first cull), on the goat's growth rule; 'model' = linear 'herd',
+                          // the herd's adult mean until the first cull) or 'max' (the herd's largest goat of that sex now; 2026-11-18),
+                          // on the goat's growth rule; 'model' = linear 'herd',
                           // vb/ogm/curved 'own' (as before 2026-11-17); 'herd' and 'cull' need linear or curved (Chris, 2026-11-17/18)
   creditAge: 0,           // growthCredit 'herd': days from which the herder counts a goat in the adult mean (0 = adultAge; 2026-11-18)
   cullMemory: 20,         // growthCredit 'cull': culls of a sex in the herder's running mean (exponential, weight 1/cullMemory per cull)

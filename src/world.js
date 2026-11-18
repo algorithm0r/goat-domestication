@@ -1110,10 +1110,12 @@ var World = class World {
     // growth credited: toward the goat's own target ('own') or the herd's mean adult size for its sex ('herd');
     // 'model' keeps each growth rule's original choice (linear 'herd', the others 'own') (with Chris, 2026-11-17)
     const credit = P.growthCredit === 'model' ? (P.growthCurve === 'linear' ? 'herd' : 'own') : P.growthCredit;
-    if (credit !== 'own' && credit !== 'herd' && credit !== 'cull') throw new Error(`unknown growthCredit ${P.growthCredit}`);
-    if (credit !== 'own' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('growthCredit herd/cull: linear or curved only');
+    if (!['own', 'herd', 'cull', 'max'].includes(credit)) throw new Error(`unknown growthCredit ${P.growthCredit}`);
+    if (credit !== 'own' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('growthCredit herd/cull/max: linear or curved only');
     // 'cull': the size the herder expects is the camp's running mean size at slaughter (2026-11-18, Chris), until the first cull the adult mean
-    const ref = credit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
+    // 'max': the largest goat of the sex in the herd now (2026-11-18, Chris)
+    const ref = credit === 'max' ? [0, 1].map(s => m.reduce((x, g) => g.sex === s && g.size > x ? g.size : x, 0) || adultSize[s])
+      : credit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
     for (const g of m) {
       const ay = g.age / Y;
       let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain

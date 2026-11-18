@@ -4885,6 +4885,34 @@ share 4 years or older (Ganj Dareh 0.60-0.70 and about 0.20); Ganj Dareh slaught
   above 0.47: met (0.78). No runaway: CU levels from about year 1400.
 - R gap within 0.1 of -0.6: met (-0.62 to -0.65). Wild mean B 0.75 or above: met (0.877 to 0.886).
 
+## [PRE-REGISTERED 2026-11-18] The herder's reference size: the largest goat
+**Question:** Chris (2026-11-18), "an obvious other opportunistic choice": the herder measures each goat against the
+largest goat in the herd. Each goat is credited next year's growth on its curve toward the size of the herd's largest
+goat of its sex, now.
+**Code change** (this commit): growthCredit 'max' (per sex; the adult mean if the herd has none of that sex).
+**Settings:** R15 arguments with growthCredit max, 4 seeds, 1600 years, tables as for the reference-size arms, years
+1501-1600. Compared with CH (herd adult mean from 2 years, the default), A4 and CU (results/refsize).
+**Prediction** (mine; Chris made none):
+- The largest goat sits above most targets, so grown does and bucks below it are credited growth they will not make, as on
+  the old linear rule (LH -0.82), and the largest goats are credited none. B gap -0.40 or below, between A4 (-0.57) and
+  LH; low confidence.
+- More old goats are kept: the share of the slaughtered aged 4 or older falls below CH's 0.19.
+- R gap within 0.1 of -0.6; wild mean B 0.75 or above.
+
+## [RESULTS 2026-11-18] The herder's reference size: the largest goat (raw)
+4 runs, all exit 0 (results/refsize MX). Tables: tab_mx.txt, fk_mx.txt, husb_mx.txt (tools as for the reference-size
+arms). Years 1501-1600, 4 seeds:
+| arm | reference | herd | herd starv | B gap | per seed | R gap | herd B | wild B | herd doe size 5+ (wild 1.26) | herd first kid (days) | m<2.5 | >=4 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| MX | largest goat of the sex | 289.0 | 46.0 | -0.67 | -0.81 -0.83 -0.34 -0.71 | -0.65 | 0.188 | 0.871 | 0.77 | 759 | 0.43 | 0.35 |
+B gap by century from year 501: -0.02, -0.04, -0.06, -0.12, -0.16, -0.22, -0.31, -0.41, -0.51, -0.60, -0.67 (still
+falling at 1600). Other gaps: A -0.21, S +0.12, H -0.19, T +0.38, M -0.16, W -0.29, L +0.13; breadth 9 (CH 7). Herd
+M:F size at 5+ 1.76 (wild 1.58). Ganj Dareh slaughter 0/4.
+**Predictions:** 1 of 2 of mine met; both shared predictions met.
+- B gap -0.40 or below: met (-0.67).
+- Share of the slaughtered aged 4 or older below CH's 0.19: not met (0.35, the other way).
+- R gap within 0.1 of -0.6: met (-0.65). Wild mean B 0.75 or above: met (0.871).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

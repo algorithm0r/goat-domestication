@@ -26,7 +26,8 @@ for (const [cid, m] of herds) {
   }
   const adultSize = [an[0] ? adult[0] / an[0] : 1, an[1] ? adult[1] / an[1] : 1];
   const camp = world.camps[cid], record = camp && camp.record ? camp.record : null;
-  const ref = P.growthCredit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
+  const ref = P.growthCredit === 'max' ? [0, 1].map(s => m.reduce((x, g) => g.sex === s && g.size > x ? g.size : x, 0) || adultSize[s])
+    : P.growthCredit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
   const herdRate = record && record.yrs > 0 ? record.kids / record.yrs : P.priorKidRate;
   const herdMilk = record && record.yrs > 0 ? record.milk / record.yrs : 0;
   const sires = P.sireRule !== 'oldest' ? world.siresOf(cid)
