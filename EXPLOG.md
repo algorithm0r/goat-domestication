@@ -4727,6 +4727,62 @@ males killed before 2.5 years: RW1 0.82, RW2 0.73 (R15C1 0.55, R15C 0.61). Ganj 
 - Wild mean B 0.75 or above: met (0.831, 0.893).
 - Males slaughtered before 2.5 years below 0.55: not met (0.82, 0.73); slower growth raised the share.
 
+## [PRE-REGISTERED 2026-11-17] Breeding threshold 0.65 at the wild pace
+**Question:** At the wild-calibrated pace, does first kid at 4-5 years (wild) and herds take off centuries later (RW1:
+2 of 4 seeds not by 1600). A doe conceives only at breedSizeFrac 0.8 of her own target (animals.js:239; does only).
+Goats reach puberty at about 60-75% of mature weight (search summaries, EXPLOG 2026-11-15 discussion); ibex conceive at
+rate 1.00 by 4 years, and most bezoar first mate at 1-2. Chris (2026-11-17): "lower the breeding threshold to 0.65 as
+you suggest and see what we get".
+**Stage 1 settings:** code of 6aebfc2 (no code change). As the wild calibration (humansPerCamp 0, sexSize 1.7,
+maleBirthSize 1.1, cullSizeNeutral sex, growthCurve curved) with breedSizeFrac 0.65: line (curveExp 1) at growYearsF 3,
+3.5, 4; curve (curveExp 2) at 3.5, 4, 4.5; 2 seeds, 600 years, 12 runs (tools/breed65.jsonl, results/breed65). Measure
+and rule exactly as in the wild calibration (tools/wildcal_tab.py, years 501-600; t95 of wild does to 5.0 years,
+interpolated between bracketing values, rounded to 0.25; nearest swept value if none bracket).
+**Stage 2 settings:** R15 with breedSizeFrac 0.65, each shape at its stage 1 growYearsF, as RW1 and RW2 otherwise;
+4 seeds, 1600 years, 8 runs (BW1, BW2; results/breed65r). Tables as for stage 2 of the wild calibration.
+**Prediction** (written before any run; guesses):
+- Stage 1: growYearsF within 0.5 of the 0.8 values (line 3.5, curve 4.0).
+- Stage 1: wild median first kid at least 250 days earlier than at 0.8 at the chosen pace (line 1799, curve 1458), and
+  below 1460 on both.
+- Stage 2: every seed's herd passes 150 goats by year 1200 on both shapes.
+- Stage 2: B gap within +-0.15 of 0; R gap within 0.1 of -0.6; wild mean B 0.75 or above, on both shapes.
+
+## [RESULTS 2026-11-17] Breeding threshold 0.65 at the wild pace, stage 1 (raw)
+12 runs, all exit 0 (results/breed65). Table: results/breed65/tab.txt (tools/wildcal_tab.py 501 600). Wild, 2 seeds:
+| shape | growYearsF | doe A | doe t95 | buck A | buck t95 | wild first kid (days) |
+|---|---|---|---|---|---|---|
+| line | 3 | 1.274 | 4.72 | 2.157 | 7.67 | 1436 |
+| line | 3.5 | 1.285 | 5.38 | 2.147 | 8.66 | 1449 |
+| line | 4 | 1.262 | 6.02 | 2.037 | 9.19 | 1604 |
+| curve | 3.5 | 1.308 | 4.65 | 2.219 | 7.49 | 1084 |
+| curve | 4 | 1.308 | 5.29 | 2.189 | 8.18 | 1107 |
+| curve | 4.5 | 1.264 | 5.54 | 2.092 | 8.50 | 1310 |
+**Rule applied:** line 3 + 0.5 (5.0 - 4.72) / (5.38 - 4.72) = 3.21, rounded 3.25; curve 3.5 + 0.5 (5.0 - 4.65) /
+(5.29 - 4.65) = 3.77, rounded 3.75. Stage 2: BW1 line at 3.25, BW2 curve at 3.75 (tools/breed65r.jsonl).
+**Stage 1 predictions:** 2 of 2 met. The chosen paces were not run in stage 1; first-kid ages there are interpolated
+between the bracketing runs (line about 1442, curve about 1096).
+- growYearsF within 0.5 of the 0.8 values: met (3.25 against 3.5; 3.75 against 4.0).
+- Wild first kid at least 250 days earlier and below 1460 on both: met (line 1442 against 1799; curve 1096 against
+  1458).
+
+## [RESULTS 2026-11-17] Breeding threshold 0.65 at the wild pace, stage 2: R15 (raw)
+8 runs, all exit 0 (results/breed65r). Tables: tab_1501.txt, fk.txt, husb.txt, wildsize.txt (tools as for the
+wild-pace stage 2), each against RW1 and RW2 (threshold 0.8). Years 1501-1600, 4 seeds:
+| arm | shape | growYearsF | threshold | herd | herd starv | B gap | R gap | herd R>=0.40 | herd B | wild B | first kid herd / wild (days) |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| BW1 | line | 3.25 | 0.65 | 247.9 | 33.6 | +0.02 | -0.66 | 0.006 | 0.902 | 0.883 | 1333 / 1508 |
+| BW2 | curve | 3.75 | 0.65 | 234.1 | 38.0 | +0.03 | -0.63 | 0.010 | 0.935 | 0.903 | 1082 / 1252 |
+| RW1 | line | 3.5 | 0.8 | 153.9 | 11.5 | -0.03 | -0.36 | 0.149 | 0.803 | 0.831 | 1574 / 1923 |
+| RW2 | curve | 4.0 | 0.8 | 245.1 | 42.7 | +0.02 | -0.63 | 0.007 | 0.916 | 0.893 | 1419 / 1751 |
+First year with 150 or more herded goats, by seed: BW1 929, 811, 998, 676; BW2 716, 609, 695, 874. Years 801-900: BW1
+herd 145.5 (61, 224, 47, 251), R gap -0.32; BW2 214.2, R gap -0.51. Wild t95 under R15: does BW1 5.60, BW2 5.34;
+bucks 8.80, 8.27. Slaughter: males before 2.5 years BW1 0.74, BW2 0.68 (Ganj Dareh 0.60-0.70); 4 years or older 0.46,
+0.49 (about 0.20); Ganj Dareh slaughter only BW1 0/4, BW2 1/4; all causes 1/4, 2/4.
+**Stage 2 predictions:** 2 of 2 met.
+- Every seed's herd passes 150 by year 1200 on both shapes: met (latest 998).
+- B gap within +-0.15 of 0, R gap within 0.1 of -0.6, wild B 0.75 or above, on both: met (+0.02, +0.03; -0.66, -0.63;
+  0.883, 0.903).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
