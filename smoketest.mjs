@@ -31,7 +31,7 @@ const check = (name, cond, detail) => { console.log(`  ${cond ? 'ok  ' : 'FAIL'}
   for (let t = 1; t <= 40 * P.yearDays; t++) e.update();
   const tps = Math.round(e.tick / ((performance.now() - t0) / 1000));
   let badAllele = 0, badE = 0;
-  for (const g of w.goats) { for (const a of g.genome) if (!(a >= 0 && a <= 1)) badAllele++; if (!Number.isFinite(g.E) || g.E < 0) badE++; }
+  for (const g of w.goats) { for (const a of g.genome) if (!(a >= 0 && a <= 1)) badAllele++; if (!Number.isFinite(g.E) || g.E < -P.leanBuffer * g.size) badE++; }   // below 0 is lean tissue burned (leanBuffer, 2026-11-10)
   const y = dm.years[dm.years.length - 1];
   check('goats persist 40 years', w.goats.length > 100, `${w.goats.length} goats, ${y.births} births in year 40`);
   check('alleles in [0,1], energies valid', badAllele === 0 && badE === 0, `${badAllele} bad alleles, ${badE} bad energies`);

@@ -1,6 +1,41 @@
 # Animal Domestication — DEVLOG
 Newest entry on top. **Append only — never edit past entries.**
 
+## 2026-11-18 — realistic growth becomes the default; herd body size traced to the cull's growth credit
+(Covers 2026-11-13 to 11-18; no entry was written in between. Details and raw results are in EXPLOG, 11-13 onward.)
+**Done:**
+- 11-13/14, husbandry: herd starvation trace; spring feeding (feedExtend, feedNeed); winterCullAll. The winter cull
+  ends starvation (W50A 2.4 a year against R15 49.2); spring feeding and more offtake do not.
+- 11-14 to 11-17, growth: sexSize and maleBirthSize (bezoar 1.7, 1.1); growthCurve 'vb', 'ogm' and Chris's 'curved'
+  (one daily chunk for every goat, bent by curveExp); wild-pace calibration (growYearsF 3.75); breedSizeFrac 0.65.
+  tools/keepvalue.mjs breaks the cull's keep value into its terms for every herd goat; tools/wildcal_tab.py.
+- 11-17/18, body size: the keep value's growthCredit switch. Crossover: herd shrinkage comes from crediting growth
+  toward the herd's average size (linear: herd -0.82, own +0.02; curve: herd -0.21, own +0.03), not from the growth
+  curve. Chris: it is a herder belief, "an associatively learned expectation", and fits the opportunistic line.
+  New references: creditAge (adult mean from N days), 'cull' (running mean size at slaughter), 'max' (the largest
+  goat of the sex). B gap, years 1501-1600, 4 seeds: own +0.03, cull -0.16, herd from 2 y -0.21, from 3 y -0.26,
+  from 4 y -0.57, max -0.67. Chris kept herd-from-2-years as the default and treats the stronger arms as experimental
+  evidence that meat selection is the cause. tools/gene_dists.py: wild and herd distributions of every gene.
+- Chris, 11-18: herd starvation at carrying capacity stays as an artefact of food-limited growth; there is no data to
+  calibrate it against, so it is not pursued.
+**Changed:**
+- Defaults (params.js, commit 81615f1): growthCurve curved, growYearsF 3.75, breedSizeFrac 0.65, sexSize 1.7,
+  maleBirthSize 1.1, cullSizeNeutral 'sex', growthCredit 'herd'. Job lists from before 81615f1 that leave these out
+  now run the new model.
+- MODEL.md C25 (growth), C30 (heat) and the keep value's growth and charge terms rewritten to the new defaults.
+- smoketest.mjs: a goat's energy counts as invalid only below -leanBuffer x size. The old E < 0 check had failed since
+  leanBuffer went in on 11-10.
+- tools/husb_tab.py, cmp_years.py, diag_collapse.mjs, probe_offtake.mjs and probe_spring.mjs moved in from the
+  session scratchpad; EXPLOG cites them as "scratchpad ...".
+**State:** smoke PASS @ c8e5eda-dirty (40 y: 536 goats, 0 bad alleles or energies, 961 ticks/s). Identity check: the new defaults reproduce the curve-herd crossover run (CH seed 1) exactly,
+0 of 1600 year records differing. Anchor (R15 husbandry plus the defaults), years 1501-1600, 4 seeds: herd 272, R gap
+-0.65, B gap -0.21; slaughter: males dead before 2.5 y 0.47 (Ganj Dareh 0.60-0.70), aged 4 or older 0.19 (about 0.20);
+herd starvation 48 a year (accepted). Results are JSON under results/ (credit, refsize, breed65r, wildpace), not
+Mongo, and experiments are named by EXPLOG heading, not expNNN.
+**Next:** decide with Chris what is on the table after body size; the open list is DEVPLAN Backlog.
+- Project still saves outside db.js v2 and expNNN: migrate the runner when there is room, not in a hurry.
+- STATUS and DEVPLAN Stage 4 were a month stale; offer Chris a full sweep of Stage 4.
+
 ## 2026-11-12 — winter cull budgets breeding does and young only; dashboard labels for the new switches
 **Done:** Chris: "budget fodder only for breeding does and young". `winterCull` (world.js cullToFodder) now budgets a
 full ration through the lean season for each breeding-age doe and each goat under a year, and culls only among those

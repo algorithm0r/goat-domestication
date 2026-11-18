@@ -139,9 +139,14 @@ None.
     fat reserve. Below zero a goat weighs food above safety more (foraging need > 1), does not breed, and a
     mother gives no milk. Chris, 2026-11-10: death at the first day of an empty reserve made the starvation count
     a knife-edge on the ration, not a deficit.
-- **C25 Growth**: target = 0.6 + 0.8B; while E > 0.4 capacity, +0.0035 × (1 − 0.5p) size/day, at
-  60 fu per unit size. Birth size 0.15 × target; adult (for mortality, sires and culling) at 720 days;
-  growth continues past that while size < target.
+- **C25 Growth** (defaults from 2026-11-18, with Chris; EXPLOG 2026-11-14 to 11-18): target = 0.6 + 0.8B, × `sexSize`
+  1.7 for males (bezoar weights). While E > 0.4 capacity a goat grows at its curve's rate × (1 − 0.5p) size/day, at
+  60 fu per unit size. `growthCurve` 'curved' (Chris 2026-11-16): every goat advances one daily chunk,
+  (1 − 0.15)/(`growYearsF` 3.75 × 360), along the line from birth size b to target T, bent by `curveExp` 2:
+  ds = chunk × k × ((T − size)/(T − b))^((k − 1)/k), so growth slows to 0 at the target and a bigger target takes
+  longer (Animal.curveRate). Birth size 0.15 × the sex-neutral target (males × `maleBirthSize` 1.1). Other rules:
+  'linear' (+0.0035 a day; the default before 2026-11-18), 'vb' (von Bertalanffy), 'ogm' (ontogenetic growth model).
+  Adult (for mortality, sires and culling) at 720 days; growth continues past that while size < target.
 - **C26 Gestation**: birth 148 days after conception (nominal 150; an off-by-two in the counter, kept
   because it is immaterial), 0.15 fu/day, one kid. **Twins** (`twinMax` > 0): at conception a doe
   carries twins with chance twinMax × L (two meioses, one sire). Each twin is born at 0.8 × the single
@@ -173,7 +178,8 @@ None.
 - **C29 Kid exposure**: available (`kidExposure`), off.
 
 ### 7.4 Reproduction (`updateReceptive`, `World.mate`, `World.fight`)
-- **C30 Heat.** A doe is in heat on a day if: not pregnant; age ≥ 480 d; size ≥ 0.8 target; E ≥ 0.35
+- **C30 Heat.** A doe is in heat on a day if: not pregnant; age ≥ 480 d; size ≥ `breedSizeFrac` 0.65 target (0.8 before
+  2026-11-18); E ≥ 0.35
   capacity; within ±(15 + 120T) days of day 330; and on her own oestrous phase (1 day in 21). With
   `postpartumDays` > 0 (default 0), also not within that many days of her last kidding.
 - **C31 Mating is spatial.** A doe in heat mates among the adult bucks (≥ 365 d) in her 3×3 at the end
@@ -334,15 +340,19 @@ None.
   camp's fodder store falls short slaughters among those goats in the cull rule's order, never below
   `cullFloor`; credited against the year's offtake like the surplus cull. Records `winterCulled` a year. (The
   first form, b9ec5e5, budgeted every goat and held the open reference herd at about 60.)
-  - *random* (H2); *opportunity* (H3–H6): lowest keep value first: + growth still to come (toward the
-    herd's mean adult size by sex, at most a year's growth) + for does under 9: 0.3 × expected kidding
+  - *random* (H2); *opportunity* (H3–H6): lowest keep value first: + next year's growth on the goat's curve toward
+    the size the herder expects (`growthCredit` 'herd', the default: the herd's mean size of its sex among goats of
+    720 days or older, `creditAge`; Chris 2026-11-18, a learned expectation, since a herder cannot see a target; this
+    credit is what shrinks herd body size, EXPLOG crossover 2026-11-17. Options: 'own' the goat's own target, 'cull'
+    the camp's running mean size at slaughter by sex, 'max' the herd's largest goat of the sex) + for does under 9: 0.3 × expected kidding
     over the next 3 years (`keepHorizon`, ≈ age at first kidding; each year × the chance she lives to
     it, 0.97 per year; the first year at half for does under 480 d). Each year's rate is her own
     record weighted by its length (years/(years + 1)) blended with the camp's record for does of that
     age (the herd's mean until that age class holds more than one doe-year; only kids born in the herd
     count)
     + for the 2 oldest bucks: 0.3 × herd rate × does per sire; the oldest young buck as a replacement at
-    half that − 0.15 feed − annual death hazard (per head) − (H6) 1.0 × R × fearOfHumans, + N(0, 0.05).
+    half that − 0.15 feed − annual death hazard (per head; `cullSizeNeutral` 'sex', the default from 2026-11-18:
+    both charged at the sex's size multiplier, 1.7 for a buck) − (H6) 1.0 × R × fearOfHumans, + N(0, 0.05).
   - **Milk in the keep value** (`milkValue`, off; with Chris 2026-11-09): a doe's expected milk to the camp
     over the same 3 years, built like her kidding (her own record of milk taken per year since breeding
     age, blended with the camp's milk per doe-year for her age class, survival-discounted), × milkValue /

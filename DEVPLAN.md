@@ -129,6 +129,11 @@ plastically. Nothing carried.
       0% too), mechanism not found; G13 the R signal is weak, so the behavioural filters (capture,
       retrieval, spook, cull) now seem to act on learned fear more than on R, as habituation resets fear;
       untested (ablate habituation).
+- [x] 4f. Realistic growth and the source of herd body size (2026-11-14 to 11-18, EXPLOG; DEVLOG 2026-11-18).
+      Defaults now: bezoar sex sizes, Chris's curved growth at the wild pace, breeding at 0.65 of target, and the
+      keep value crediting growth toward the herd's mean size (a herder's learned expectation). Body size
+      shrinks only through that credit (crossover). Anchor, years 1501-1600: males dead < 2.5 y 0.47 ✗ (0.60-0.70),
+      past 4 y 0.19 ✓. Herd starvation at capacity (about 48 a year) is accepted, not a target (Chris 2026-11-18).
 **Done when:** the H0–H6 condition table runs as a headless batch, and the H3 kill-off profile
 matches Ganj Dareh (60–70% of males dead by 2.5 years; about 20% of all goats past 4 years) as a
 calibration check.
@@ -152,3 +157,19 @@ calibration check.
   should fall under domestication. Revisit if a condition needs them to rise.
 - **T3. Bake the burn-in.** Every run repeats a 300-year no-human burn-in. Save wild-type
   checkpoints per seed and start conditions from them. Do before the Stage 5 batches.
+
+## Backlog
+- [ ] fix: about 20 analysis tools that EXPLOG cites as "scratchpad ..." (ablate_tab.py, milk_tab.py, overlap.py, ...)
+  are lost with earlier sessions' scratchpads; their result tables are in results/. Keep new tools in tools/.
+- [ ] feat: migrate the runner to db.js v2 and expNNN experiment names (results are JSON under results/, README
+  still describes the Mongo runner).
+- [ ] idea: recalibrate the keep value: one horizon for every term (growth, kids, feed, risk), feed and risk at a
+  reference size for sex and age, and keepHorizon 3 revisited (probe 2026-11-17: buck kids sit in the bottom 15%).
+- [ ] idea: males killed before 2.5 y are 0.47 in the anchor against Ganj Dareh 0.60-0.70.
+- [ ] idea: horns shrink more under the own-growth credit (-0.24) than under the herd average (-0.11); unexplained.
+- [ ] idea: pigmentation -0.13 in the anchor only (3 of 4 seeds beyond the neutral gene's drift range): hitchhiking
+  or drift, untested.
+- [ ] fix: trace the condition gap between bucks and dry does.
+- [ ] idea: are the winter cull's kids male or female?
+- [ ] feat: merge the harness/run-format branch (sim-runfmt; it still has world.draw(c, ...) calls) on Chris's word.
+- [ ] idea: should paper/ go public? (asked, unanswered)
