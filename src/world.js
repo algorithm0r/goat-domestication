@@ -944,6 +944,8 @@ var World = class World {
     const Y = PARAMETERS.yearDays, t = this.ys.cullTally[kind];
     t[g.age < Y ? 0 : g.age >= g.breedAge ? (g.sex === SEX_F ? 1 : 2) : 3]++;
     if (g.gsc === 0) t[4]++;
+    const c = this.camps[g.herd];                                  // growthCredit 'cull': the camp's running mean size at slaughter, by sex
+    if (c) { const r = c.cullRef || (c.cullRef = [NaN, NaN]); r[g.sex] = isNaN(r[g.sex]) ? g.size : r[g.sex] + (g.size - r[g.sex]) / PARAMETERS.cullMemory; }
   }
 
   // winterCull (with Chris, 2026-11-12: "cull does before feeding them over winter"; budget "only for breeding does and
@@ -1087,10 +1089,10 @@ var World = class World {
   // Ranked by keep value + N(0, cullNoise); the lowest go first.
   cullByOpportunity(m) {
     const P = PARAMETERS, Y = P.yearDays;
-    const adult = [0, 0], an = [0, 0];
+    const adult = [0, 0], an = [0, 0], creditAge = P.creditAge || P.adultAge;
     let does = 0, bucks = 0;
     for (const g of m) {
-      if (g.age >= P.adultAge) { adult[g.sex] += g.size; an[g.sex]++; }
+      if (g.age >= creditAge) { adult[g.sex] += g.size; an[g.sex]++; }
       if (g.sex === SEX_F && g.age >= P.femaleMinAge) does++;
       if (g.sex === SEX_M && g.age >= P.maleMinAge) bucks++;
     }
@@ -1108,13 +1110,15 @@ var World = class World {
     // growth credited: toward the goat's own target ('own') or the herd's mean adult size for its sex ('herd');
     // 'model' keeps each growth rule's original choice (linear 'herd', the others 'own') (with Chris, 2026-11-17)
     const credit = P.growthCredit === 'model' ? (P.growthCurve === 'linear' ? 'herd' : 'own') : P.growthCredit;
-    if (credit !== 'own' && credit !== 'herd') throw new Error(`unknown growthCredit ${P.growthCredit}`);
-    if (credit === 'herd' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('growthCredit herd: linear or curved only');
+    if (credit !== 'own' && credit !== 'herd' && credit !== 'cull') throw new Error(`unknown growthCredit ${P.growthCredit}`);
+    if (credit !== 'own' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('growthCredit herd/cull: linear or curved only');
+    // 'cull': the size the herder expects is the camp's running mean size at slaughter (2026-11-18, Chris), until the first cull the adult mean
+    const ref = credit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
     for (const g of m) {
       const ay = g.age / Y;
       let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain
-        : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(Y) : g.curveGainTo(adultSize[g.sex], Y))
-        : Math.max(0, Math.min((credit === 'own' ? g.target : adultSize[g.sex]) - g.size, yearGrowth));
+        : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(Y) : g.curveGainTo(ref[g.sex], Y))
+        : Math.max(0, Math.min((credit === 'own' ? g.target : ref[g.sex]) - g.size, yearGrowth));
       if (g.sex === SEX_F && ay < P.senescenceAge) {
         // expected kidding: her own record weighted by its length, blended with the camp's rate for
         // does of her age class (or the herd mean while the camp has little experience)

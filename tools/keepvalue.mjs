@@ -20,12 +20,13 @@ for (const [cid, m] of herds) {
   // the sim's inputs, as in cullByOpportunity
   const adult = [0, 0], an = [0, 0]; let does = 0, bucks = 0;
   for (const g of m) {
-    if (g.age >= P.adultAge) { adult[g.sex] += g.size; an[g.sex]++; }
+    if (g.age >= (P.creditAge || P.adultAge)) { adult[g.sex] += g.size; an[g.sex]++; }
     if (g.sex === G.SEX_F && g.age >= P.femaleMinAge) does++;
     if (g.sex === G.SEX_M && g.age >= P.maleMinAge) bucks++;
   }
   const adultSize = [an[0] ? adult[0] / an[0] : 1, an[1] ? adult[1] / an[1] : 1];
   const camp = world.camps[cid], record = camp && camp.record ? camp.record : null;
+  const ref = P.growthCredit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
   const herdRate = record && record.yrs > 0 ? record.kids / record.yrs : P.priorKidRate;
   const herdMilk = record && record.yrs > 0 ? record.milk / record.yrs : 0;
   const sires = P.sireRule !== 'oldest' ? world.siresOf(cid)
@@ -35,8 +36,8 @@ for (const [cid, m] of herds) {
     const ay = g.age / Y, r = { camp: cid, sex: g.sex ? 'M' : 'F', age: +ay.toFixed(2), size: +g.size.toFixed(3), target: +g.target.toFixed(3) };
     const credit = P.growthCredit === 'model' ? (P.growthCurve === 'linear' ? 'herd' : 'own') : P.growthCredit;
     r.growth = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)
-      : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(Y) : g.curveGainTo(adultSize[g.sex], Y))
-      : Math.max(0, Math.min((credit === 'own' ? g.target : adultSize[g.sex]) - g.size, P.growthAbs * Y));
+      : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(Y) : g.curveGainTo(ref[g.sex], Y))
+      : Math.max(0, Math.min((credit === 'own' ? g.target : ref[g.sex]) - g.size, P.growthAbs * Y));
     r.kids = 0; r.milk = 0;
     if (g.sex === G.SEX_F && ay < P.senescenceAge) {
       const yrs = Math.max(0, (g.age - P.femaleMinAge) / Y), own = yrs > 0 ? g.kids / yrs : 0, wOwn = yrs / (yrs + P.recordWeight);

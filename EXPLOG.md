@@ -4835,6 +4835,56 @@ LH reproduces the sexsize R15 row (herd 303.3, starvation 49.2, B gap -0.82). B 
 - My guess, CH between -0.10 and -0.30: met (-0.21).
 - R gap within 0.1 of -0.6 in all arms: met (-0.61, -0.57, -0.65, -0.63). Wild mean B 0.75 or above: met (0.875 to 0.906).
 
+## [PRE-REGISTERED 2026-11-18] The herder's reference size: adult age, and size at slaughter
+**Decision first** (Chris, 2026-11-18): the herd-average credit is husbandry, herders judging future meat against "an
+associatively learned expectation" of size; "change the defaults to curve with average size used for cull". New defaults
+(this commit): growthCurve curved, growYearsF 3.75, breedSizeFrac 0.65, sexSize 1.7, maleBirthSize 1.1, cullSizeNeutral
+sex, growthCredit herd (curveExp 2 unchanged). Job lists before this commit that leave these out now run the new model.
+**Question:** CH (-0.21) depends on what the herder counts as typical. (1) The herd mean counts goats from adultAge (720
+days), and on the curve does grow to about 3.75 years, so the mean includes goats still growing. (2) Chris: herders
+"would estimate size based on the size of the goats when they cull them", so the mean size at slaughter replaces the
+adult mean; is that too strong a feedback?
+**Code change** (this commit): creditAge (days from which a goat counts in the herder's adult mean; 0 = adultAge, which
+also sets newborn-cohort and other uses, so it is not varied); growthCredit 'cull': each camp keeps a running mean size of
+the goats of each sex it slaughters (offtake, surplus and winter culls; exponential, weight 1/cullMemory, cullMemory 20),
+the adult mean until its first cull of that sex; it replaces the adult mean in the growth credit.
+**Settings:** R15 arguments only (the growth settings are now defaults), 4 seeds, 1600 years, tables as for the
+crossover, years 1501-1600.
+- D: new defaults, seed 1 only: identity check against results/credit CH seed 1 (cmp_years.py, all years); 0 records may
+  differ.
+- A3: creditAge 1080 (3 years). A4: creditAge 1440 (4 years). CH (creditAge = adultAge 720) is the 2-year arm.
+- CU: growthCredit cull.
+**Prediction** (mine; Chris made none):
+- A3 and A4: the B gap grows with creditAge, A4 more negative than CH (-0.21), between -0.25 and -0.45. Low confidence:
+  the curve's gain depends on the distance to the reference in a way I have not worked through.
+- CU: the reference falls well below adult size, since about half the males slaughtered are under 2.5 years, so goats
+  past about a year are credited no growth. Weaker than CH: B gap between -0.15 and +0.05. I expect the feedback (smaller
+  herd goats, smaller culls, a lower reference) to limit itself rather than run away, because a lower reference credits
+  fewer goats. The share of males slaughtered before 2.5 years rises above CH's 0.47.
+- All arms: R gap within 0.1 of -0.6; wild mean B 0.75 or above.
+
+## [RESULTS 2026-11-18] The herder's reference size: adult age, and size at slaughter (raw)
+13 runs, all exit 0 (results/refsize). Tables: tab_1501.txt (tools/sexsize_tab.py), fk.txt (tools/ogm_tab.py), husb.txt
+and bcentury.txt (scratchpad husb_tab.py), perseed_1501.txt; CH from results/credit, CO = results/breed65r BW2.
+**Identity:** D seed 1 (new defaults) against CH seed 1: 0 of 1600 records differ (69 shared keys).
+Years 1501-1600, 4 seeds:
+| arm | reference | herd | herd starv | B gap | per seed | R gap | herd B | wild B | herd doe size 5+ (wild 1.26) | herd first kid (days) | m<2.5 | >=4 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| CH | adult mean from 2 y | 272.1 | 48.3 | -0.21 | -0.15 -0.23 -0.31 -0.16 | -0.65 | 0.670 | 0.880 | 1.14 | 928 | 0.47 | 0.19 |
+| A3 | adult mean from 3 y | 268.6 | 43.2 | -0.26 | -0.58 -0.19 -0.10 -0.15 | -0.62 | 0.615 | 0.877 | 1.10 | 911 | 0.48 | 0.30 |
+| A4 | adult mean from 4 y | 285.5 | 48.6 | -0.57 | -0.83 -0.46 -0.65 -0.37 | -0.65 | 0.296 | 0.878 | 0.86 | 783 | 0.45 | 0.36 |
+| CU | mean size at slaughter | 254.5 | 51.4 | -0.16 | -0.11 -0.16 -0.11 -0.23 | -0.65 | 0.735 | 0.886 | 1.19 | 950 | 0.78 | 0.20 |
+| CO | own target | 234.1 | 38.0 | +0.03 | | -0.63 | 0.935 | 0.903 | 1.34 | 1082 | 0.68 | 0.49 |
+B gap by century from year 501: A3 -0.02, -0.02, -0.02, -0.02, -0.06, -0.11, -0.16, -0.20, -0.20, -0.22, -0.26; A4 -0.01,
+-0.03, -0.05, -0.07, -0.12, -0.18, -0.25, -0.32, -0.40, -0.51, -0.57 (still falling at 1600); CU -0.01, -0.01, -0.02,
+-0.04, -0.05, -0.07, -0.10, -0.13, -0.15, -0.16, -0.16 (level from about 1400). Slaughter is males before 2.5 years and
+share 4 years or older (Ganj Dareh 0.60-0.70 and about 0.20); Ganj Dareh slaughter count 1/4, 0/4, 0/4, 1/4, 1/4.
+**Predictions:** 2 of 4 of mine met; both shared predictions met.
+- B gap grows with creditAge: met (-0.21, -0.26, -0.57). A4 between -0.25 and -0.45: not met (-0.57, and not level).
+- CU between -0.15 and +0.05: not met, narrowly (-0.16). Weaker than CH: met (-0.16 vs -0.21). Males before 2.5 years
+  above 0.47: met (0.78). No runaway: CU levels from about year 1400.
+- R gap within 0.1 of -0.6: met (-0.62 to -0.65). Wild mean B 0.75 or above: met (0.877 to 0.886).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

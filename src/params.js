@@ -61,13 +61,13 @@ var PARAMETERS = {
   growthCost: 216000,     // kcal per unit of size gained
   growCondition: 0.4,     // reserve fraction needed to grow
   // sex differences in size and growth (2026-11-14, with Chris; EXPLOG 'Sex differences in size and growth'):
-  sexSize: 1,             // a male's target is sexSize × the target from B (1 = same-size sexes; 1.7 = bezoar weights)
-  maleBirthSize: 1,       // a male newborn's size × this (birth size stays a share of the sex-neutral target; 1.1 = bezoar)
-  growthCurve: 'linear',  // 'linear' (growthAbs a day) | 'vb': von Bertalanffy in mass, dM/dt = 3k(T^(1/3) M^(2/3) - M)
+  sexSize: 1.7,           // default 1.7 from 2026-11-18 (Chris); a male's target is sexSize × the target from B (1 = same-size sexes; 1.7 = bezoar weights)
+  maleBirthSize: 1.1,     // default 1.1 from 2026-11-18 (Chris); a male newborn's size × this (birth size stays a share of the sex-neutral target; 1.1 = bezoar)
+  growthCurve: 'curved',  // default 'curved' from 2026-11-18 (Chris; 'linear' before); 'linear' (growthAbs a day) | 'vb': von Bertalanffy in mass, dM/dt = 3k(T^(1/3) M^(2/3) - M)
                           // | 'ogm': ontogenetic growth model, dM/dt = a M^(3/4) (1 - (M/T)^(1/4)), time to grow ~ T^(1/4)
                           // | 'curved': one daily chunk for every goat, (1 - birthSize) / (growYearsF x yearDays), bent by
                           //   curveExp: ds = chunk k ((T - M) / (T - b))^((k - 1) / k), time to grow ~ T - b (Chris, 2026-11-16)
-  growYearsF: 2, growYearsM: 4,   // 'vb': years at the full rate from birth (birthSize of target) to 95% of target, per sex
+  growYearsF: 3.75, growYearsM: 4,   // growYearsF default 3.75 from 2026-11-18 (2 before; 'curved' uses it for both sexes); 'vb': years at the full rate from birth (birthSize of target) to 95% of target, per sex
                           // ('ogm': the same for a goat of target 1 x the sex's size multiplier)
   curveExp: 2,            // 'curved': 1 = the straight line; 2 = twice its speed at birth, slowing to 0 at the target
   growSD: 0,              // 'ogm': each goat's rate a x exp(growSD z), z ~ N(0,1) drawn at birth (rand4), not inherited
@@ -86,7 +86,7 @@ var PARAMETERS = {
                           // tripletMax × max(0, 2L − 1), so only high-L does have them (0 = off)
   tripletBirthSize: 0.7,  // a triplet's birth size as a share of a single kid's (three cost 3 × this in gestation)
   femaleMinAge: 480,      // days; breeding also needs size and condition (plastic)
-  breedSizeFrac: 0.8,     // fraction of target size needed to conceive
+  breedSizeFrac: 0.65,    // default 0.65 from 2026-11-18 (0.8 before); fraction of target size needed to conceive
   breedCondition: 0.35,   // reserve fraction needed to conceive
   rutPeakDay: 330,        // late November
   rutHalfBase: 15,        // rut half-width at T = 0 (days)
@@ -322,11 +322,15 @@ var PARAMETERS = {
   recordWeight: 1,        // opportunity: years of a doe's own record at which it weighs equal to the camp's
   ageClasses: 10,         // opportunity: camp record of kids per doe-year by age class (years)
   feedCost: 0.15,         // opportunity: a year's keep, × size^0.75, in meat units
-  cullSizeNeutral: 1,     // opportunity: feed and meat-at-risk charged per head, so the cull rule cannot itself select on size (0 = by size;
+  cullSizeNeutral: 'sex', // default 'sex' from 2026-11-18 (1 before); opportunity: feed and meat-at-risk charged per head, so the cull rule cannot itself select on size (0 = by size;
                           // 'sex' = per head at the sex's size multiplier, sexSize for males: neutral within a sex, a buck eats more)
-  growthCredit: 'model',  // opportunity: next year's growth in the keep value, toward 'own' (the goat's own target) or 'herd' (the
-                          // herd's mean adult size for its sex), on the goat's growth rule; 'model' = linear 'herd', vb/ogm/curved
-                          // 'own' (as before 2026-11-17); 'herd' needs linear or curved (Chris, 2026-11-17: the crossover test)
+  growthCredit: 'herd',   // opportunity: next year's growth in the keep value, toward 'own' (the goat's own target), 'herd' (the
+                          // herd's mean adult size for its sex: the herder's learned expectation; default from 2026-11-18, Chris)
+                          // or 'cull' (running mean size of the goats of that sex the camp has slaughtered, over the last ~cullMemory;
+                          // the herd's adult mean until the first cull), on the goat's growth rule; 'model' = linear 'herd',
+                          // vb/ogm/curved 'own' (as before 2026-11-17); 'herd' and 'cull' need linear or curved (Chris, 2026-11-17/18)
+  creditAge: 0,           // growthCredit 'herd': days from which the herder counts a goat in the adult mean (0 = adultAge; 2026-11-18)
+  cullMemory: 20,         // growthCredit 'cull': culls of a sex in the herder's running mean (exponential, weight 1/cullMemory per cull)
   cullNoise: 0.05,       // opportunity: sd of the herder's judgement noise on keep value (0 = pure ranking)
   flightCost: 0,          // opportunity: cost of observed flightiness (R × fear of humans); H6 > 0
   rutGuard: 0,            // husbandry: chance a receptive herd doe is kept at camp each rut day; cuts wild-buck sirings by this
