@@ -4966,7 +4966,7 @@ Probe, seed 2, year 800, bottom-15% share (total keep value) by class: K0 F kids
 0.80, M 3-5 0.67; KA F kids 0.04 (+0.37), M kids 0.63 (+0.31), M 1-2 1.00 (+0.11), no non-sire males past 3; KH M kids 0.81
 (+0.01), M 1-2 0.43, F 2-3 0.25; KAH (36 herd goats) F 5-9 0.67, M 1-2 0.50. Under 'age' a female kid's risk falls from
 -0.180 to -0.085 and her feed from -0.150 to -0.086, more than a buck kid's gains relative to bucks a year older.
-**Predictions:** 3 of 10 met.
+**Predictions:** 4 of 11 met.
 - K0 reproduces CH: met.
 - KA males dead before 2.5 y 0.25-0.45: not met (0.87, the other way). KA aged 4+ above 0.19: not met (0.09). KA B gap
   within 0.08 of -0.21: met (-0.16).
