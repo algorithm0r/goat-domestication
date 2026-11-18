@@ -4649,6 +4649,84 @@ herd F/M 1.21/1.41 (LSD 0.73/1.02, R15C 0.99/1.07). First kid, herd does: CF med
 - R gap within 0.1 of -0.6: met (-0.58).
 - Wild mean B 0.75 or above: met (0.898).
 
+## [PRE-REGISTERED 2026-11-17] Growth pace calibrated to wild goats, then R15 at that pace
+**Question:** Every growth pace so far was set by hand: linear growthAbs 0.0035 (a doe grown in 243 days at the full
+rate) and growYearsF 2 (my guess, with no female growth data). Chris (2026-11-17): balance it "around wild
+populations"; "go with your best guess". Wild data (search summaries and secondary sources, primary papers not read):
+Alpine ibex females reach full body mass at 4.5-5.5 years and males at 8.5-10.5 (Mammalian Species account); ibex
+females conceive at 2 years at rate 0.13, at 3 at 0.56, at 4 at 1.00 (Giacometti and Ratti, Albris). No bezoar growth
+curve was found; bezoar females weigh 25-55 kg against ibex 40-50, so the ibex female figure is the stand-in. Most
+bezoar females first mate at 2 in Turkmenistan; most yearlings mate in Daghestan (IUCN). Our wild does now reach about
+95% of adult size by about 2.7 years at growYearsF 2 on the curve (H0C) and about 3.3 on the line (H0C1), and about
+1 year on the old fast line (H0).
+**Target:** wild does at 95% of adult size at 5.0 years. Bucks are not targeted: one chunk for every goat gives them
+about 1.8x the doe's distance, so about 9 years if does take 5 (ibex 8.5-10.5).
+**Stage 1 settings:** code of 21c1672 (no code change). humansPerCamp 0, sexSize 1.7, maleBirthSize 1.1,
+cullSizeNeutral sex, growthCurve curved, curveExp 1 (the line) and 2 (Chris's curve), growYearsF 3, 3.5, 4, 4.5, 5;
+2 seeds, 600 years, 20 runs (tools/wildcal.jsonl, results/wildcal).
+**Stage 1 measure and rule** (fixed now): wild does, sizeByAge, years 501-600, pooled over seeds. Adult size A = mean of
+age bins 8-12. Bin a covers ages a to a+1 and sits at a+0.5. t95 = the age where the bin means first reach 0.95 A,
+interpolated linearly between bin midpoints. For each shape, the stage 2 growYearsF is the one interpolated linearly
+between the two swept values whose t95 bracket 5.0, rounded to 0.25. If none bracket it, the nearest swept value.
+Wild first-kid age (firstKidStats) is reported as a check, not a target.
+**Stage 2 settings:** R15 as for R15C and R15C1 (sexSize 1.7, maleBirthSize 1.1, cullSizeNeutral sex, growthCurve
+curved), curveExp 1 and 2, each at its stage 1 growYearsF; 4 seeds, 1600 years, 8 runs (RW1, RW2; results/wildpace).
+Tables as for the ablation, years 1501-1600.
+**Prediction** (written before any run; guesses):
+- Stage 1: growYearsF near 3.75 for the curve and 3.0 for the line (scaling t95 from H0C and H0C1).
+- Stage 1: wild median first kid rises above 1100 days on both shapes (breedSizeFrac 0.8 of target binds later). If
+  it passes 1460 days (4 years) the breeding threshold, not pace, becomes the next thing to check against the
+  literature (puberty at 60-75% of mature weight).
+- Stage 2: B gap within +-0.15 of 0 on both shapes; R gap within 0.1 of -0.6; wild mean B 0.75 or above.
+- Stage 2: share of slaughtered males killed before 2.5 years below 0.55 (R15C1 at the 2-year pace gave 0.55; slower
+  growth keeps males growing, so the keep-value rule holds them longer). Ganj Dareh band 0.60-0.70.
+
+## [RESULTS 2026-11-17] Growth pace calibrated to wild goats, stage 1 (raw)
+20 runs, all exit 0 (results/wildcal). Table: results/wildcal/tab.txt (tools/wildcal_tab.py 501 600). Wild goats,
+years 501-600, 2 seeds; A = adult size (bins 8-12), t95 in years, first kid = mean of yearly wild medians:
+| shape | growYearsF | doe A | doe t95 | buck A | buck t95 | wild first kid (days) |
+|---|---|---|---|---|---|---|
+| line | 3 | 1.248 | 4.41 | 2.113 | 7.46 | 1594 |
+| line | 3.5 | 1.225 | 5.04 | 2.061 | 8.34 | 1799 |
+| line | 4 | 1.215 | 5.45 | 1.996 | 8.99 | 1833 |
+| line | 4.5 | 1.178 | 6.00 | 1.874 | 9.36 | 2081 |
+| line | 5 | 1.173 | 6.48 | 1.767 | 9.68 | 2168 |
+| curve | 3 | 1.287 | 3.91 | 2.181 | 6.45 | 1254 |
+| curve | 3.5 | 1.291 | 4.35 | 2.187 | 7.34 | 1440 |
+| curve | 4 | 1.291 | 4.95 | 2.170 | 8.08 | 1458 |
+| curve | 4.5 | 1.250 | 5.25 | 2.076 | 8.40 | 1576 |
+| curve | 5 | 1.248 | 5.74 | 2.035 | 8.85 | 1792 |
+References at growYearsF 2 (results/curved, 4 seeds): curve t95 2.71, first kid 1062; line 3.30, 1248.
+**Rule applied:** line 3 + 0.5 (5.0 - 4.41) / (5.04 - 4.41) = 3.47, rounded 3.5; curve 4 + 0.5 (5.0 - 4.95) / (5.25 -
+4.95) = 4.08, rounded 4.0. Stage 2: RW1 line at 3.5, RW2 curve at 4.0 (tools/wildpace.jsonl, results/wildpace).
+**Stage 1 predictions:** 1 of 2 met.
+- growYearsF near 3.75 (curve) and 3.0 (line): not met (4.0, 3.5).
+- Wild median first kid above 1100 days on both: met (curve 1458, line 1799). The line passes 1460 days and the curve
+  sits at it, so by the pre-registered note the breeding threshold (breedSizeFrac 0.8) is the next thing to check:
+  ibex conceive at 4 years at rate 1.00 and most bezoar first mate at 1-2.
+
+## [RESULTS 2026-11-17] Growth pace calibrated to wild goats, stage 2: R15 at the wild pace (raw)
+8 runs, all exit 0 (results/wildpace). Tables: tab_1501.txt (tools/sexsize_tab.py), fk.txt (tools/ogm_tab.py), husb.txt
+(scratchpad husb_tab.py), wildsize.txt (tools/wildcal_tab.py), each against R15C1 and R15C (same shapes at growYearsF
+2). B means from the hist and histHerd histograms as for the fast-curve batch. Years 1501-1600, 4 seeds:
+| arm | shape | growYearsF | herd | herd per seed | herd starv | B gap | R gap | herd R>=0.40 | herd B | wild B | herd doe size 5+ |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| RW1 | line | 3.5 | 153.9 | 59, 38, 268, 250 | 11.5 | -0.03 | -0.36 | 0.149 | 0.803 | 0.831 | 1.24 |
+| RW2 | curve | 4.0 | 245.1 | 241, 238, 252, 251 | 42.7 | +0.02 | -0.63 | 0.007 | 0.916 | 0.893 | 1.32 |
+| R15C1 | line | 2 | 230.9 | - | 42.2 | +0.02 | -0.57 | - | - | - | 1.33 |
+| R15C | curve | 2 | 228.0 | - | 49.3 | +0.03 | -0.57 | 0.017 | 0.931 | 0.901 | 1.35 |
+Herd takeoff (herded goats, every 100 years from year 450): RW1 herds stay at about 20-60 for about 1000 years in every
+seed; seeds 3 and 4 rise past 200 by year 1450, seeds 1 and 2 have not risen by 1600 (59 and 26 at 1550). RW2 herds
+pass 150 at years 750-1150. Years 801-900: RW1 herd 34.7, R gap -0.07, breadth 0; RW2 R gap -0.35. So the RW1 1501-1600
+row mixes two taken-off and two small herds. First kid, median: RW1 herd 1574, wild 1923 days; RW2 herd 1419, wild 1751
+(R15C1 1145 / 1441; R15C 931 / 1084). Wild t95 under R15: does RW1 5.71, RW2 5.49; bucks 8.98, 8.51. Slaughter,
+males killed before 2.5 years: RW1 0.82, RW2 0.73 (R15C1 0.55, R15C 0.61). Ganj Dareh, slaughter only: 0/4 both.
+**Stage 2 predictions:** 2 of 4 met.
+- B gap within +-0.15 of 0 on both: met (-0.03, +0.02).
+- R gap within 0.1 of -0.6 on both: not met (RW1 -0.36, with two herds not yet taken off; RW2 -0.63).
+- Wild mean B 0.75 or above: met (0.831, 0.893).
+- Males slaughtered before 2.5 years below 0.55: not met (0.82, 0.73); slower growth raised the share.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
