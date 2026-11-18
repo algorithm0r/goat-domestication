@@ -1,9 +1,10 @@
 // samerun.mjs — are two runyears outputs the same run? Everything but `seconds` must match exactly
 // (numbers by ===, key sets and array lengths too). Exit 0 if identical, 1 with the first difference.
-//   node tools/samerun.mjs <a.json> <b.json>
-import fs from 'fs';
+// Either file may be plain .json or compact .json.gz (2026-11-13): both are read through loadRun as the plain object.
+//   node tools/samerun.mjs <a.json[.gz]> <b.json[.gz]>
+import { loadRun } from './loadrun.mjs';
 const [fa, fb] = process.argv.slice(2);
-const load = f => { const o = JSON.parse(fs.readFileSync(f, 'utf8')); delete o.seconds; return o; };
+const load = f => { const o = loadRun(f); delete o.seconds; return o; };
 function diff(a, b, at) {
   if (a === b) return null;
   if (typeof a !== typeof b || a === null || b === null || typeof a !== 'object') return `${at}: ${JSON.stringify(a)} vs ${JSON.stringify(b)}`;

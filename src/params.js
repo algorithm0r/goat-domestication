@@ -323,13 +323,17 @@ var PARAMETERS = {
   ageClasses: 10,         // opportunity: camp record of kids per doe-year by age class (years)
   feedCost: 0.15,         // opportunity: a year's keep, × size^0.75, in meat units
   cullSizeNeutral: 'sex', // default 'sex' from 2026-11-18 (1 before); opportunity: feed and meat-at-risk charged per head, so the cull rule cannot itself select on size (0 = by size;
-                          // 'sex' = per head at the sex's size multiplier, sexSize for males: neutral within a sex, a buck eats more)
+                          // 'sex' = per head at the sex's size multiplier, sexSize for males: neutral within a sex, a buck eats more;
+                          // 'age' = at the herd's mean size for the goat's sex and age in years, 0..5+: neutral within sex and age, 2026-11-18)
   growthCredit: 'herd',   // opportunity: next year's growth in the keep value, toward 'own' (the goat's own target), 'herd' (the
                           // herd's mean adult size for its sex: the herder's learned expectation; default from 2026-11-18, Chris)
                           // or 'cull' (running mean size of the goats of that sex the camp has slaughtered, over the last ~cullMemory;
                           // the herd's adult mean until the first cull) or 'max' (the herd's largest goat of that sex now; 2026-11-18),
                           // on the goat's growth rule; 'model' = linear 'herd',
                           // vb/ogm/curved 'own' (as before 2026-11-17); 'herd' and 'cull' need linear or curved (Chris, 2026-11-17/18)
+  keepFrame: 'year',      // opportunity (2026-11-18, Chris): 'year' = growth, feed, meat at risk and the sire's share over the next year
+                          // (kids over keepHorizon); 'horizon' = every term over keepHorizon years, each discounted by survival
+  keepTerms: 0,           // diagnostic: 1 stores each herd goat's keep-value terms on it at every cull (g._kvTerms; tools/keepvalue.mjs)
   creditAge: 0,           // growthCredit 'herd': days from which the herder counts a goat in the adult mean (0 = adultAge; 2026-11-18)
   cullMemory: 20,         // growthCredit 'cull': culls of a sex in the herder's running mean (exponential, weight 1/cullMemory per cull)
   cullNoise: 0.05,       // opportunity: sd of the herder's judgement noise on keep value (0 = pure ranking)
@@ -374,8 +378,19 @@ var PARAMETERS = {
   updatesPerDraw: 3,      // fast-forward: sim days per rendered frame
 
   // --- data collection ---
-  reportingPeriod: 30,    // sample scalars every N days; trait histograms every year
+  reportingPeriod: 30,    // sample scalars (the census, samples[]) every N days; each row carries its tick, year and day
+  histPeriod: 1,          // record the gene histograms (hist, histHerd) every N years, at the end of years N-1, 2N-1, ...;
+                          // histYears lists the year of each row; histDepth pools max(10, N) years per record (2026-11-13)
   epoch: 360 * 200,       // a run ends (and ships a packet) at N ticks
+  // diagnostics, each a named switch (conventions §4 "Keep packets small", 2026-11-13): 1 records it, 0 leaves it out
+  // of the saved run. All on by default so runs stay comparable with saved ones; a sweep turns off what it no longer
+  // uses, in its pre-registration. Share of the plain JSON of a 4000-y husbandry run (husb/HmaxH_seed1, 32 MB):
+  logWolfAtk: 1,          // years[].wolfAtk: wolf attacks and kills by herd/wild, phase, escape, camp, spotted, ... (14%)
+  logKidLife: 1,          // years[].kidLife: unweaned kids' kid-days, kcal by source, weaning, orphan deaths (13%)
+  logKilloff: 1,          // years[].killoff: deaths by cause, sex and age (8%)
+  logHerdKilloff: 1,      // years[].herdKilloff: herd deaths by sex and age (1%)
+  logKidDeathCause: 1,    // years[].kidDeathCause: unweaned deaths by cause and litter size (2%)
+  logHistDepth: 1,        // histDepth: gene histograms by lineage depth, every 10 years (7%)
 
   // --- database (the standard vendored client, src/db.js) ---
   db: {

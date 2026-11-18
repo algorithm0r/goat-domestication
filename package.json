@@ -1,0 +1,16 @@
+{
+  "name": "sim",
+  "version": "1.0.0",
+  "description": "Agent-based simulation of goat (and possibly wolf) domestication; follow-up to AgriGin / grain domestication work",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "mongodb": "^6.22.0"
+  }
+}

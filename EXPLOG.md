@@ -4913,6 +4913,39 @@ M:F size at 5+ 1.76 (wild 1.58). Ganj Dareh slaughter 0/4.
 - Share of the slaughtered aged 4 or older below CH's 0.19: not met (0.35, the other way).
 - R gap within 0.1 of -0.6: met (-0.65). Wild mean B 0.75 or above: met (0.871).
 
+## exp001 — Keep value recalibrated: every term over the same horizon, feed and risk at the size for sex and age: what happens to body size and the kill-off?
+**Pre-registered:** 2026-11-18. The first experiment under the data protocol (conventions §4): Mongo
+animalDomestication.exp001_keep-recal is the record, results/exp001_keep-recal/<run>.json the copy.
+**Question:** Chris (2026-11-18): "let's do the keep value recalibration and see what that does". The keep value mixes
+time frames: growth, feed, meat at risk and the sire's share count one year, a doe's kids keepHorizon (3) years. Feed
+and risk are charged at the sex's size multiplier (cullSizeNeutral 'sex'), so a buck kid of size 0.4 pays a grown
+buck's 1.7. Probe 2026-11-17 (tools/keepvalue.mjs, BW2 seed 2, year 800): buck kids total -0.13 (feed -0.223, risk
+-0.306), 95% of them in the bottom 15% of their herd.
+**Code change** (this commit): keepFrame 'year' (default, unchanged) | 'horizon': growth credited over keepHorizon years
+(on the curve, toward the same reference), feed, meat at risk and the sire's share summed over keepHorizon years, each
+year discounted by the chance the goat lives to it (1 - that year's hazard) at the size charged for its age that year.
+cullSizeNeutral 'age': feed and risk at the herd's mean size for the goat's sex and age in years (0..5+), neutral
+within sex and age. keepTerms (diagnostic) stores each goat's terms; tools/keepvalue.mjs now reads them from the sim.
+**Settings:** R15 husbandry arguments (as for the crossover), defaults otherwise (curve, herd-average credit from 2 y),
+experiment runs lean (runyears LEAN: unused diagnostics off, histPeriod 5, reportingPeriod 360). 4 seeds, 1600 years.
+Run names <ARM>_seed<S>.
+- K0: defaults. Identity check: every seed against results/credit CH_seed1-4 (tools/cmp_years.py, shared year
+  fields); 0 records may differ.
+- KA: cullSizeNeutral age.
+- KH: keepFrame horizon.
+- KAH: both.
+Tables, years 1501-1600: tools/sexsize_tab.py, ogm_tab.py, husb_tab.py; gene_dists.py; tools/keepvalue.mjs probe at
+year 800, seed 2, for each arm (results/_scratch).
+**Prediction** (mine; Chris made none):
+- K0 reproduces CH: 0 of 1600 year records differ in all 4 seeds.
+- KA: buck kids leave the bottom of the ranking, so males are eaten older: males dead before 2.5 y below CH's 0.47
+  (0.25-0.45), share aged 4 or older above 0.19. B gap within 0.08 of CH's -0.21 (the growth credit is unchanged).
+- KH: three years of growth credited toward the herd mean widens the gap between small and large goats' credit: B gap
+  stronger than CH, -0.25 to -0.45. Young males are credited more growth, so males dead before 2.5 y fall below 0.47.
+- KAH: B gap as KH (within 0.10); males dead before 2.5 y the lowest of the four arms.
+- All arms: R gap within 0.1 of -0.6; wild mean B 0.75 or above.
+I expect neither change to bring young males into the Ganj Dareh band (0.60-0.70); both should move them away from it.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

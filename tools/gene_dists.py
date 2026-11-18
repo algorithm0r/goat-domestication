@@ -3,7 +3,9 @@
 # Pools the 20-bucket histograms (hist = all goats, histHerd = herd; wild = hist - histHerd) over years Y0..Y1
 # (1-based: 1501-1600 = year records 1500..1599) and over the arm's seeds; plots each population as a share of
 # its own goats, so a small herd and a large wild population sit on one scale. Prints mean, sd, gap and overlap.
-import glob, json, sys
+import glob, json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from runio import hist_rows
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -19,7 +21,7 @@ def pooled(pat, y0, y1):
     W = {t: [0] * 20 for t in TRAITS}; H = {t: [0] * 20 for t in TRAITS}
     for f in files:
         d = json.load(open(f, encoding="utf-8"))
-        for y in range(y0 - 1, y1):
+        for y in hist_rows(d, y0 - 1, y1 - 1):
             for t in TRAITS:
                 a, h = d["hist"][t][y], d["histHerd"][t][y]
                 for k in range(20): W[t][k] += a[k] - h[k]; H[t][k] += h[k]

@@ -1097,6 +1097,16 @@ var World = class World {
       if (g.sex === SEX_M && g.age >= P.maleMinAge) bucks++;
     }
     const adultSize = [an[0] ? adult[0] / an[0] : 1, an[1] ? adult[1] / an[1] : 1];
+    // keepFrame 'horizon' and cullSizeNeutral 'age' (2026-11-18, Chris: "the keep value recalibration"): the herd's mean
+    // size by sex and age in years (0 .. AGE_REF-1, the last class open), the size a herder expects of a goat that age
+    const AGE_REF = 6, ageRef = (P.cullSizeNeutral === 'age') ? [0, 1].map(() => new Float64Array(AGE_REF)) : null;
+    if (ageRef) {
+      const an2 = [0, 1].map(() => new Float64Array(AGE_REF));
+      for (const g of m) { const a = Math.min(AGE_REF - 1, Math.floor(g.age / Y)); ageRef[g.sex][a] += g.size; an2[g.sex][a]++; }
+      for (const s of [0, 1]) for (let a = 0; a < AGE_REF; a++) ageRef[s][a] = an2[s][a] ? ageRef[s][a] / an2[s][a] : 0;
+      for (const s of [0, 1]) for (let a = 1; a < AGE_REF; a++) if (!ageRef[s][a]) ageRef[s][a] = Math.max(ageRef[s][a - 1], a >= 2 ? adultSize[s] : 0);
+      for (const s of [0, 1]) if (!ageRef[s][0]) ageRef[s][0] = ageRef[s][1] || adultSize[s];
+    }
     const camp = m.length ? this.camps[m[0].herd] : null;
     const record = camp && camp.record ? camp.record : null;     // camp's experience: kids per doe-year by age
     const herdRate = record && record.yrs > 0 ? record.kids / record.yrs : P.priorKidRate;
@@ -1116,11 +1126,16 @@ var World = class World {
     // 'max': the largest goat of the sex in the herd now (2026-11-18, Chris)
     const ref = credit === 'max' ? [0, 1].map(s => m.reduce((x, g) => g.sex === s && g.size > x ? g.size : x, 0) || adultSize[s])
       : credit !== 'cull' ? adultSize : [0, 1].map(s => camp && camp.cullRef && !isNaN(camp.cullRef[s]) ? camp.cullRef[s] : adultSize[s]);
+    if (P.keepFrame !== 'year' && P.keepFrame !== 'horizon') throw new Error(`unknown keepFrame ${P.keepFrame}`);
+    if (P.keepFrame === 'horizon' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('keepFrame horizon: linear or curved only');
+    const H = P.keepFrame === 'horizon' ? P.keepHorizon : 1, GD = H * Y;   // growth credited over GD days
+    const terms = P.keepTerms ? {} : null;
     for (const g of m) {
       const ay = g.age / Y;
-      let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain
-        : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(Y) : g.curveGainTo(ref[g.sex], Y))
-        : Math.max(0, Math.min((credit === 'own' ? g.target : ref[g.sex]) - g.size, yearGrowth));
+      let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain (H years: 'horizon')
+        : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(GD) : g.curveGainTo(ref[g.sex], GD))
+        : Math.max(0, Math.min((credit === 'own' ? g.target : ref[g.sex]) - g.size, yearGrowth * H));
+      if (terms) { terms.growth = v; terms.kids = 0; terms.milk = 0; }
       if (g.sex === SEX_F && ay < P.senescenceAge) {
         // expected kidding: her own record weighted by its length, blended with the camp's rate for
         // does of her age class (or the herd mean while the camp has little experience)
@@ -1142,18 +1157,28 @@ var World = class World {
         }
         v += P.kidValue * kv;
         if (P.milkValue > 0) v += P.milkValue * mv / P.meatYield;   // milk at its food energy, in meat units
+        if (terms) { terms.kids = P.kidValue * kv; terms.milk = P.milkValue > 0 ? P.milkValue * mv / P.meatYield : 0; }
       }
-      if (sires.includes(g)) v += P.kidValue * herdRate * does / Math.max(1, sires.length);
-      else if (heirs.includes(g)) v += 0.5 * P.kidValue * herdRate * does / Math.max(1, sires.length);
-      const sz = P.cullSizeNeutral === 'sex' ? g.sexMult() : P.cullSizeNeutral ? 1 : g.size;
-      v -= P.feedCost * Math.pow(sz, 0.75);
-      const hz = P.adultMortality + (ay < 1 ? P.juvMortality : 0) + (ay > P.senescenceAge ? P.senescenceRate * (ay - P.senescenceAge) : 0);
-      v -= Math.min(1, hz) * sz;
-      if (P.flightCost > 0) v -= P.flightCost * g.tr[T_R] * g.fearOfHumans;
+      // feed, meat at risk and the sire's share: one year ('year'), or summed over keepHorizon years, each year discounted
+      // by the chance the goat lives to it, at the size charged for its age that year ('horizon', 2026-11-18)
+      const hzAt = a => P.adultMortality + (a < 1 ? P.juvMortality : 0) + (a > P.senescenceAge ? P.senescenceRate * (a - P.senescenceAge) : 0);
+      const szAt = a => P.cullSizeNeutral === 'age' ? ageRef[g.sex][Math.min(AGE_REF - 1, Math.floor(a))]
+        : P.cullSizeNeutral === 'sex' ? g.sexMult() : P.cullSizeNeutral ? 1 : g.size;
+      let feed = 0, risk = 0, live = 0, surv = 1;
+      for (let k = 0; k < H; k++) {
+        const a = ay + k, sz = szAt(a), hz = Math.min(1, hzAt(a));
+        feed += surv * P.feedCost * Math.pow(sz, 0.75); risk += surv * hz * sz; live += surv; surv *= 1 - hz;
+      }
+      const sire = sires.includes(g) ? P.kidValue * herdRate * does / Math.max(1, sires.length)
+        : heirs.includes(g) ? 0.5 * P.kidValue * herdRate * does / Math.max(1, sires.length) : 0;
+      v += sire * live; v -= feed; v -= risk;                     // this order keeps 'year' bit-identical to the code before
+      if (terms) { terms.sire = sire * live; terms.feed = -feed; terms.risk = -risk; terms.flight = 0; terms.last = 0; }
+      if (P.flightCost > 0) { v -= P.flightCost * g.tr[T_R] * g.fearOfHumans; if (terms) terms.flight = -P.flightCost * g.tr[T_R] * g.fearOfHumans; }
       // the last breeding doe and the last breeding buck are worth more to keep (with Chris, 2026-10-27):
       // they can still be eaten in a shortfall, but last
       if (P.lastBreederValue > 0 && ((g.sex === SEX_F && g.age >= P.femaleMinAge && does <= P.lastBreeders) ||
-                                     (g.sex === SEX_M && g.age >= P.maleMinAge && bucks <= P.lastBreeders))) v += P.lastBreederValue;
+                                     (g.sex === SEX_M && g.age >= P.maleMinAge && bucks <= P.lastBreeders))) { v += P.lastBreederValue; if (terms) terms.last = P.lastBreederValue; }
+      if (terms) g._kvTerms = Object.assign({ total: v }, terms);   // keepTerms: the terms of this keep value (tools/keepvalue.mjs)
       g._cullKey = -(v + P.cullNoise * normalSample(0, 1));
     }
     m.sort((a, b) => a._cullKey - b._cullKey);

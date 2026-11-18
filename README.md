@@ -10,15 +10,20 @@ the shared engine v2.
 
 ## Run
 - **Browser:** open `index.html`.
-- **Headless batch:** `node runner.mjs --reps 50` — runs the same sim core in the main V8 realm
-  (indirect `eval`, not `vm` — avoids vm's hot-loop tax; see `~/.claude/conventions.md` §4) and
-  writes self-describing packets to MongoDB through the research Server.
+- **Experiments:** `node tools/runyears.mjs --register <slug> "<question>"` claims the next `expNNN`; pre-register it in
+  `EXPLOG.md` as `## expNNN — <question>`; then `node tools/runyears.mjs <years> --exp expNNN --run <ARM>_seed<S> seed=S
+  key=value ...` (through `cpuslot`). Each run goes to Mongo `animalDomestication.expNNN_<slug>` (the record) and
+  `results/expNNN_<slug>/<run>.json` (the plain JSON copy), with `PARAMETERS.id` naming it. Same sim core, main V8 realm
+  (indirect `eval`, not `vm`; `~/.claude/conventions.md` §4). Probes: `--scratch --run <name>`. Needs `npm install`
+  (the mongodb driver) and the Mint Tunnel on 127.0.0.1:27017.
+- `runner.mjs` is the scaffold's original batch runner (legacy `batch`-style packets); not used for experiments.
 - **Smoke test:** `node smoketest.mjs` — no DB; asserts the model invariant and prints metrics.
 
 ## Layout
 - `src/` — sim core (`engine`, `params`, `world`, `agent`, `observer`, `datamanager`, `charts`,
   `util`) + `db.js` (vendored standard DB client) + `ui.js`/`main.js` (browser-only, all DOM).
-- `runner.mjs` / `smoketest.mjs` — headless entry points.
+- `tools/runyears.mjs` (experiments), `smoketest.mjs`, `runner.mjs` (legacy) — headless entry points; `tools/` also
+  holds the table and plotting tools (`tools/runio.py` reads old and new run files).
 - `DEVPLAN.md` / `DEVLOG.md` — the plan (forward) and the log (backward, append-only).
 
 See `~/.claude/conventions.md` for the shared standards this follows.

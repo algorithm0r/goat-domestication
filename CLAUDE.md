@@ -24,8 +24,8 @@ Agent-based simulation of goat (and possibly wolf) domestication; follow-up to A
 - **Model/view split:** the world holds state and never draws; the `Observer` renders it.
 - **Config:** one `PARAMETERS` global (`params.js`), serialized verbatim into every saved
   packet. `PARAM_SCHEMA` drives the control panel.
-- **DB:** the vendored standard client `src/db.js` (see `~/.claude/conventions.md` §4).
-  Use `db.packet()`, `db.nextBatch()`, and `db.scratch()` for throwaway work.
+- **DB:** the vendored standard client `src/db.js` v2 (see `~/.claude/conventions.md` §4).
+  Experiments via `db.experiment()` / `ex.run()` (tools/runyears.mjs does this); `db.scratch()` for throwaway work.
 
 ## Conventions
 Follow `~/.claude/conventions.md`. STATUS is overwritten every close (present truth); DEVLOG is
@@ -35,5 +35,8 @@ tokens and a `**Done when:**` criterion. `/log-session` rewrites STATUS — don'
 
 ## Run
 - Browser: open `index.html`.
-- Headless batch: `node runner.mjs --reps N` (writes to MongoDB via the Server).
+- Experiments (data protocol, from 2026-11-18): `node tools/runyears.mjs --register <slug> "<question>"`, pre-register
+  `## expNNN — ...` in EXPLOG, then `node tools/runyears.mjs <years> --exp expNNN --run <ARM>_seed<S> seed=S k=v ...`
+  through `cpuslot`. Mongo is the record; `results/expNNN_slug/` holds the JSON copies. Probes use `--scratch`.
+  Old `results/<name>/` folders and `tools/*.jsonl` job lists before exp001 are the pre-protocol archive.
 - Smoke (no DB): `node smoketest.mjs` — prints the numbers that go in the DEVLOG entry.

@@ -158,18 +158,24 @@ calibration check.
 - **T3. Bake the burn-in.** Every run repeats a 300-year no-human burn-in. Save wild-type
   checkpoints per seed and start conditions from them. Do before the Stage 5 batches.
 
+## Run names
+Experiment runs (exp001 on) are named `<ARM>_seed<S>`: ARM a short upper-case arm code defined in the experiment's EXPLOG
+entry (e.g. K0, KAH), S the seed. Unique within the experiment.
+
 ## Backlog
 - [ ] fix: about 20 analysis tools that EXPLOG cites as "scratchpad ..." (ablate_tab.py, milk_tab.py, overlap.py, ...)
   are lost with earlier sessions' scratchpads; their result tables are in results/. Keep new tools in tools/.
-- [ ] feat: migrate the runner to db.js v2 and expNNN experiment names (results are JSON under results/, README
-  still describes the Mongo runner).
+- [x] feat: migrate the runner to db.js v2 and expNNN experiment names (2026-11-18: tools/runyears.mjs --register /
+  --exp; exp001 the first).
 - [ ] idea: recalibrate the keep value: one horizon for every term (growth, kids, feed, risk), feed and risk at a
   reference size for sex and age, and keepHorizon 3 revisited (probe 2026-11-17: buck kids sit in the bottom 15%).
+  Running as exp001 (2026-11-18).
 - [ ] idea: males killed before 2.5 y are 0.47 in the anchor against Ganj Dareh 0.60-0.70.
 - [ ] idea: horns shrink more under the own-growth credit (-0.24) than under the herd average (-0.11); unexplained.
 - [ ] idea: pigmentation -0.13 in the anchor only (3 of 4 seeds beyond the neutral gene's drift range): hitchhiking
   or drift, untested.
 - [ ] fix: trace the condition gap between bucks and dry does.
 - [ ] idea: are the winter cull's kids male or female?
-- [ ] feat: merge the harness/run-format branch (sim-runfmt; it still has world.draw(c, ...) calls) on Chris's word.
+- [x] feat: merge the harness/run-format branch (merged 2026-11-18 on Chris's word, 1866bd4; no stale draw calls
+  in its files).
 - [ ] idea: should paper/ go public? (asked, unanswered)

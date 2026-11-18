@@ -15,6 +15,10 @@ var shareBin = s => { for (let b = 0; b < SHARE_BINS.length; b++) if (s <= SHARE
 var FEAR_KEYS = ['fearW', 'fearH'];          // learned fear of wolves, of humans: histograms over [0, fearMax]
 var HIST_KEYS = TRAITS.concat(FEAR_KEYS);
 var median = v => { if (!v.length) return null; const s = v.slice().sort((a, b) => a - b); return s[s.length >> 1]; };
+// year-record diagnostics behind a named PARAMETERS switch (params.js, "diagnostics"); 0 leaves the field out
+var DIAG_FIELDS = { logWolfAtk: 'wolfAtk', logKidLife: 'kidLife', logKilloff: 'killoff', logHerdKilloff: 'herdKilloff', logKidDeathCause: 'kidDeathCause' };
+var diagOff = s => PARAMETERS[s] === 0 || PARAMETERS[s] === false;
+var histPeriod = () => Math.max(1, Math.round(PARAMETERS.histPeriod || 1));   // years between recorded gene histograms
 var genBin = d => { for (let b = 0; b < GEN_BINS.length; b++) if (d <= GEN_BINS[b][1]) return b; return GEN_BINS.length - 1; };
 
 var DataManager = class DataManager {
@@ -27,11 +31,16 @@ var DataManager = class DataManager {
     this.hist = {};                          // trait → [year][bucket] counts, all goats
     this.histHerd = {};                      // the same, herd goats only (wild = hist − histHerd), from 2026-11-02
     for (const t of HIST_KEYS) { this.hist[t] = []; this.histHerd[t] = []; }
+    // 2026-11-13: hist and histHerd are recorded at the end of every histPeriod-th year (years histPeriod-1, 2*histPeriod-1,
+    // ...; every year by default), and histYears names the year of each recorded row, so readers never infer it
+    this.histYears = [];
     // 2026-11-11: genotype histograms by lineage, pooled over DEPTH_EVERY years, [trait][record][bin][bucket]; record k covers
     // years k*every .. k*every + every - 1. Herd goats by mean depth (Goat.wildDepth rounded, in GEN_BINS); wild goats by the
     // share of the genome from herd-born goats (1 - wv[0], in SHARE_BINS: none, to 1/16, 1/8, 1/4, 1/2, more), since a
     // wild goat's mean depth mixes how much herd ancestry it has with how deep it is
-    this.histDepth = { every: DEPTH_EVERY, bins: GEN_BINS, wildShareBins: SHARE_BINS, herd: {}, wild: {} };
+    // histDepth pools max(DEPTH_EVERY, histPeriod) years per record (a histPeriod up to 10 leaves it as it is); years: the
+    // last year of each record, which covers the `every` years ending there
+    this.histDepth = { every: Math.max(DEPTH_EVERY, histPeriod()), bins: GEN_BINS, wildShareBins: SHARE_BINS, herd: {}, wild: {}, years: [] };
     for (const t of TRAITS) { this.histDepth.herd[t] = []; this.histDepth.wild[t] = []; }
     this._depthAcc = null;
     this.run = (PARAMETERS.db && PARAMETERS.db.run) || 'run';
@@ -69,6 +78,7 @@ var DataManager = class DataManager {
     const mat = new Array(GEN_BINS.length).fill(0), pat = new Array(GEN_BINS.length).fill(0), anc = new Float64Array(GEN_BINS.length);
     let ancDepth = 0, wildHS = 0, wildAny = 0;
     const szS = [0, 1].map(() => [0, 1].map(() => new Float64Array(13))), szN = [0, 1].map(() => [0, 1].map(() => new Float64Array(13)));
+    const logDepth = !diagOff('logHistDepth');   // histDepth stays in the run as an empty record when switched off
     for (const g of w.goats) {
       if (g.dead) continue;
       { const hi = g.herd >= 0 ? 1 : 0, a = Math.min(12, Math.floor(g.age / PARAMETERS.yearDays)); szS[hi][g.sex][a] += g.size; szN[hi][g.sex][a]++; }
@@ -86,13 +96,14 @@ var DataManager = class DataManager {
       const inHerd = g.herd >= 0, dd = da[inHerd ? 1 : 0], hs = !inHerd && g.wv ? 1 - g.wv[0] : 0;
       const db = inHerd ? (g.wv ? genBin(Math.round(g.wildDepth())) : 0) : shareBin(hs);
       if (!inHerd) { wildHS += hs; if (hs > 1e-9) wildAny++; }
-      for (let t = 0; t < NT; t++) dd[t][db][Math.min(HIST_BUCKETS - 1, (G[t] * HIST_BUCKETS) | 0)]++;
+      if (logDepth) for (let t = 0; t < NT; t++) dd[t][db][Math.min(HIST_BUCKETS - 1, (G[t] * HIST_BUCKETS) | 0)]++;
     }
-    if ((w.year + 1) % DEPTH_EVERY === 0) {
+    if (logDepth && (w.year + 1) % this.histDepth.every === 0) {
       TRAITS.forEach((t, k) => { this.histDepth.wild[t].push(da[0][k]); this.histDepth.herd[t].push(da[1][k]); });
+      this.histDepth.years.push(w.year);
       this._depthAcc = null;
     }
-    HIST_KEYS.forEach((t, k) => { this.hist[t].push(h[k]); this.histHerd[t].push(hh[k]); });
+    if ((w.year + 1) % histPeriod() === 0) { HIST_KEYS.forEach((t, k) => { this.hist[t].push(h[k]); this.histHerd[t].push(hh[k]); }); this.histYears.push(w.year); }
     const fk = ys.firstKidAges.slice().sort((a, b) => a - b);
     const deaths = {}; CAUSE_NAMES.forEach((c, k) => deaths[c] = ys.deaths[k]);
     const herdDeaths = {}; CAUSE_NAMES.forEach((c, k) => herdDeaths[c] = ys.herdDeaths[k]);   // herd goats only (2026-10-31)
@@ -101,7 +112,7 @@ var DataManager = class DataManager {
     // mean size by [wild, herd] × sex × age in years (0..12+), and herd deaths by [slaughtered, starved, other] × sex ×
     // half-year of age (0..29), for the Ganj Dareh comparison (2026-11-14)
     const sizeByAge = [0, 1].map(hi => [0, 1].map(s => Array.from(szS[hi][s], (v, a) => szN[hi][s][a] ? +(v / szN[hi][s][a]).toFixed(3) : null)));
-    this.years.push({
+    const rec = {
       year: w.year, goats: n, wolves: w.wolves.length, humans: w.humans.length, killoff,
       sizeByAge, herdDeathHalf: ys.herdDeathHalf.map(c => c.map(a => a.slice())),
       wolfAtk: ys.wolfAtk,                    // key → [attacks, kills]; key herd/wild|phase|escape|camp|spotted|loose|kid|nearHerder
@@ -175,14 +186,16 @@ var DataManager = class DataManager {
         gatherScored: +ys.gatherScored.toFixed(1), meatHunted: +ys.meatHunted.toFixed(1), huntScored: +ys.huntScored.toFixed(1), shots: ys.shots, shotKills: ys.shotKills, altKills: ys.altKills, kills: ys.hunted,
         unmetQ: ys.unmetQ.map(v => +v.toFixed(1)), slaughterQ: [...ys.slaughterQ], herdQ: [...ys.herdQ], labourQ: [...ys.labourQ],
       } } : {}),
-    });
+    };
+    for (const sw in DIAG_FIELDS) if (diagOff(sw)) delete rec[DIAG_FIELDS[sw]];   // switched-off diagnostics left out
+    this.years.push(rec);
     w.resetYearStats();
     this._adultsAtYearStart = this.countAdults();
   }
 
   async flush() {
     if (!this.db) return { ok: false };
-    const pkt = this.db.packet(PARAMETERS, { project: 'Animal Domestication', run: this.run, samples: this.samples, years: this.years, hist: this.hist, histHerd: this.histHerd, histDepth: this.histDepth });
+    const pkt = this.db.packet(PARAMETERS, { project: 'Animal Domestication', run: this.run, samples: this.samples, years: this.years, hist: this.hist, histHerd: this.histHerd, histYears: this.histYears, histDepth: this.histDepth });
     try {
       const res = await this.db.insert(this.run, pkt);
       if (typeof console !== 'undefined') console.log('[data] saved', JSON.stringify(res));

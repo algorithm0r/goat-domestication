@@ -2,6 +2,8 @@
 # husb_tab.py: score the new-husbandry pilot against its controls.
 # Windows are 1-based year ranges (3201-4000 = year records 3200..3999).
 import json, os, sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from runio import hist_rows
 SIM = "D:/Chris's Documents/Documents/Research/Animal Domestication/sim/"
 ARMS = [("HmaxH", "results/husb/HmaxH"), ("S0", "results/settle/S0"),
         ("HmaxIsoH", "results/husb/HmaxIsoH"), ("HmaxIso", "results/iso/HmaxIso")]
@@ -51,7 +53,7 @@ for arm, pre in ARMS:
             if not ys: continue
             gs = {t: [] for t in GENES}
             for r in ys:
-                y = r["year"]; n = sum(d["hist"]["R"][y]); nh = sum(d["histHerd"]["R"][y])
+                n = r["goats"]; nh = r.get("herded") or 0   # = the histogram counts (checked on credit CH seed 1, 1600 of 1600 years)
                 if n - nh <= 0: continue
                 for t in GENES:
                     hm = r["herdTraitMeans"][t]; am = r["traitMeans"][t]
@@ -67,7 +69,7 @@ for arm, pre in ARMS:
             for t in GENES:
                 H = [0] * 20; Wd = [0] * 20
                 for s, d in runs:
-                    for y in range(a - 1, min(b, len(d["years"]))):
+                    for y in hist_rows(d, a - 1, b - 1):
                         hh = d["histHerd"][t][y]
                         if sum(hh) == 0: continue
                         for k in range(20): H[k] += hh[k]; Wd[k] += d["hist"][t][y][k] - hh[k]
@@ -75,7 +77,7 @@ for arm, pre in ARMS:
                 ov[t] = sum(min(H[k] / sh, Wd[k] / sw) for k in range(20)) if sh and sw else float("nan")
             Rh = 0; Rn = 0
             for s, d in runs:
-                for y in range(a - 1, min(b, len(d["years"]))):
+                for y in hist_rows(d, a - 1, b - 1):
                     hh = d["histHerd"]["R"][y]; Rh += sum(hh[8:]); Rn += sum(hh)
             say("     overlap " + " ".join(f"{t} {ov[t]:.2f}" for t in GENES) + f" | herd R>=0.40 {Rh / Rn if Rn else float('nan'):.3f}")
 
