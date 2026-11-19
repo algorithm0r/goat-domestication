@@ -4976,6 +4976,65 @@ Probe, seed 2, year 800, bottom-15% share (total keep value) by class: K0 F kids
 - "Neither change brings young males into the band; both move them away": not met as worded. Both move them out of the
   band, but past it (0.80-0.87), not away from it on the low side.
 
+## exp002 — No quota: the herder eats only goats whose keep value falls below zero. When are males eaten, and what happens to body size and the herd?
+**Pre-registered:** 2026-11-18. Mongo animalDomestication.exp002_keep-threshold; results/exp002_keep-threshold.
+**Question:** exp001 showed the flat quota (15% of the herd's head count a year) forces the herder to eat goats that
+still pay to keep (a buck kid at +0.31 in the KA probe) and counts a kid as a full head. Chris (2026-11-18): "the
+herders kept the goats during the fast growth and once growth was less than feed or opportunity cost they became
+dinner. ... i like the econCull idea where we cull those below a keep threshold."
+**Code change** (this commit): econCull with economy 0 replaces the offtakeRate quota: every cullEvery (30) days the
+herder slaughters every herd goat whose keep value plus judgement noise (cullNoise 0.05) is below cullThreshold (0).
+The keep value is the one-year frame (keepFrame 'year'): next year's growth toward the herd mean, a doe's kids over 3
+years, the sire's share, against next year's feed and meat at risk. surplusCull and winterCull are refused with it.
+econCull 0 (the default) leaves the quota path untouched.
+**Settings:** exp001's R15 husbandry arguments (offtakeRate 0.15 is then unused) plus econCull 1. Lean experiment runs.
+4 seeds, 1600 years. Reference: exp001 K0 (the quota, same defaults).
+- TS: econCull 1 (feed and risk at the sex's multiplier, the default).
+- TA: econCull 1, cullSizeNeutral age (feed and risk at the herd's size for the goat's sex and age).
+- Check: one scratch run, econCull 0, seed 1, 600 years, against exp001 K0_seed1 (tools/cmp_years.py): 0 records may
+  differ.
+**Prediction** (mine; Chris made none):
+- Herds grow past the quota's 272 in both arms, and herd starvation rises above K0's 48 a year, since nothing caps the
+  herd but forage.
+- TS: in the exp001 K0 probe a yearling buck's keep value is +0.000 (growth 0.275 against feed 0.223 and risk 0.051 at
+  the buck multiplier), so with noise about half are eaten as yearlings: males dead before 2.5 y 0.60 or more.
+- TA: a yearling buck is +0.11 (feed and risk at a yearling's size) and a buck aged 2-3 about -0.07, so males are eaten
+  mostly at 2-3: males dead before 2.5 y lower than TS, between 0.35 and 0.70.
+- Both: does are eaten only when their kidding value runs out (old or barren), so the share of the slaughtered aged 4
+  or older is above 0.30.
+- Both: only grown non-sire bucks and spent does are eaten, so the growth credit selects on size less: B gap weaker than
+  K0's -0.21, between -0.15 and +0.05.
+- R gap within 0.1 of -0.6; wild mean B 0.75 or above.
+
+## exp002 results (raw)
+8 runs and the check, all exit 0. Mongo animalDomestication.exp002_keep-threshold (8.4-8.6 MB of BSON a run);
+results/exp002_keep-threshold: tab_1501.txt, fk.txt, husb.txt, bcentury.txt (tools as for exp001), K0 = exp001 K0.
+**Check:** econCull 0, seed 1, 600 years (results/_scratch) against exp001 K0_seed1: 0 of 600 records differ.
+Years 1501-1600, 4 seeds:
+| arm | herd | herd starv | herd births | culled | B gap | R gap | herd B | wild B | breadth | herd doe size 5+ | herd first kid (days) | m<2.5 | >=4 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| K0 (exp001) | 272.1 | 48.3 | 142.0 | 44.3 | -0.21 | -0.65 | 0.670 | 0.880 | 7 | 1.14 | 928 | 0.47 | 0.19 |
+| TS | 20.2 | 0.0 | 12.3 | 9.7 | +0.00 | -0.03 | 0.881 | 0.887 | 0 | 1.30 | 1113 | 0.33 | 0.49 |
+| TA | 286.0 | 55.0 | 153.6 | 38.4 | -0.15 | -0.62 | 0.718 | 0.870 | 3 | 1.17 | 974 | 0.85 | 0.11 |
+TS herds by seed 11.7, 26.9, 29.6, 12.6; seeds 1 and 2 by century from 401: 6-27 throughout. TS seeds 1 and 2, 1501-1600,
+culled by class a year (kids under 1 y, breeding does, breeding bucks, other, no herd-born dam): seed 1 4.6, 1.3, 0.8, 0.0,
+2.8 of 6.7 culled, 6.4 births; seed 2 8.6, 1.4, 0.6, 0.0, 2.2 of 10.6, 15.3 births. TA seeds 1 and 2: kids 0.1 and 0.0,
+breeding bucks 38.5 and 33.9, breeding does 2.7 and 6.0 a year. TA herds pass 100 at 801-900 (seed 1) and 1201-1300
+(seed 2).
+Slaughter by age (herdDeathHalf, 4 seeds, 1501-1600), share of males by half-year from 0: K0 0.18, 0.36, 0.00, 0.00, 0.03,
+0.11, 0.19, 0.08, 0.05, 0.01; TA 0.00, 0.00, 0.01, 0.11, 0.74, 0.11, 0.02, 0.00, 0.00, 0.00. Females slaughtered: all aged
+5 or older in both.
+B gap by century from 501: TS -0.01 to +0.00 throughout; TA -0.00, -0.01, -0.03, -0.01, -0.05, -0.15, -0.17, -0.19, -0.19,
+-0.16, -0.15.
+**Predictions:** 3 of 8 met.
+- Check: met.
+- Herds past 272 and herd starvation above 48 in both arms: not met (TA 286 and 55 met; TS 20 and 0).
+- TS males dead before 2.5 y 0.60 or more: not met (0.33).
+- TA males dead before 2.5 y 0.35-0.70 and below TS: not met (0.85; 74% of male slaughter at 2.0-2.5 y).
+- Share of the slaughtered aged 4+ above 0.30 in both: not met (TS 0.49, TA 0.11).
+- B gap between -0.15 and +0.05 in both: met (TS +0.00, TA -0.15).
+- R gap within 0.1 of -0.6: not met (TS -0.03; TA -0.62). Wild B 0.75 or above: met (0.887, 0.870).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

@@ -862,6 +862,18 @@ var World = class World {
     if (P.economy && (P.surplusCull || P.winterCull)) throw new Error('surplusCull and winterCull are for the offtake-rate cull (economy 0)');
     if (P.economy) this.campEconomy(members, day);
     else for (const m of members) {
+      // econCull without the economy (2026-11-18, Chris: "the herders kept the goats during the fast growth and once
+      // growth was less than feed or opportunity cost they became dinner"): no offtake quota; every cullEvery days the
+      // herder slaughters every herd goat whose keep value (with its judgement noise) is below cullThreshold
+      if (P.econCull) {
+        if (P.surplusCull || P.winterCull) throw new Error('econCull replaces the offtake quota; surplusCull and winterCull belong to the quota');
+        if (m.length && this.day % P.cullEvery === 0) {
+          this.cullOrder(m);
+          while (m.length && -m[m.length - 1]._cullKey < P.cullThreshold) { const g = m.pop(); this.tallyCull(g, 'offtake'); this.kill(g, CAUSE.culled); ys.culledHerd++; }
+        }
+        while (m.length > P.herdTarget) { this.kill(m.pop(), CAUSE.culled); ys.culledHerd++; }
+        continue;
+      }
       // offtake: slaughter for meat at offtakeRate of the herd per year (stochastic, one animal at a
       // time, chosen by the cull rule), then cull anything above herdTarget
       let n = 0; const rate = P.leanPulse > 0 ? P.offtakeRate * this.leanPulseFactor() : P.offtakeRate;

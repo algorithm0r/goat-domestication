@@ -343,7 +343,8 @@ var PARAMETERS = {
   keepHeirs: 1,           // opportunity: young bucks held back as replacement sires (succession)
   lastBreederValue: 0,    // keep-value boost (meat units) for the herd's last breeding doe and last breeding buck (0 = off)
   lastBreeders: 1,        // how many does/bucks count as "the last" for the boost
-  econCull: 0,            // economy: 1 = opportunity cull, every cullEvery days, of goats whose keep value < cullThreshold
+  econCull: 0,            // 1 = opportunity cull, every cullEvery days, of goats whose keep value < cullThreshold; with economy 0 it
+                          // replaces the offtakeRate quota (2026-11-18, Chris), with economy 1 it runs beside the camp's demand
   cullEvery: 30,          // days between opportunity culls
   cullThreshold: 0,       // keep value (meat units) below which keeping a goat no longer pays
   cullOldAge: 7,          // youngMales: females older than this (years) are culled before breeding females
