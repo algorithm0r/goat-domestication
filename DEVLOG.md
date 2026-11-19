@@ -1,6 +1,28 @@
 # Animal Domestication — DEVLOG
 Newest entry on top. **Append only — never edit past entries.**
 
+## 2026-11-18 — data protocol in place; threshold cull; batch 1 frozen (v0.1.0)
+**Done:**
+- Merged harness/run-format (diagnostic switches, histPeriod, compact readers). db.js v2 vendored; tools/runyears.mjs
+  gains --register and --exp expNNN --run NAME (Mongo record plus results/expNNN_slug JSON copy, lean by default, about
+  9 MB of BSON for 1600 years); --scratch for probes. tools/runio.py reads thinned histograms; husb_tab and gene_dists
+  use it. exp001 is the first numbered experiment.
+- exp001: keepFrame 'horizon' and cullSizeNeutral 'age' under the 15% quota both kill young males at 0.80-0.87.
+  keepvalue.mjs now reads the sim's own terms (keepTerms).
+- exp002: econCull works without the economy: no quota, the herder eats goats whose keep value falls below 0. With
+  age-sized charges males are eaten at 2.0-2.5 y (Chris's curve story); with sex-sized charges herds never grow.
+- exp003: feedCost 0.075-0.10 puts males dead before 2.5 y in the Ganj Dareh band; the out-of-sample Ganj Dareh
+  measures miss. Chris: report ranges, don't fit every target.
+- Batch 1 (Chris): defaults econCull 1 (opportunity rule only), cullSizeNeutral 'age', feedCost 0.085; exp004 anchor.
+**Changed:** params.js defaults; world.js (keepFrame, age charges, threshold path); MODEL.md batch-1 cull; README,
+CLAUDE.md run instructions; DEVPLAN run-name grammar.
+**State:** smoke PASS @ 88ad485 (40 y, 536 goats). exp004 A1, years 1501-1600, 4 seeds: herd 286, R gap -0.63, B gap
+-0.25, breadth 6, males dead before 2.5 y 0.69 (slaughter). Checks: exp004 defaults reproduce exp003 F075 (0 of 600
+differ); exp001 K0 reproduced the pre-change anchor (0 of 1600, 4 seeds). Experiments this session: exp001, exp002,
+exp003, exp004.
+**Next:** draft the batch-1 experiment plan (paper outline sections 3.1-3.7 plus body size and the feedCost range) for
+Chris to review; tell the author session that body size is now the meat cull's signature, not part of the syndrome.
+
 ## 2026-11-18 — realistic growth becomes the default; herd body size traced to the cull's growth credit
 (Covers 2026-11-13 to 11-18; no entry was written in between. Details and raw results are in EXPLOG, 11-13 onward.)
 **Done:**

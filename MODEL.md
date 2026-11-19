@@ -340,6 +340,11 @@ None.
   camp's fodder store falls short slaughters among those goats in the cull rule's order, never below
   `cullFloor`; credited against the year's offtake like the surplus cull. Records `winterCulled` a year. (The
   first form, b9ec5e5, budgeted every goat and held the open reference herd at about 60.)
+  - **Batch 1 defaults (2026-11-18, v0.1.0):** `econCull` 1 replaces the `offtakeRate` quota: every `cullEvery` (30) days
+    the herder slaughters every herd goat whose keep value plus judgement noise is below `cullThreshold` 0 (exp002), with
+    `cullSizeNeutral` 'age' (feed and meat at risk charged at the herd's mean size for the goat's sex and age in years) and
+    `feedCost` 0.085 (exp003: males dead before 2.5 y in the Ganj Dareh band for 0.075-0.10; report the range). The quota
+    (`econCull` 0) remains as a switch.
   - *random* (H2); *opportunity* (H3–H6): lowest keep value first: + next year's growth on the goat's curve toward
     the size the herder expects (`growthCredit` 'herd', the default: the herd's mean size of its sex among goats of
     720 days or older, `creditAge`; Chris 2026-11-18, a learned expectation, since a herder cannot see a target; this
@@ -351,8 +356,8 @@ None.
     age (the herd's mean until that age class holds more than one doe-year; only kids born in the herd
     count)
     + for the 2 oldest bucks: 0.3 × herd rate × does per sire; the oldest young buck as a replacement at
-    half that − 0.15 feed − annual death hazard (per head; `cullSizeNeutral` 'sex', the default from 2026-11-18:
-    both charged at the sex's size multiplier, 1.7 for a buck) − (H6) 1.0 × R × fearOfHumans, + N(0, 0.05).
+    half that − `feedCost` (0.085) × size^0.75 feed − annual death hazard × size (`cullSizeNeutral` 'age', the batch-1
+    default: size = the herd's mean for the goat's sex and age in years; 'sex' = the sex's multiplier, 1 = per head) − (H6) 1.0 × R × fearOfHumans, + N(0, 0.05).
   - **Milk in the keep value** (`milkValue`, off; with Chris 2026-11-09): a doe's expected milk to the camp
     over the same 3 years, built like her kidding (her own record of milk taken per year since breeding
     age, blended with the camp's milk per doe-year for her age class, survival-discounted), × milkValue /

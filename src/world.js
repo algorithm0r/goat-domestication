@@ -865,8 +865,9 @@ var World = class World {
       // econCull without the economy (2026-11-18, Chris: "the herders kept the goats during the fast growth and once
       // growth was less than feed or opportunity cost they became dinner"): no offtake quota; every cullEvery days the
       // herder slaughters every herd goat whose keep value (with its judgement noise) is below cullThreshold
-      if (P.econCull) {
-        if (P.surplusCull || P.winterCull) throw new Error('econCull replaces the offtake quota; surplusCull and winterCull belong to the quota');
+      // (only under cullRule 'opportunity', whose keys are keep values; the other rules' keys are not, so they keep the quota)
+      if (P.econCull && P.cullRule === 'opportunity') {
+        if (P.surplusCull || P.winterCull) throw new Error('econCull replaces the offtake quota; surplusCull and winterCull belong to the quota (set econCull=0)');
         if (m.length && this.day % P.cullEvery === 0) {
           this.cullOrder(m);
           while (m.length && -m[m.length - 1]._cullKey < P.cullThreshold) { const g = m.pop(); this.tallyCull(g, 'offtake'); this.kill(g, CAUSE.culled); ys.culledHerd++; }

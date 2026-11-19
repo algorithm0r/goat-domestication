@@ -321,8 +321,9 @@ var PARAMETERS = {
   keepHorizon: 3,         // opportunity (≈ age at first kidding): years ahead a herder counts a doe's expected kidding (survival-discounted)
   recordWeight: 1,        // opportunity: years of a doe's own record at which it weighs equal to the camp's
   ageClasses: 10,         // opportunity: camp record of kids per doe-year by age class (years)
-  feedCost: 0.15,         // opportunity: a year's keep, × size^0.75, in meat units
-  cullSizeNeutral: 'sex', // default 'sex' from 2026-11-18 (1 before); opportunity: feed and meat-at-risk charged per head, so the cull rule cannot itself select on size (0 = by size;
+  feedCost: 0.085,        // opportunity: a year's keep, × size^0.75, in meat units. 0.085 from 2026-11-18 (batch 1; 0.15 before): exp003
+                          // puts males dead before 2.5 y in the Ganj Dareh band at 0.075-0.10 (Chris: sweep that range, report it)
+  cullSizeNeutral: 'age', // default 'age' from 2026-11-18 batch 1 ('sex' earlier that day, 1 before); opportunity: feed and meat-at-risk charged per head, so the cull rule cannot itself select on size (0 = by size;
                           // 'sex' = per head at the sex's size multiplier, sexSize for males: neutral within a sex, a buck eats more;
                           // 'age' = at the herd's mean size for the goat's sex and age in years, 0..5+: neutral within sex and age, 2026-11-18)
   growthCredit: 'herd',   // opportunity: next year's growth in the keep value, toward 'own' (the goat's own target), 'herd' (the
@@ -343,7 +344,8 @@ var PARAMETERS = {
   keepHeirs: 1,           // opportunity: young bucks held back as replacement sires (succession)
   lastBreederValue: 0,    // keep-value boost (meat units) for the herd's last breeding doe and last breeding buck (0 = off)
   lastBreeders: 1,        // how many does/bucks count as "the last" for the boost
-  econCull: 0,            // 1 = opportunity cull, every cullEvery days, of goats whose keep value < cullThreshold; with economy 0 it
+  econCull: 1,            // default 1 from 2026-11-18 (batch 1, Chris; 0 before = the offtakeRate quota; only under cullRule
+                          // 'opportunity': other rules and surplusCull/winterCull runs need econCull=0). 1 = opportunity cull, every cullEvery days, of goats whose keep value < cullThreshold; with economy 0 it
                           // replaces the offtakeRate quota (2026-11-18, Chris), with economy 1 it runs beside the camp's demand
   cullEvery: 30,          // days between opportunity culls
   cullThreshold: 0,       // keep value (meat units) below which keeping a goat no longer pays

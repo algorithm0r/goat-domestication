@@ -5085,6 +5085,36 @@ slaughter 0.14). Males dead before 2.5 y on all causes: 0.77 (the calibration us
 - B gap within -0.10 to -0.25 at every point: not met (F050 -0.27, F125 -0.28; no trend, wide seed spread).
 - R gap within 0.1 of -0.6: met (-0.61 to -0.63). Wild B 0.75 or above: met (0.870-0.889).
 
+## exp004 — Batch 1 anchor (v0.1.0): the frozen defaults under R15 husbandry, the reference for the paper's first experiments
+**Pre-registered:** 2026-11-18. Mongo animalDomestication.exp004_batch1-anchor; results/exp004_batch1-anchor.
+**Decision** (Chris, 2026-11-18): freeze the model for a first batch of paper experiments ("tag this as our first
+batch"); feedCost "perhaps 0.08 or 0.09 ... sweep this range when we do final tests ... find these ranges and report
+them". New defaults (this commit): econCull 1 (threshold cull, opportunity rule only; other cull rules keep the
+quota), cullSizeNeutral 'age', feedCost 0.085. With the curve, the herd-average credit from 2 y, bezoar sex sizes and
+breeding at 0.65 already default, R15 husbandry arguments alone now run the batch-1 model. Pre-batch-1 job lists that
+use surplusCull or winterCull with the opportunity rule now stop with an error (set econCull=0); the others run the
+batch-1 cull unless they set econCull, cullSizeNeutral and feedCost.
+**Settings:** R15 husbandry arguments (as for exp001-003; offtakeRate 0.15 unused), defaults otherwise. A1: 4 seeds,
+1600 years, lean experiment runs, years 1501-1600 scored with the exp003 tables.
+**Checks:** (1) one scratch run, defaults with feedCost=0.075, seed 1, 600 years, against exp003 F075_seed1
+(tools/cmp_years.py): 0 records may differ (the defaults equal exp003's explicit arguments). (2) smoketest.mjs PASS.
+**Prediction** (mine): males dead before 2.5 y (slaughter) between 0.61 and 0.72 (exp003 at 0.075 and 0.10); R gap within
+0.1 of -0.6; B gap between -0.10 and -0.30; herd 260-300; wild B 0.75 or above.
+
+## exp004 results (raw)
+4 runs, the check and the smoke, all exit 0. Mongo animalDomestication.exp004_batch1-anchor; results/exp004_batch1-anchor:
+tab_1501.txt, fk.txt, husb.txt (tools as for exp003).
+**Checks:** (1) defaults with feedCost 0.075, seed 1, 600 years, against exp003 F075_seed1: 0 of 600 records differ.
+(2) smoketest PASS (40 y, 536 goats, 0 bad alleles or energies).
+Years 1501-1600, 4 seeds, A1: herd 286.0 (per seed 286.4, 284.5, 294.8, 278.2), herd starvation 52.7, births 147.7,
+culled 37.8 a year. Gaps R -0.63, A -0.10, S +0.08, B -0.25 (per seed -0.25, -0.23, -0.41, -0.12), H -0.14, T +0.37,
+M -0.12, W -0.04, L +0.21, C +0.00; breadth 6, depth 13.9, IBD 0.90. Herd B 0.624, wild B 0.873. Herd first kid median
+915 days (wild 1250). Herd size by age (F/M): 1 y 0.68/0.74, 2 y 0.88/0.98, 5 y 1.10/1.70. Slaughter: males dead before
+2.5 y 0.69 (unrounded 0.689; by half-year 1.5-3.5 y 0.04, 0.65, 0.23, 0.06, 0.01), aged 4+ 0.14, F:M 0.15, Ganj Dareh
+1/4; all causes: 0.80, 0.11, F:M 0.93, does dead at 2.5+ 0.45, Ganj Dareh 0/4.
+**Predictions:** 5 of 5 met; both checks met. Males dead before 2.5 y 0.61-0.72 (0.69); R gap within 0.1 of -0.6
+(-0.63); B gap -0.10 to -0.30 (-0.25); herd 260-300 (286); wild B 0.75 or above (0.873).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
