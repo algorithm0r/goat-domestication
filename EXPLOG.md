@@ -5035,6 +5035,56 @@ B gap by century from 501: TS -0.01 to +0.00 throughout; TA -0.00, -0.01, -0.03,
 - B gap between -0.15 and +0.05 in both: met (TS +0.00, TA -0.15).
 - R gap within 0.1 of -0.6: not met (TS -0.03; TA -0.62). Wild B 0.75 or above: met (0.887, 0.870).
 
+## exp003 — Threshold cull with age-sized charges: which feedCost puts the male kill age in the Ganj Dareh band, and what else moves with it?
+**Pre-registered:** 2026-11-18. Mongo animalDomestication.exp003_feedcost-sweep; results/exp003_feedcost-sweep.
+**Question:** In exp002 TA (econCull 1, cullSizeNeutral age, feedCost 0.15) the herder eats a buck once a year's growth
+falls below a year's feed plus meat at risk, at 2.0-2.5 y (74% of male slaughter): males dead before 2.5 y 0.85 against
+Ganj Dareh 0.60-0.70. feedCost is a placeholder constant (MODEL.md §11): what the herder prices in for a year's keep, in
+meat units, x size^0.75. Chris (2026-11-18): "we are basically using this constant to estimate the cost that the
+herder is pricing in ... that's why we sweep and report ... register the default as the range that places us in the
+band." This is a declared calibration: once chosen, the male kill age is a calibration target, not a test.
+**Settings:** exp002 TA arguments (R15 husbandry, econCull 1, cullSizeNeutral age), lean experiment runs, 4 seeds, 1600
+years, years 1501-1600 scored. Arms F050, F075, F100, F125: feedCost 0.05, 0.075, 0.10, 0.125. feedCost 0.15 is exp002
+TA (same code path and arguments), reused as the fifth point.
+**Selection rule** (fixed now): the calibrated default is the swept value whose 4-seed males-dead-before-2.5-y share
+(slaughter, tools/sexsize_tab.py) lies in 0.60-0.70; if two do, the one closest to 0.65; if none, the value
+interpolated linearly between the two that bracket 0.65, rounded to 0.005, which then gets its own pre-registered
+4-seed confirmation before it becomes the default.
+**Out-of-sample checks at the chosen value** (Ganj Dareh, not used to choose): share of the slaughtered aged 4 or
+older (about 0.20), females' deaths at 2.5 y or older (0.60-0.70), females per male (1.11-1.86), reported for slaughter
+and all causes. Sensitivity across all five points: B gap, R gap, breadth, herd size, herd starvation.
+**Prediction** (mine; Chris made none):
+- Males dead before 2.5 y falls as feedCost falls: about 0.80 at 0.125, 0.70-0.80 at 0.10, 0.55-0.70 at 0.075, 0.30-0.55
+  at 0.05; the band is reached between 0.075 and 0.10.
+- The share of the slaughtered aged 4 or older rises as feedCost falls (0.11 at 0.15).
+- Fewer goats fall below zero, so herds are larger and herd starvation higher at lower feedCost.
+- B gap between -0.10 and -0.25 at every point; R gap within 0.1 of -0.6 at every point; wild B 0.75 or above.
+
+## exp003 results (raw)
+16 runs, all exit 0. Mongo animalDomestication.exp003_feedcost-sweep; results/exp003_feedcost-sweep: tab_1501.txt,
+fk.txt, husb.txt (tools as for exp001); F150 = exp002 TA. Years 1501-1600, 4 seeds:
+| arm | feedCost | herd | herd starv | B gap | per seed | R gap | breadth | herd B | wild B | m<2.5 slaughter | all causes | >=4 slaughter | f>=2.5 all causes | F:M all causes |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| F050 | 0.05 | 277.8 | 53.8 | -0.27 | -0.38 -0.43 -0.18 -0.08 | -0.63 | 5 | 0.613 | 0.889 | 0.57 | 0.72 | 0.10 | 0.47 | 0.95 |
+| F075 | 0.075 | 273.4 | 55.1 | -0.12 | -0.01 -0.12 -0.25 -0.09 | -0.61 | 6 | 0.769 | 0.889 | 0.61 | 0.77 | 0.13 | 0.47 | 0.92 |
+| F100 | 0.10 | 281.2 | 55.3 | -0.16 | -0.34 -0.08 -0.15 -0.06 | -0.63 | 7 | 0.718 | 0.889 | 0.72 | 0.82 | 0.13 | 0.49 | 0.92 |
+| F125 | 0.125 | 288.1 | 49.0 | -0.28 | +0.01 -0.44 -0.46 -0.22 | -0.61 | 5 | 0.580 | 0.877 | 0.85 | 0.89 | 0.11 | 0.48 | 0.90 |
+| F150 | 0.15 | 286.0 | 55.0 | -0.15 | -0.26 -0.19 -0.07 -0.10 | -0.62 | 3 | 0.718 | 0.870 | 0.85 | 0.90 | 0.11 | 0.49 | 0.90 |
+Male slaughter by half-year of age (herdDeathHalf), shares at 1.5-2, 2-2.5, 2.5-3, 3-3.5, 3.5-4 y: F050 0.02, 0.55, 0.30,
+0.10, 0.02; F075 0.02, 0.59, 0.27, 0.08, 0.02; F100 0.05, 0.67, 0.20, 0.05, 0.01; F125 0.13, 0.71, 0.12, 0.02, 0.00; F150
+0.11, 0.74, 0.11, 0.02, 0.00. Unrounded males dead before 2.5 y (slaughter): 0.569, 0.613, 0.723, 0.847, 0.853.
+**Selection (rule as registered):** F075 is the only value in 0.60-0.70 (0.613): calibrated feedCost 0.075.
+**Out-of-sample checks at 0.075:** 0 of 3 in band. Aged 4 or older 0.13 slaughter, 0.12 all causes (about 0.20); females
+dead at 2.5 y or older 0.47 all causes (0.60-0.70; slaughter 1.00); females per male 0.92 all causes (1.11-1.86;
+slaughter 0.14). Males dead before 2.5 y on all causes: 0.77 (the calibration used slaughter, as registered).
+**Predictions:** 5 of 10 met.
+- Males dead before 2.5 y by feedCost: 0.125 about 0.80 not met (0.85); 0.10 in 0.70-0.80 met (0.72); 0.075 in 0.55-0.70
+  met (0.61); 0.05 in 0.30-0.55 not met (0.57); the band reached between 0.075 and 0.10 met.
+- Share aged 4 or older rises as feedCost falls: not met (0.10-0.13, no trend).
+- Larger herds and more starvation at lower feedCost: not met (herd 273-288, starvation 49-55, no trend).
+- B gap within -0.10 to -0.25 at every point: not met (F050 -0.27, F125 -0.28; no trend, wide seed spread).
+- R gap within 0.1 of -0.6: met (-0.61 to -0.63). Wild B 0.75 or above: met (0.870-0.889).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
