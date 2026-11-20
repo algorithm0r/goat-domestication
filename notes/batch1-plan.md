@@ -52,3 +52,11 @@ years, or about 14 days at 4000 years. The sweep is 92% of it. B0 runs first and
 The measures list (conceptions by origin, selSire/selDam, the three depths); the lineage block's CI stopping rule; the
 neutral coat gene C as a drift yardstick (its gap varies by about ±0.1 per seed, exp-crossover gene figure, so single-
 seed gaps under 0.1 are drift).
+
+## Standing measures for every pre-registration from exp008 (2026-11-20)
+- Establishment by herd size (tools/jump_tab.py: 100-year mean herd >= 100 held 400 years), never by a trait gap; R as
+  a cross-check only. Time to establishment as a censored outcome (KM), not a count at year 4000.
+- The herd-change / wild-change split of every gap against the founders (tools/split_tab.py), a registered measure.
+  Differences in its components between arms take paired SEs over shared seeds (the wild's trajectory is mostly the
+  seed's own: same-seed r 0.45-0.81, tools/pair_tab.py); differences in gaps take unpaired SEs (same-seed r about 0).
+- Established and small-state herds scored apart, never pooled; no-herd runs counted, never scored as gap 0.

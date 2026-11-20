@@ -144,6 +144,7 @@ var DataManager = class DataManager {
       traitMeans: Object.fromEntries(TRAITS.map((t, k) => [t, n ? +(mean[k] / n).toFixed(4) : null])),
       learnedFear: { wolves: n ? +(fW / n).toFixed(4) : null, humans: n ? +(fH / n).toFixed(4) : null },
       herded: nh, captured: ys.captured, exchanged: ys.exchanged, concOrigin: ys.concOrigin,
+      wildConc: ys.wildConc, capIn: ys.capIn, capBred: ys.capBred,   // [wild sire, herd sire]; [does, bucks] (2026-11-20)
       selSire: ys.selN[1] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selSire[k] / ys.selN[1]).toFixed(5)])) : null,
       selDam: ys.selN[0] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selDam[k] / ys.selN[0]).toFixed(5)])) : null, selN: ys.selN, escaped: ys.escaped, runOffLost: ys.runOffLost, refetched: ys.refetched, ranOff: ys.ranOff, rejoined: ys.rejoined, culledHerd: ys.culledHerd, milk: +ys.milk.toFixed(1),
       wolvesKilled: ys.wolvesKilled, wolvesChased: ys.wolvesChased, fodder: +ys.fodder.toFixed(1), fodderSpring: +ys.fodderSpring.toFixed(1), foraged: +ys.foraged.toFixed(1),

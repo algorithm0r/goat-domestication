@@ -6,6 +6,8 @@
 # Effects of each behaviour: add = (NONE + it) - NONE; drop = REF - (REF without it); exchange's drop effect is
 # REF - (REF + exchange) with the sign turned so both read "having it": (REF + exchange) - REF. Seed means, with the SE
 # of the difference. "interacts" lists core traits where add and drop differ by more than 0.10.
+# A run with no herd row in the window is scored as gap 0 (herd counted as it is); from 2026-11-20 such runs are listed
+# at the end (none in exp005/exp006 at 1401-1600 or 3201-4000; audited with tools/audit_scoring.py).
 import glob, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 _src = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "settle_tab.py"), encoding="utf-8").read().replace("\nmain()\n", "\n")
@@ -62,5 +64,7 @@ def main():
             if lab == "drop" and E["add"]["R"] is not None:
                 inter = " ".join(t for t in CORE if abs(E["add"][t][0] - row[t][0]) > 0.10)
             print(f"| {name} | {lab} | " + " | ".join(cells) + f" | {inter} |")
+    nh = [f"{a}_seed{s}" for a in V for s in sorted(V[a]) if V[a][s]["nohist"]]   # 2026-11-20 (audit): was silent
+    if nh: print("\nNo herd row in the window, scored as gap 0: " + ", ".join(nh))
 
 main()

@@ -5368,6 +5368,195 @@ noProv
 5. addExchREF's R and B within 0.10 of REF's: not met (R -0.638 vs -0.636; B -0.454 vs -0.295, 0.159 apart).
 6. R drop effect of cull and of provisioning -0.15 or below: met (cull -0.28 +- 0.10, provisioning -0.19 +- 0.08).
 
+## exp006 correction, 2026-11-20 (the analysis session's audit, d5254b3)
+In "exp006 results (raw)", the 1401-1600 sentence "the add-one arms other than addCull have herd 9.1-21.6 and every gap
+within 0.02 of zero" is wrong for R: R is -0.031 to -0.040 in all of them (addGuard -0.040, addShelter -0.039, NONE
+-0.032); the other traits are within 0.014. Every exp006 table reproduces from its command (tools/audit_scoring.py,
+each check failing on a planted bad input first). corner_tab's "exch / drop" row is addExchREF - REF, a top-corner
+add, as the tool's header says; only its label reads "drop".
+
+## exp007 — Reviewer's design checks: is the R gap the herd-load spook rule, and do lineage sire rules move gaps when the herd selects on no trait?
+**Pre-registered:** 2026-11-20, before batch 1's remaining blocks launch (they wait on this). Mongo animalDomestication.exp007_design-checks;
+results/exp007_design-checks; job list tools/exp007.jsonl (48 runs, cpuslot --anywhere); code 0bc2e21 (v0.1.0 plus the
+sex-cull preference terms, default off). Registry note: a second --register by mistake claimed exp008 (question "x");
+deleted from the registry at once, nothing ran under it.
+**Why:** the reviewer's design review (notes/review/2026-11-20-design.md, 0bc2e21), findings 1, 2 and 6. Checked in the
+code before registering: a herded goat's spook chance is herderAlarm × R × fearOfHumans × herdLoad (src/animals.js:363),
+herdLoad = max(minLoad 0.25, herd goats / (herdPerHerder 20 × herders)) (src/world.js:181-183), and herdLoad is used
+nowhere else. REF's ~288 goats over 3 camps give a load of about 4.8; a herd of 30 gives 0.5.
+**Arms** (4000 years, seeds 1-8, the exp006 base arguments):
+- LOADLO: REF with herdPerHerder=1e9 (load fixed at minLoad 0.25 whatever the herd size).
+- LOADHI: REF with herdPerHerder=1e9 minLoad=4.8 (load fixed at about REF's established level, also in small herds).
+- CTLDEEP, CTLRAND, CTLSHAL: REF with herderAlarm=0 (no spooking), the random cull at 0.13 (no keep value), and
+  sireRule deep / random / shallow: a herd regime that selects on no trait by rule (the S pull of herd goats toward the
+  herder remains).
+- NOCULL: NONE (exp006's bare culture) with offtakeRate=0: no cull at all, so the bottom corner is not a 13% quota.
+**Measure** (the analysis session scores; years 3201-4000 unless named): per arm, herd (mean of year rows' herded),
+gaps by tools/settle_tab.py's gaps(), breadth n (core traits with abs(seed-mean gap) >= 0.10). Established = mean herd
+>= 100 over 3201-4000 (by herd size, not by a trait gap, as the review asks). Within each arm, the across-seed
+correlation of herd and R gap. LOADLO and LOADHI are compared with REF (exp005 seeds 1-4 + exp006 seeds 5-8); the CTL
+arms with each other. Exploratory, beside these: each gap split into herd change and wild change against the
+founders' mean at year 400 (an analysis tool, to be written).
+**Prediction** (mine):
+1. LOADLO: established in at least 6 of 8 seeds; the seed-mean R gap of established seeds between -0.30 and 0 (REF -0.64).
+2. LOADHI: seed-mean R gap -0.50 or below, and every seed with a herd of 30 or more has an R gap of -0.30 or below.
+3. CTLDEEP minus CTLRAND: within 0.10 on every core trait (seed means).
+4. Breadth n of 2 or less in each CTL arm.
+5. NOCULL: established in at least 6 of 8 seeds.
+**Decision rule:** if 1 holds (the R gap mostly goes when the load no longer scales with herd size), the paper reports R
+as a consequence of the load rule (Methods), establishment is defined by herd size, and R leaves every isolation
+measure. If 3 fails (deep differs from random with no trait selected), the lineage block runs as planned with this
+control added; if 3 holds, the lineage claim is restated as within-herd selection carried by isolation (review 2) and
+B4 is redesigned before it runs. Either way the batch is re-planned with Chris before launch.
+
+## exp007 amendment, 2026-11-20 (before any result: 0 of 48 runs finished; the reviewer's pre-registration review, notes/review/2026-11-20-exp007-prereg.md, 4e8bd8b)
+**Wording corrected.** The CTL arms do not "select on no trait by rule". They have no spooking and no keep value, but
+these rules still read R: tethering (src/animals.js:250, R × fearOfHumans ≥ captureFear keeps a goat at camp), the
+retrieval of night strays (world.js:849, the approach test) and capture (world.js:660/667). Natural selection in the
+herd's own environment (pens, guards, provisioning, milking) also continues.
+**Measures added** (scored by the analysis session, alongside the registered ones):
+- For every arm: the herd-change / wild-change split of each gap, against the founders' mean at year 400; realized
+  offtake (culled per year per herd goat, from the year rows); jump years by a herd-size criterion and by R (tools/jump_tab.py).
+- The CTL arms are compared over established seeds only (herd >= 100 over 3201-4000), with each seed's herd beside its gaps.
+**Prediction 3 restated:** a CTLDEEP - CTLRAND difference counts only if abs(diff) > 0.10 AND > 2 SE (unpaired), with
+the neutral marker C's deep - random difference reported as the noise reference. "Prediction 3 fails" means at least
+one core trait passes both bars.
+**Prediction 2 restated:** scored only if at least 4 LOADHI seeds keep a herd of 30 or more over 3201-4000. If fewer do,
+that is the result: a fixed high load stops herds growing.
+**Decision rule, revised:**
+- R and herd size. LOADLO alone tests how strong the spook filter is, not whether the gap follows herd size. If
+  LOADHI gives an R gap of -0.30 or below in herds of 30-100 goats, the R gap tracks spook load, not herd size, and R
+  is reported as a consequence of the load rule. If LOADLO's R gap moves to -0.30 or above, R leaves every isolation
+  measure either way.
+- Lineage. If prediction 3 holds: lineage alone does not move the gaps here, and B4's lineage claim is redesigned
+  before it runs. If it fails, the split decides how to read it, and isolation acting alone is not among the readings:
+  - a difference carried by wild change: the deep herd stopped tracking a moving wild;
+  - a difference carried by herd change in a trait no remaining rule reads (any but R): selection in the herd's own
+    environment, carried by isolation.
+- NOCULL. If NOCULL establishes in at least 6 of 8 seeds while NONE established in none, the bottom corner's lack of
+  herds was the 13% quota's doing. The factorial's cull factor then compares the threshold cull against no cull, not
+  against the quota.
+**Identity check added:** REF seed 1, 4000 years, current code, --scratch, compared year row by year row with
+exp005's REF_seed1 (the code since exp005 adds output thinning and default-off preference terms; a 500-year check
+on 2026-11-20 found every record equal).
+
+## exp007 amendment 2, 2026-11-20 (before any result; the reviewer's four gaps, 5508103)
+- Lineage branch, R: a CTLDEEP - CTLRAND difference in R carried by herd change reads as selection by the remaining
+  R-reading rules (tether, stray retrieval, capture), carried by isolation.
+- "Carried by": the component (herd change or wild change) that accounts for more than half of the difference; if
+  neither does, the reading is "mixed" and the branch takes no reading for that trait.
+- Established-only CTL comparison: at least 4 established seeds per CTL arm. With fewer, prediction 3 is scored on all 8
+  seeds, with herd size beside each gap, and the comparison is reported as not resolved on established herds.
+- NOCULL established in 1-5 of 8: the quota explains part of the bottom corner's failure. The factorial's cull factor
+  then keeps three levels (threshold, 13% random quota, no cull), not two.
+
+## exp007 results (raw)
+48 of 48 runs complete (complete: true, last year row 3998), every exit file 0. 40 on the desktop (2175-3962 s),
+8 on mint (4440-5547 s). Commits recorded: e20d071 through a0a2e12 (other sessions committed docs and analysis
+tools while the batch ran); `git diff e20d071 a0a2e12 -- src load.mjs tools/runyears.mjs` is empty, so every run used
+the same sim code. Two runs started with a dirty tree (a5115fa, 958274f); the uncommitted files then were analysis
+tools and docs, none in src. Mongo: animalDomestication.exp007_design-checks on mint (both hosts write there since
+2026-11-20). JSON copies in results/exp007_design-checks/. The identity check named in amendment 1 did not run (its job
+list was written to /tmp, which cpuslot did not run from); resubmitted 2026-11-20 after the batch, result to follow as a
+note. Scoring: the analysis session's "exp007 results (scored)" (tools/exp007_tab.py).
+
+## exp007 results (scored)
+Analysis session, 2026-11-20.
+**Command:** `python tools/exp007_tab.py results/exp007_design-checks "results/exp005_b0-pilot;results/exp006_two-corner"`
+(run through cpuslot), saved as results/exp007_design-checks/scored.txt.
+- REF pools exp005 seeds 1-4 with exp006 seeds 5-8; NONE is exp006.
+- Window 3201-4000.
+- Every exp007 run passes `tools/audit_scoring.py rows`: each histogram row's counts equal its year row's goats and
+  herded.
+- The split's identity check (herd change − wild change = settle_tab gap, 1e-9) holds on every run.
+
+Registered measures, seed means. est = seeds with herd ≥ 100. n = core traits with abs(gap) ≥ 0.10. offtake = culled
+per year per herd goat (amendment). r(herd,R) = the across-seed correlation of herd and R gap within the arm.
+
+| arm | seeds | est | herd | R | A | S | B | H | T | M | W | L | C | n | offtake | r(herd,R) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REF | 8 | 8 | 287.8 | -0.636 | -0.148 | +0.174 | -0.295 | -0.083 | +0.447 | -0.062 | -0.090 | +0.140 | -0.001 | 6 | 0.133 | +0.00 |
+| LOADLO | 8 | 8 | 261.6 | -0.055 | -0.009 | +0.003 | -0.009 | -0.005 | +0.039 | -0.004 | -0.006 | +0.009 | +0.002 | 0 | 0.124 | -0.70 |
+| LOADHI | 8 | 0 | 0.9 | -0.030 | +0.002 | -0.007 | +0.000 | -0.005 | -0.001 | -0.010 | +0.001 | -0.002 | +0.013 | 0 | 1.381 | -0.64 |
+| NONE | 8 | 0 | 11.4 | -0.033 | +0.003 | -0.000 | -0.001 | +0.000 | +0.001 | -0.001 | +0.002 | +0.005 | +0.001 | 0 | 0.144 | +0.09 |
+| NOCULL | 8 | 8 | 207.4 | -0.645 | -0.585 | +0.182 | +0.029 | +0.017 | -0.010 | +0.043 | +0.028 | -0.073 | +0.032 | 3 | 0.000 | +0.49 |
+| CTLDEEP | 8 | 8 | 209.2 | -0.165 | -0.198 | +0.236 | -0.098 | -0.195 | +0.155 | +0.014 | -0.137 | +0.064 | -0.021 | 6 | 0.136 | -0.18 |
+| CTLRAND | 8 | 8 | 204.7 | -0.025 | -0.006 | +0.016 | -0.010 | -0.010 | +0.014 | -0.018 | -0.011 | -0.009 | +0.009 | 0 | 0.135 | +0.62 |
+| CTLSHAL | 8 | 8 | 202.7 | -0.025 | -0.003 | +0.003 | -0.003 | -0.002 | +0.002 | -0.004 | +0.001 | -0.002 | +0.004 | 0 | 0.135 | -0.23 |
+
+Notes on the table:
+- LOADHI's herd is 0.9 (0-1 goats per seed over 3201-4000), so its offtake (culls within a year over year-end herd
+  goats) cannot be read.
+- Within an arm the herd varies little (LOADLO 256-269, the CTL arms 201-214), so r(herd,R) is computed over a
+  narrow range.
+- Per-seed herd, R and B gaps are in scored.txt.
+
+**Herd/wild split** (amendment), seed means, herd change / wild change against the founders (301-400). The SEs and
+the other arms are in scored.txt.
+
+| arm | R | A | S | B | H | T | M | W | L | C |
+|---|---|---|---|---|---|---|---|---|---|---|
+| REF | -0.714/-0.078 | -0.060/+0.088 | -0.073/-0.247 | -0.291/+0.004 | -0.023/+0.060 | +0.459/+0.012 | -0.196/-0.135 | +0.067/+0.158 | +0.102/-0.038 | -0.054/-0.053 |
+| LOADLO | -0.151/-0.096 | +0.011/+0.019 | -0.085/-0.088 | -0.004/+0.005 | +0.052/+0.057 | +0.264/+0.225 | -0.229/-0.225 | +0.146/+0.152 | -0.091/-0.100 | +0.050/+0.047 |
+| NOCULL | -0.693/-0.048 | -0.576/+0.009 | -0.004/-0.187 | +0.048/+0.019 | +0.118/+0.101 | -0.028/-0.018 | -0.048/-0.092 | +0.228/+0.200 | -0.255/-0.182 | -0.017/-0.049 |
+| CTLDEEP | -0.224/-0.059 | -0.092/+0.106 | -0.027/-0.263 | -0.079/+0.018 | -0.115/+0.081 | +0.134/-0.021 | -0.061/-0.074 | +0.085/+0.222 | -0.032/-0.096 | -0.066/-0.045 |
+| CTLRAND | -0.085/-0.060 | +0.098/+0.104 | -0.248/-0.264 | +0.008/+0.018 | +0.089/+0.100 | -0.000/-0.015 | -0.082/-0.064 | +0.228/+0.239 | -0.102/-0.093 | -0.010/-0.019 |
+
+**Establishment year** (amendment; tools/jump_tab.py criteria; per seed in scored.txt).
+- By herd size:
+  - LOADLO and all three CTL arms: 8 of 8 each, all at 501, the criterion's first testable year (the 100-year mean
+    ending there was already ≥ 100). That is left-censored: these herds were established at once.
+  - NOCULL: 8 of 8, at 657-996.
+  - LOADHI and NONE: 0 of 8.
+- By R: none of LOADLO, LOADHI, CTLRAND, CTLSHAL or CTLDEEP establishes. NOCULL establishes at 615-975, 0-60 years
+  before its herd years.
+- So in LOADLO and the CTL arms the two markers part.
+
+**Prediction 3, CTLDEEP − CTLRAND.** Every CTL seed is established, so all 8 seeds of each arm are scored. A
+difference counts at abs(diff) > 0.10 and > 2 SE (unpaired). "Carried by" uses the more-than-half rule of amendment 2.
+
+| trait | diff (SE) | counts | herd change diff | wild change diff | carried by | paired over 8 shared seeds, herd / wild (SE) (added after registration, descriptive) |
+|---|---|---|---|---|---|---|
+| R | -0.139 (0.019) | yes | -0.139 | +0.001 | herd | -0.139 (0.022) / +0.001 (0.003) |
+| A | -0.193 (0.032) | yes | -0.190 | +0.003 | herd | -0.190 (0.033) / +0.003 (0.005) |
+| S | +0.220 (0.031) | yes | +0.221 | +0.000 | herd | +0.221 (0.028) / +0.000 (0.009) |
+| B | -0.088 (0.013) | no | -0.088 | -0.000 | herd | -0.088 (0.013) / -0.000 (0.003) |
+| H | -0.185 (0.035) | yes | -0.204 | -0.019 | herd | -0.204 (0.038) / -0.019 (0.013) |
+| T | +0.141 (0.019) | yes | +0.135 | -0.006 | herd | +0.135 (0.024) / -0.006 (0.010) |
+| M | +0.031 (0.027) | no | +0.021 | -0.010 | herd | +0.021 (0.030) / -0.010 (0.020) |
+| W | -0.126 (0.027) | yes | -0.143 | -0.017 | herd | -0.143 (0.043) / -0.017 (0.025) |
+| L | +0.073 (0.035) | no | +0.070 | -0.003 | herd | +0.070 (0.044) / -0.003 (0.030) |
+| C (noise reference) | -0.030 (0.029) | - | -0.056 | -0.026 | - | -0.056 (0.046) / -0.026 (0.052) |
+
+Exploratory, beside the registered reading:
+- The two arms share a wild: wild change differs by at most 0.026 on any trait, because the wild's course is set by
+  the seed (tools/pair_tab.py on exp005/006). So every deep − random difference is herd change by construction.
+- Within CTLDEEP's own gaps, the same more-than-half rule gives:
+  - wild change for S (herd −0.027, wild −0.263), W (+0.085 / +0.222) and A (−0.092 / +0.106): the deep herd
+    stayed near the founders while the wild moved;
+  - herd change for R, H and T.
+- In CTLRAND and CTLSHAL the herd change is within 0.025 of the wild change on every trait: those herds track the wild.
+
+**Predictions:** 2 of 5 met, 1 not scored, 2 not met.
+1. LOADLO established in ≥ 6 of 8, with seed-mean R gap of established seeds in [−0.30, 0]: met (8 of 8; R −0.055).
+2. LOADHI: not scored. 0 of 8 seeds keep a herd of 30 or more (herd 0.9). By amendment 1 that is the result: a fixed
+   high load stops herds growing.
+3. No core trait with abs(CTLDEEP − CTLRAND) > 0.10 and > 2 SE: not met. R, A, S, H, T and W pass both bars; C's
+   difference is −0.030 (0.029).
+4. Breadth ≤ 2 in each CTL arm: not met. CTLDEEP n = 6 (R A S H T W); CTLRAND n = 0 and CTLSHAL n = 0 are within it.
+5. NOCULL established in ≥ 6 of 8: met (8 of 8; NONE 0 of 8).
+
+**Decision rule, as amended, applied:**
+- *R and herd size.* LOADLO's R gap is −0.055, above −0.30, so R leaves every isolation measure. LOADHI has no herd of
+  30-100 goats, so the branch "R tracks spook load, not herd size" cannot be tested on these runs. LOADLO's whole gap
+  vector is within 0.04 of zero (n = 0; REF n = 6) at a herd of 262.
+- *Lineage.* Prediction 3 fails. Every passing trait is carried by herd change by the registered rule. So the readings
+  are: R is selection by the remaining R-reading rules (tether, stray retrieval, capture), carried by isolation
+  (amendment 2); A, S, H, T and W are selection in the herd's own environment, carried by isolation (amendment 1).
+  The exploratory note above qualifies S, W and A.
+- *NOCULL.* 8 of 8 established against NONE's 0 of 8: the bottom corner's lack of herds was the 13% quota's doing. The
+  factorial's cull factor compares the threshold cull with no cull.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

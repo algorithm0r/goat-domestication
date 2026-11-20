@@ -3,7 +3,7 @@
 // day (sub-ticks of movement and grazing), dusk, night, and the once-a-day life history, owns the
 // spatial index, and runs the cross-agent passes (mating, hunting, wolves). MODEL.md describes it all.
 //
-// Units: energy and forage are in forage units (fu); a day is one engine tick, split into movement
+// Units: energy and forage are in kcal (metabolisable energy; 1 fu = 3,600 kcal in older notes); a day is one engine tick, split into movement
 // sub-ticks. Every trait's benefit and cost comes from a mechanism; nothing is a fitness score.
 //   R  reactivity: alarm and flight; sensitivity of learned fear; quitting contests
 //   A  aggression: persistence in contests, defence against wolves
@@ -13,7 +13,8 @@
 //   T  breeding-season breadth: more heats per year
 //   M  lactation capacity: kid growth up to need; costs the mother energy (all of it, or what is made: milkCost)
 //   W  pigmentation: wolves detect well-pigmented goats less often
-// Every trait also carries the genome's reproductive cost (penalty: slower growth, lower fertility).
+// The genome's reproductive cost (penalty: slower growth, lower fertility) is off by default since 2026-11-03
+// (reproCostGrowth, reproCostFertility 0); traits cost only through their mechanisms.
 
 var SEX_F = 0, SEX_M = 1;
 var CAUSE = { predation: 0, starvation: 1, age: 2, other: 3, fight: 4, exposure: 5, hunted: 6, culled: 7 };
@@ -45,8 +46,9 @@ var Goat = class Goat {
     const base = P.sizeMin + (P.sizeMax - P.sizeMin) * this.tr[T_B];   // the sex-neutral target from B
     this.target = base * (sex === SEX_M ? P.sexSize : 1);
     // reproductive cost of the genome (the grain model's gene-minimisation penalty, carried over):
-    // p = mean expressed trait value. It slows growth (later maturity) and cuts fertility, whatever
-    // the goat's condition, so a trait whose benefit is removed decays instead of drifting. Core traits only:
+    // p = mean expressed trait value. When reproCostGrowth/reproCostFertility > 0 (both 0 by default since 2026-11-03)
+    // it slows growth and cuts fertility, whatever the goat's condition, so a trait whose benefit is removed decays
+    // instead of drifting; at the defaults p is computed but inert. Core traits only:
     // twinning (L) carries its own costs (heavier gestation, lighter kids, shared milk).
     let ps = 0; for (let t = 0; t < NT_CORE; t++) ps += this.tr[t];
     this.penalty = ps / NT_CORE;
@@ -55,7 +57,7 @@ var Goat = class Goat {
     this.recoverUntil = 0;                                       // age (days) before which a doe that kidded can't conceive
     this.size = ageDays >= P.adultAge ? this.target : P.birthSize * base * (sex === SEX_M ? P.maleBirthSize : 1);
     this.growMult = growMultDraw();                              // 'ogm': this goat's growth-rate multiplier (not inherited)
-    this.E = 0.6 * this.reserveCap();                           // energy reserve (fu)
+    this.E = 0.6 * this.reserveCap();                           // energy reserve (kcal)
     this.mother = mother || null;
     this.dead = false; this.cause = -1;
     this.alarmed = false;                                       // recomputed every sub-tick
@@ -90,7 +92,7 @@ var Goat = class Goat {
     this.milkGiven = 0; this.milkTick = -1;                     // milk her kids have drunk today (twins share it)
     this.receptive = false;
     this.cycleOffset = randomInt(P.cycleDays);                  // her own oestrous phase
-    this.milkTaken = 0;                                         // today's milk taken by herders (fu)
+    this.milkTaken = 0;                                         // today's milk taken by herders (kcal)
     this.milkYield = 0;                                         // all the milk herders have taken from her (her record)
     this.firstKidAge = -1;
     this.kids = 0;
@@ -216,7 +218,7 @@ var Goat = class Goat {
   }
   isAdult() { return this.age >= PARAMETERS.adultAge; }
 
-  // Daily upkeep (fu): Kleiber-scaled body maintenance only (traits cost through reproduction).
+  // Daily upkeep (kcal): Kleiber-scaled body maintenance only (traits cost through reproduction).
   maintenance() { return PARAMETERS.maintBase * this.p75(); }
 
   // Fighting ability a rival can see and feel: body size and horns.
@@ -475,7 +477,7 @@ var Goat = class Goat {
       this.milkTaken = take; this.milkYield += take; world.camps[this.herd].milkPool += take; world.ys.milk += take;
       if (P.milkCost === 'made') this.E -= take;
     }
-    // growth: absolute daily rate, slowed by the genome's reproductive cost (later maturity)
+    // growth: by the growth curve (growthCurve, default 'curved'); × (1 − reproCostGrowth × p), 1 by default
     if (this.size < this.target && this.E > P.growCondition * cap) {
       const gm = P.loadGrowth > 0 ? (1 - P.reproCostGrowth * P.loadRef / NT_CORE) / Math.max(0.2, 1 + P.loadGrowth * (this.load - P.loadRef))
                                   : 1 - P.reproCostGrowth * this.penalty;

@@ -78,7 +78,7 @@ var World = class World {
     this.estrusCount = new Uint16Array(N);
     this.wolfField = new Uint8Array(N);
     this.humanField = new Uint8Array(N);   // hunters present this sub-tick (goats flee them)
-    this.food = new Float32Array(N);       // human plant food standing on a site (fu); goats don't eat it
+    this.food = new Float32Array(N);       // human plant food standing on a site (kcal); goats don't eat it
     this.foodCap = new Float32Array(N);    // a site's capacity in an average year (0 = not a site)
     this.foodPatch = new Int16Array(N).fill(-1);
     this.patchYear = [];                   // this year's yield factor of each patch (masting)
@@ -804,6 +804,7 @@ var World = class World {
     g._kidsAtYearStart = g.kids;                                 // the camp record counts only kids born in the herd
     g.seen = [0, 0, 0]; g.seenFrom = this.year * PARAMETERS.yearDays + this.day;   // the herder starts watching it
     this.ys.capturedR += g.tr[T_R];
+    g.capBred = false; this.ys.capIn[g.sex]++;                    // captive fate (2026-11-20, output only): bred yet, at conception below
     h.captive = g; h.hunting = false; h.attemptsLeft = 0; this.herdCount[c.id]++;
   }
 
@@ -1331,7 +1332,7 @@ var World = class World {
     return P.economy && P.cropDamage ? this.veg[i] + this.food[i] / P.vegK : this.veg[i];
   }
 
-  // Remove up to `amount` forage units from cell i; returns what was actually eaten.
+  // Remove up to `amount` kcal of forage from cell i; returns what was actually eaten.
   graze(i, amount) {
     const P = PARAMETERS;
     const avail = (this.veg[i] - P.vegFloor) * P.vegK;
@@ -1624,6 +1625,12 @@ var World = class World {
       // herd conceptions by origin (with Chris, 2026-11-10): dam captured / camp-born; sire wild / captured / camp-born /
       // another camp's herd (born or captured there)
       if (f.herd >= 0) this.ys.concOrigin[f.gsc >= 1 ? 1 : 0][best.herd < 0 ? 0 : best.herd !== f.herd ? 3 : best.gsc >= 1 ? 2 : 1]++;
+      // output only (2026-11-20, exp007 gene flow): wild dams' conceptions by a wild / a herd sire (the herd-to-wild route
+      // nothing else counts), and a captive's first breeding while in the herd (capIn at capture; capBred / capIn = the share
+      // of captures that breed before they die or escape)
+      else this.ys.wildConc[best.herd < 0 ? 0 : 1]++;
+      if (f.capBred === false && f.herd >= 0) { f.capBred = true; this.ys.capBred[SEX_F]++; }
+      if (best.capBred === false && best.herd >= 0) { best.capBred = true; this.ys.capBred[SEX_M]++; }
     }
   }
 
@@ -1842,7 +1849,7 @@ var World = class World {
       captured: 0, exchanged: 0, immigrants: 0, surplusBucks: 0, winterCulled: 0, offtakeDue: 0, offtakeCredited: 0, huntTries: 0, wildNearCamp: 0, campDays: 0,
       cullTally: { offtake: [0, 0, 0, 0, 0], surplus: [0, 0, 0, 0, 0], winter: [0, 0, 0, 0, 0] }, herdComp: [0, 0, 0, 0], herdStarve: { lean: [0, 0, 0, 0, 0, 0], grow: [0, 0, 0, 0, 0, 0] }, herdStarveMonth: new Array(12).fill(0), fodderSpring: 0,
       herdDeathHalf: [0, 1, 2].map(() => [new Array(30).fill(0), new Array(30).fill(0)]),   // [kids, does, bucks, other, captured themselves]
-      concOrigin: [[0, 0, 0, 0], [0, 0, 0, 0]],
+      concOrigin: [[0, 0, 0, 0], [0, 0, 0, 0]], wildConc: [0, 0], capIn: [0, 0], capBred: [0, 0],
       selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
       dried: 0, driedLost: 0, fodderLost: 0, gatherScored: 0, meatHunted: 0, huntScored: 0, shots: 0, shotKills: 0, altKills: 0, unmetQ: [0, 0, 0, 0], slaughterQ: [0, 0, 0, 0], herdQ: [0, 0, 0, 0], labourQ: [0, 0, 0, 0],
       roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0,

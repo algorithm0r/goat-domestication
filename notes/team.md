@@ -11,10 +11,12 @@ the steward.*
 | **Steward / experiments** ("Animal domestication simulation") | `src/`, `index.html`, `load.mjs`, `smoketest.mjs`, the run tools (`tools/runyears.mjs`, `tools/batch.mjs`, `tools/*.jsonl` job lists, `tools/publish_public.sh`), EXPLOG pre-registrations and raw completion records, `README.md`, `MODEL.md`, `STATUS.md`, `DEVLOG.md`, `DEVPLAN.md`, `notes/` (except `notes/review/`), this file | Leads. Designs and pre-registers every experiment, runs every simulation (cpuslot), keeps the model and its docs, sets priorities, the only one who publishes the public repo |
 | **Analysis** | the analysis scripts in `tools/` (`runio.py`, `settle_tab.py`, `corner_tab.py`, `perseed_tab.py`, `husb_tab.py`, `gene_dists.py`, and each new scorer), the scored sections of EXPLOG, the tables in `results/expNNN_*/` | Scores each experiment as it lands, by the measure its pre-registration names, and scores the predictions. Makes the tables the paper quotes |
 | **Author** ("Draft the goat domestication paper") | `paper/` | Writes the paper. Asks the steward for runs and the analysis session for tables. Decides whether to have a literature helper; if so, that helper writes only where the author says |
+| **Literature helper** ("Goat paper: literature helper", the author's, 2026-11-20) | `paper/literature.md`, `paper/goats.bib` | Works for the author: sources on early goat body size and kill-off profiles, missing references, a check of every bib entry. Reports to the author, never writes `draft.tex` |
 | **Reviewer** | `notes/review/` | Reads everything and writes nothing else. Attacks the design, the claims and the draft as a hostile Proc B referee would. No stake in any result |
 
 Only the steward runs simulations or writes to Mongo. The others read the JSON copies in `results/` (Mongo read-only if
-needed). Analysis scripts over a whole experiment run through `cpuslot run --tag animal-domestication -- python ...`.
+needed). Analysis scripts over a whole experiment run through `cpuslot run --tag animal-domestication-analysis -- python ...`
+(their own tag, so short analysis jobs share slots fairly instead of queuing behind the 4000-year runs).
 
 ## Rules every session keeps
 
