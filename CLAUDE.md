@@ -1,6 +1,8 @@
 # Animal Domestication — Claude instructions
 
 ## Read first, every session
+0. `notes/team.md`: the team (steward/experiments, analysis, author, reviewer), who owns which files, and the git
+   rules for sharing this checkout. Write only what you own.
 1. `STATUS.md` — where the system is right now (the 60-second orient)
 2. `DEVLOG.md` — the top entry (what changed last)
 3. `DEVPLAN.md` — the current `[ ACTIVE ]` stage
