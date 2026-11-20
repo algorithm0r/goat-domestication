@@ -15,7 +15,7 @@ the shared engine v2.
   key=value ...` (through `cpuslot`). Each run goes to Mongo `animalDomestication.expNNN_<slug>` (the record) and
   `results/expNNN_<slug>/<run>.json` (the plain JSON copy), with `PARAMETERS.id` naming it. Same sim core, main V8 realm
   (indirect `eval`, not `vm`; `~/.claude/conventions.md` §4). Probes: `--scratch --run <name>`. Needs `npm install`
-  (the mongodb driver) and the Mint Tunnel on 127.0.0.1:27017.
+  (the mongodb driver) and the desktop's own MongoDB service on 127.0.0.1:27017 (not mint: mint's mongod has no animalDomestication, so runs sent to mint with cpuslot --anywhere would write to a different database; checked by the cpuslot session 2026-11-19).
 - `runner.mjs` is the scaffold's original batch runner (legacy `batch`-style packets); not used for experiments.
 - **Smoke test:** `node smoketest.mjs` — no DB; asserts the model invariant and prints metrics.
 

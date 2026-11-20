@@ -5217,6 +5217,157 @@ noMilk 0.058, noTether 0.088).
 6. The rule gives 4000: met.
 7. A thinned 4000-year run under 9 MB: met (7.8-7.9).
 
+## exp006 — Sweep, first pass: each behaviour added alone to a bare culture and removed alone from the reference culture, to 4000 years: which behaviour selects which gene, and where do they interact?
+**Pre-registered:** 2026-11-19. Mongo animalDomestication.exp006_two-corner; results/exp006_two-corner; job list
+tools/exp006.jsonl (124 runs); code as exp005 (v0.1.0 plus record thinning).
+**Decision** (Chris, 2026-11-19, after exp005 and a speed review): "for the sweep let's start with just 0 factors + 1
+and all factors - 1". In place of the 2^9 factorial for now: one behaviour at a time from both corners. Run length
+4000 (exp005's rule). No gain from more cpuslot workers (Chris: throughput was timed).
+**Factors** (on / off): cull = threshold cull (cullRule opportunity, econCull default) / random cull at quota 0.13;
+penning 1/0; guarding 1/0; provision 2160/0; kidShelter 1/0; buckManagement 1/0; tetherNew 1/0; milkIntensity 0.5/0;
+exchangeN 2/0 (the outline's "exchange on").
+**Arms:** base arguments as exp005 REF plus exchangeN=0, with the factors set as named.
+- Bottom corner: NONE (all nine off); addCull, addPen, addGuard, addProv, addShelter, addBuck, addTether, addMilk,
+  addExch (NONE with that one on). 10 arms x seeds 1-8.
+- Top corner: REF (the reference culture, every factor on but exchange) and its leave-one-out arms RAND, noPen,
+  noGuard, noProv, noShelter, noBuck, noTether, noMilk: exp005 seeds 1-4 plus seeds 5-8 here (36 runs); addExchREF
+  (REF with exchange) seeds 1-8. The top corner is REF, not REF + exchange: exchange's top-corner effect is
+  addExchREF - REF, the others are measured with exchange off.
+**Measure:** tools/corner_tab.py 3201-4000 results/exp005_b0-pilot results/exp006_two-corner (also 1401-1600): per arm,
+herd, gaps (settle_tab's), breadth n, est = seeds with R gap -0.30 or below; per behaviour, add effect = (NONE + it) -
+NONE and drop effect = REF - (REF without it), seed means with SE; "interacts" = core traits where add and drop differ
+by more than 0.10. Settling: tools/settle_tab.py on the pooled arms.
+**Prediction** (mine):
+1. NONE: est in at most 4 of 8 seeds, and its herd under 100.
+2. The add-one arm with the largest herd is addProv.
+3. No add-one arm has a B gap of -0.10 or below (in REF, B needs both the threshold cull and buck management: RAND
+   -0.03, noBuck -0.02 in exp005).
+4. Buck management's add and drop effects on B differ by more than 0.10 (it interacts).
+5. addExchREF's R and B gaps are within 0.10 of REF's.
+6. R's drop effect for the cull and for provisioning is -0.15 or below with 8 seeds (exp005: -0.27, -0.23 at 4 seeds).
+
+## exp006 note, 2026-11-19 (before any result): runs split between the desktop and mint
+Chris, 2026-11-19: "so why not run some of these runs on mint?". The 6 runs already started (NONE, addCull, addPen,
+addGuard, addProv, addShelter, seed 1) stay on the desktop. The other 118 were cancelled from the queue and resubmitted
+with cpuslot --anywhere (tools/exp006_anywhere.jsonl, same commands), so each runs on whichever machine frees first; a
+run's host is in its _parameters.id.host. Cross-host check: cpuslot crosscheck, a 600-year REF run in file mode, seed 1:
+the saved JSON identical on both (seconds, host, started ignored); 432 s desktop, 725 s mint. Mongo: the runs had been
+writing to the desktop's own MongoDB, not mint's (conventions say mint); mint's mongod had no animalDomestication.
+Copied to mint before resubmitting: the registry and exp001-exp005 (86 documents, counts equal on both). Runs on mint
+write exp006 to mint's database; after the last run, the desktop's exp006 documents are merged into mint's and counted
+(Chris: move animalDomestication to mint after exp006). The JSON copies come back to results/exp006_two-corner either way.
+
+## exp006 results (raw)
+124 of 124 runs complete (complete: true, last year row 3998 of 0-3999 at recordEvery 3). 101 ran on the desktop
+(2629-5676 s), 23 on mint (3989-6514 s). Exit files: 121 read 0; addBuck_seed1, addMilk_seed1 and addTether_seed1
+(mint) read "unknown (agent restarted)", but their logs end with the run line and the cpuslot copy-back, and their JSON
+is complete (finished 2026-11-20 06:16-06:17Z). Commits v0.1.0-8-gd5b3091 (9 runs) and v0.1.0-9-gd370f3b (115), both
+clean; the two differ only in README and EXPLOG. Saved parameters: recordEvery 3, histPeriod 15, reportingPeriod 1080.
+Mongo: runs wrote to the database of the host they ran on (desktop or mint); the cpuslot session merges the desktop's
+into mint's after this. Top-corner arms pool exp005 seeds 1-4 with seeds 5-8 here. Tables:
+results/exp006_two-corner/corner_3201-4000.txt, corner_1401-1600.txt (tools/corner_tab.py), settle.txt
+(tools/settle_tab.py, given both folders), perseed.txt.
+
+Long run 3201-4000, seed means:
+
+| arm | seeds | est | herd | R | A | S | B | H | T | M | W | L | C | n |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| NONE | 8 | 0 | 11.4 | -0.033 | +0.003 | -0.000 | -0.001 | +0.000 | +0.001 | -0.001 | +0.002 | +0.005 | +0.001 | 0 |
+| addCull | 8 | 4 | 130.4 | -0.338 | -0.181 | +0.028 | -0.018 | +0.003 | +0.127 | +0.012 | -0.012 | -0.017 | +0.011 | 3 |
+| addPen | 8 | 0 | 13.3 | -0.035 | -0.001 | +0.002 | +0.002 | -0.001 | -0.000 | +0.008 | +0.003 | +0.007 | +0.001 | 0 |
+| addGuard | 8 | 1 | 44.6 | -0.125 | -0.048 | +0.013 | -0.000 | +0.001 | +0.013 | +0.016 | -0.007 | -0.006 | -0.000 | 1 |
+| addProv | 8 | 0 | 14.2 | -0.035 | +0.004 | +0.004 | -0.001 | -0.001 | +0.004 | +0.001 | -0.002 | +0.003 | -0.006 | 0 |
+| addShelter | 8 | 0 | 11.2 | -0.031 | +0.001 | +0.002 | -0.001 | -0.001 | +0.003 | +0.003 | +0.002 | +0.005 | -0.003 | 0 |
+| addBuck | 8 | 0 | 11.8 | -0.038 | +0.002 | +0.001 | +0.000 | -0.001 | +0.001 | -0.000 | +0.004 | -0.003 | -0.005 | 0 |
+| addTether | 8 | 0 | 17.0 | -0.032 | -0.000 | +0.001 | +0.000 | +0.002 | +0.004 | -0.001 | +0.001 | +0.000 | +0.003 | 0 |
+| addMilk | 8 | 0 | 9.3 | -0.029 | +0.001 | +0.001 | -0.002 | +0.001 | +0.001 | -0.003 | +0.001 | +0.011 | +0.002 | 0 |
+| addExch | 8 | 0 | 12.2 | -0.030 | +0.000 | +0.001 | -0.002 | -0.000 | +0.005 | +0.006 | +0.006 | +0.005 | -0.002 | 0 |
+| REF | 8 | 8 | 287.8 | -0.636 | -0.148 | +0.174 | -0.295 | -0.083 | +0.447 | -0.062 | -0.090 | +0.140 | -0.001 | 6 |
+| addExchREF | 8 | 8 | 304.8 | -0.638 | -0.179 | +0.107 | -0.454 | -0.206 | +0.520 | -0.036 | -0.143 | +0.183 | +0.006 | 8 |
+| RAND | 8 | 4 | 123.0 | -0.351 | -0.050 | +0.025 | -0.025 | -0.033 | +0.106 | -0.024 | -0.007 | +0.088 | -0.000 | 2 |
+| noPen | 8 | 8 | 497.3 | -0.622 | -0.164 | +0.239 | -0.423 | -0.224 | +0.628 | +0.096 | -0.095 | +0.374 | -0.028 | 7 |
+| noGuard | 8 | 8 | 299.0 | -0.635 | -0.066 | +0.144 | -0.482 | -0.073 | +0.484 | -0.058 | -0.023 | +0.065 | -0.004 | 4 |
+| noProv | 8 | 5 | 109.6 | -0.444 | -0.032 | +0.034 | -0.042 | -0.063 | +0.133 | -0.045 | -0.039 | +0.018 | -0.014 | 2 |
+| noShelter | 8 | 8 | 296.1 | -0.637 | -0.119 | +0.178 | -0.434 | -0.145 | +0.424 | -0.054 | -0.162 | +0.134 | -0.016 | 8 |
+| noBuck | 8 | 8 | 265.9 | -0.624 | -0.491 | +0.065 | -0.020 | +0.003 | +0.304 | -0.080 | -0.069 | +0.069 | +0.020 | 3 |
+| noTether | 8 | 8 | 303.4 | -0.649 | -0.258 | +0.272 | -0.499 | -0.178 | +0.545 | +0.083 | -0.105 | +0.267 | -0.032 | 8 |
+| noMilk | 8 | 8 | 278.4 | -0.636 | -0.098 | +0.082 | -0.304 | -0.150 | +0.443 | -0.005 | -0.104 | +0.091 | -0.009 | 5 |
+
+Effects (add = from NONE, drop = from REF), seed-mean difference (SE):
+
+| behaviour | from | herd | R | A | S | B | H | T | M | W | L | interacts |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| cull | add | +119.0 | -0.31 (0.11) | -0.18 (0.07) | +0.03 (0.01) | -0.02 (0.01) | +0.00 (0.01) | +0.13 (0.05) | +0.01 (0.01) | -0.01 (0.01) | -0.02 (0.01) |  |
+| cull | drop | +164.7 | -0.28 (0.10) | -0.10 (0.04) | +0.15 (0.04) | -0.27 (0.07) | -0.05 (0.04) | +0.34 (0.05) | -0.04 (0.04) | -0.08 (0.05) | +0.05 (0.06) | S B T |
+| pen | add | +1.9 | -0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) | +0.01 (0.00) | +0.00 (0.00) | +0.00 (0.00) |  |
+| pen | drop | -209.6 | -0.01 (0.01) | +0.02 (0.07) | -0.06 (0.06) | +0.13 (0.07) | +0.14 (0.05) | -0.18 (0.04) | -0.16 (0.06) | +0.00 (0.05) | -0.23 (0.05) | B H T M L |
+| guard | add | +33.2 | -0.09 (0.08) | -0.05 (0.05) | +0.01 (0.01) | +0.00 (0.00) | +0.00 (0.00) | +0.01 (0.01) | +0.02 (0.01) | -0.01 (0.01) | -0.01 (0.01) |  |
+| guard | drop | -11.2 | -0.00 (0.01) | -0.08 (0.04) | +0.03 (0.05) | +0.19 (0.11) | -0.01 (0.04) | -0.04 (0.04) | -0.00 (0.04) | -0.07 (0.05) | +0.07 (0.04) | B |
+| prov | add | +2.8 | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) |  |
+| prov | drop | +178.2 | -0.19 (0.08) | -0.12 (0.03) | +0.14 (0.04) | -0.25 (0.07) | -0.02 (0.05) | +0.31 (0.05) | -0.02 (0.04) | -0.05 (0.05) | +0.12 (0.04) | R A S B T L |
+| shelter | add | -0.2 | +0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) |  |
+| shelter | drop | -8.3 | +0.00 (0.01) | -0.03 (0.04) | -0.00 (0.05) | +0.14 (0.11) | +0.06 (0.05) | +0.02 (0.03) | -0.01 (0.05) | +0.07 (0.05) | +0.01 (0.05) | B |
+| buck | add | +0.4 | -0.01 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.01) | +0.00 (0.00) | -0.01 (0.01) |  |
+| buck | drop | +21.8 | -0.01 (0.01) | +0.34 (0.03) | +0.11 (0.04) | -0.27 (0.07) | -0.09 (0.04) | +0.14 (0.03) | +0.02 (0.04) | -0.02 (0.05) | +0.07 (0.04) | A S B T |
+| tether | add | +5.6 | +0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) |  |
+| tether | drop | -15.7 | +0.01 (0.01) | +0.11 (0.08) | -0.10 (0.09) | +0.20 (0.12) | +0.10 (0.06) | -0.10 (0.05) | -0.14 (0.06) | +0.01 (0.06) | -0.13 (0.05) | A B T M L |
+| milk | add | -2.1 | +0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) | +0.01 (0.00) |  |
+| milk | drop | +9.4 | +0.00 (0.01) | -0.05 (0.05) | +0.09 (0.04) | +0.01 (0.12) | +0.07 (0.06) | +0.00 (0.04) | -0.06 (0.04) | +0.01 (0.05) | +0.05 (0.05) |  |
+| exch | add | +0.8 | +0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | -0.00 (0.00) | -0.00 (0.00) | +0.00 (0.00) | +0.01 (0.00) | +0.00 (0.00) | +0.00 (0.00) |  |
+| exch | drop | +17.1 | -0.00 (0.01) | -0.03 (0.06) | -0.07 (0.06) | -0.16 (0.10) | -0.12 (0.05) | +0.07 (0.04) | +0.03 (0.06) | -0.05 (0.07) | +0.04 (0.06) | B H |
+
+1401-1600 (corner_1401-1600.txt): the add-one arms other than addCull have herd 9.1-21.6 and every gap within 0.02
+of zero; addCull herd 126.3, R -0.286, est 4. est at 1600: RAND 1, noProv 4, the other top-corner arms 8.
+Settled at (bias rule, pooled seeds 1-8): 1600 for NONE and every add-one arm except addCull 2400, addGuard 2800;
+noBuck, noPen, noShelter 3200; not settled: REF, RAND, noGuard, noMilk, noProv, noTether, addExchREF. At 3200 REF's worst trait is B, +0.074 +- 0.040.
+Per seed, R gap / herd in 400-year blocks (1-400, 401-800, ..., 3601-4000; herding starts in year 400):
+
+```
+addCull
+  s1: +0.00/0 -0.05/13 -0.12/37 -0.40/134 -0.57/216 -0.56/210 -0.60/219 -0.62/228 -0.60/216 -0.62/213
+  s2: +0.00/0 -0.04/2 -0.03/9 -0.06/26 -0.05/26 -0.05/26 -0.08/29 -0.05/21 -0.09/32 -0.05/24
+  s3: +0.00/0 -0.10/36 -0.41/182 -0.59/253 -0.59/242 -0.58/237 -0.59/235 -0.58/229 -0.60/229 -0.59/229
+  s4: +0.00/0 -0.02/10 -0.15/51 -0.46/205 -0.57/247 -0.60/247 -0.60/242 -0.62/255 -0.63/250 -0.64/249
+  s5: +0.00/0 -0.04/18 -0.04/19 -0.03/19 -0.05/20 -0.03/16 -0.03/18 -0.04/19 -0.03/19 -0.13/43
+  s6: +0.00/0 -0.05/15 -0.04/24 -0.04/19 -0.08/28 -0.03/20 -0.03/23 -0.07/29 -0.05/24 -0.04/19
+  s7: +0.00/0 -0.05/23 -0.11/41 -0.47/212 -0.64/259 -0.62/240 -0.64/242 -0.63/241 -0.64/253 -0.62/245
+  s8: +0.00/0 -0.04/11 -0.04/15 -0.05/24 -0.05/20 -0.08/31 -0.03/21 -0.04/27 -0.04/22 -0.04/19
+addGuard
+  s1: +0.00/0 -0.05/22 -0.06/26 -0.04/21 -0.04/22 -0.04/25 -0.07/25 -0.06/23 -0.05/23 -0.03/23
+  s2: +0.00/0 -0.04/18 -0.03/19 -0.04/21 -0.06/18 -0.04/19 -0.06/22 -0.06/26 -0.05/22 -0.05/19
+  s3: +0.00/0 -0.04/21 -0.04/24 -0.05/32 -0.06/30 -0.04/32 -0.12/33 -0.07/31 -0.04/26 -0.05/27
+  s4: +0.00/0 -0.04/20 -0.13/26 -0.05/22 -0.05/25 -0.06/24 -0.06/22 -0.04/21 -0.06/25 -0.07/28
+  s5: +0.00/0 -0.03/18 -0.04/22 -0.05/21 -0.04/20 -0.03/20 -0.04/21 -0.04/21 -0.06/21 -0.04/20
+  s6: +0.00/0 -0.04/21 -0.04/20 -0.03/20 -0.04/20 -0.05/21 -0.03/20 -0.04/22 -0.05/23 -0.05/24
+  s7: +0.00/0 -0.04/21 -0.04/23 -0.05/24 -0.04/28 -0.05/25 -0.27/69 -0.59/200 -0.67/198 -0.66/187
+  s8: +0.00/0 -0.04/20 -0.05/22 -0.03/20 -0.05/25 -0.04/21 -0.05/20 -0.04/22 -0.03/24 -0.04/23
+RAND
+  s1: +0.00/0 -0.05/30 -0.05/34 -0.07/36 -0.09/35 -0.09/38 -0.10/40 -0.09/36 -0.07/34 -0.10/40
+  s2: +0.00/0 -0.05/27 -0.04/30 -0.07/33 -0.10/37 -0.15/42 -0.53/186 -0.65/217 -0.65/217 -0.63/215
+  s3: +0.00/0 -0.04/34 -0.06/34 -0.07/36 -0.07/35 -0.09/41 -0.04/35 -0.12/42 -0.08/41 -0.10/41
+  s4: +0.00/0 -0.05/27 -0.06/33 -0.06/35 -0.06/35 -0.09/43 -0.13/48 -0.58/210 -0.64/216 -0.63/216
+  s5: +0.00/0 -0.06/31 -0.13/40 -0.60/196 -0.65/205 -0.64/209 -0.65/207 -0.65/205 -0.66/208 -0.66/208
+  s6: +0.00/0 -0.04/27 -0.04/30 -0.08/33 -0.06/32 -0.06/31 -0.08/34 -0.05/32 -0.04/29 -0.04/30
+  s7: +0.00/0 -0.05/28 -0.04/29 -0.06/33 -0.16/44 -0.09/38 -0.10/41 -0.08/40 -0.24/84 -0.66/226
+  s8: +0.00/0 -0.07/30 -0.05/33 -0.06/32 -0.05/26 -0.05/28 -0.03/30 -0.05/33 -0.06/35 -0.37/130
+noProv
+  s1: +0.00/0 -0.06/30 -0.06/38 -0.08/39 -0.07/41 -0.08/42 -0.08/42 -0.12/49 -0.11/42 -0.36/89
+  s2: +0.00/0 -0.05/26 -0.05/35 -0.08/39 -0.08/41 -0.09/44 -0.07/42 -0.09/42 -0.11/43 -0.18/51
+  s3: +0.00/0 -0.14/55 -0.54/144 -0.64/152 -0.63/157 -0.60/153 -0.61/149 -0.62/152 -0.59/155 -0.60/151
+  s4: +0.00/0 -0.07/24 -0.29/80 -0.63/147 -0.64/149 -0.64/150 -0.65/149 -0.62/151 -0.65/156 -0.62/143
+  s5: +0.00/0 -0.06/27 -0.07/33 -0.08/40 -0.06/36 -0.07/42 -0.08/38 -0.13/47 -0.53/122 -0.62/130
+  s6: +0.00/0 -0.09/36 -0.25/63 -0.54/119 -0.65/146 -0.63/136 -0.65/140 -0.67/139 -0.67/134 -0.63/140
+  s7: +0.00/0 -0.17/53 -0.61/158 -0.66/158 -0.63/160 -0.61/156 -0.65/157 -0.60/148 -0.62/153 -0.62/155
+  s8: +0.00/0 -0.04/26 -0.06/39 -0.05/37 -0.08/42 -0.07/40 -0.05/36 -0.05/37 -0.09/43 -0.12/45
+```
+**Predictions:** 4 of 6 met.
+1. NONE est in at most 4 of 8 and herd under 100: met (est 0, herd 11.4).
+2. The add-one arm with the largest herd is addProv: not met (addCull 130.4; addProv 14.2).
+3. No add-one arm has B gap -0.10 or below: met (lowest addCull -0.018).
+4. Buck management's add and drop effects on B differ by more than 0.10: met (add +0.00, drop -0.27).
+5. addExchREF's R and B within 0.10 of REF's: not met (R -0.638 vs -0.636; B -0.454 vs -0.295, 0.159 apart).
+6. R drop effect of cull and of provisioning -0.15 or below: met (cull -0.28 +- 0.10, provisioning -0.19 +- 0.08).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

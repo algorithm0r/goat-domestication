@@ -1,7 +1,7 @@
 # settle_tab.py: has each arm settled? The run-length rule of the 2026-11-11 pilot (EXPLOG c16de77), rebuilt 2026-11-19
 # (the original lived in a scratchpad and was lost).
-#   python tools/settle_tab.py DIR [ENDS] [LONG0-LONG1]
-# DIR holds <ARM>_seed<S>.json. Gap of a trait = herd genotype mean - wild genotype mean, from the 20-bucket histograms
+#   python tools/settle_tab.py DIR[;DIR...] [ENDS] [LONG0-LONG1]
+# DIR holds <ARM>_seed<S>.json; several folders separated by ';' are pooled (2026-11-20). Gap of a trait = herd genotype mean - wild genotype mean, from the 20-bucket histograms
 # (hist = all goats, histHerd = herd; wild = hist - histHerd) at bucket midpoints, per row, averaged over the rows in a window
 # (hist_rows: thinned runs keep only some years). Per arm and seed: 200-year windows ending at each E (default 1600, 2000,
 # 2400, 2800, 3200) against the long-run window (default 3201-4000); bias = seed mean of (window - long run), SE over
@@ -33,11 +33,11 @@ def herd(d, y0, y1):
     return sum(r) / len(r) if r else 0.0
 
 def main():
-    folder = sys.argv[1]
+    folders = sys.argv[1].split(";")
     ends = [int(e) for e in sys.argv[2].split(",")] if len(sys.argv) > 2 else [1600, 2000, 2400, 2800, 3200]
     l0, l1 = (int(v) for v in sys.argv[3].split("-")) if len(sys.argv) > 3 else (3201, 4000)
     arms = {}
-    for f in sorted(glob.glob(os.path.join(folder, "*.json"))):
+    for f in sorted(f for folder in folders for f in glob.glob(os.path.join(folder, "*.json"))):
         m = re.match(r"(.+)_seed(\d+)\.json$", os.path.basename(f))
         if m: arms.setdefault(m.group(1), []).append(f)
     print(f"long run {l0}-{l1}; 200-year windows ending at {ends}; ok = every core trait within 0.05 of the long run")
