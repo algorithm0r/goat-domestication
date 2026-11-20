@@ -11,6 +11,9 @@
    year from a herd of 286, about 13%), so the factor tests *which* goats die, not *how many*.
 2. **The buck and doe cull rules (rules block) can't run under the threshold cull.** They pick which goat of a sex dies
    within a count the overall cull sets, and the threshold cull has no count. The code refuses the combination.
+   *2026-11-20, Chris: "build way 2".* Under the threshold cull a sex rule is now a keep-value term: a centered rank by
+   the rule, times buckPrefValue / doePrefValue (meat units), so the preference moves which goats cross the threshold.
+   The rules block runs as rule × value.
 3. **Body size is now the meat cull's signature** (the growth credit, exp001-exp003 and the crossover), not part of
    the syndrome. The outline's B results (3.2, 3.4, 3.5) were all on the old linear growth, where the credit was hidden.
 4. **The reference culture changes** from milksel S0 (offtake 0.1, old growth) to the reference culture (REF; called R15 up to exp004, after its offtake rate, which no longer exists) on v0.1.0, which is the

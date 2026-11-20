@@ -1027,8 +1027,16 @@ var World = class World {
   //   youngMales, temperament: older strict-priority rules, kept for comparison
   // Then, with buckCull / doeCull set (with Chris, 2026-11-10), each sex's own rule picks which of that sex go, in the
   // places the overall rule gave that sex (so the overall rule still sets how many of each sex are eaten).
+  // Under the threshold cull (econCull, cullRule 'opportunity') there is no count to work within, so the sex rules are
+  // terms of the keep value instead (cullByOpportunity, prefScores; with Chris, 2026-11-20).
   cullOrder(m) {
-    if (PARAMETERS.econCull && (PARAMETERS.buckCull || PARAMETERS.doeCull)) throw new Error('buckCull/doeCull need the count cull (econCull 0)');
+    const P = PARAMETERS;
+    if (P.econCull && P.cullRule === 'opportunity') {
+      if (!!P.buckCull !== P.buckPrefValue > 0 || !!P.doeCull !== P.doePrefValue > 0)
+        throw new Error('threshold cull: buckCull/doeCull need buckPrefValue/doePrefValue > 0, and the values need a rule');
+      return this.cullOrderAll(m);
+    }
+    if (P.buckPrefValue || P.doePrefValue) throw new Error('buckPrefValue/doePrefValue are for the threshold cull (econCull 1, cullRule opportunity)');
     this.cullOrderAll(m);
     if (PARAMETERS.buckCull) this.cullBySex(m, SEX_M, PARAMETERS.buckCull);
     if (PARAMETERS.doeCull) this.cullBySex(m, SEX_F, PARAMETERS.doeCull);
@@ -1058,6 +1066,35 @@ var World = class World {
     }
     xs.sort((a, b) => a._sexKey - b._sexKey || a._sexTie - b._sexTie);
     for (let k = 0; k < at.length; k++) m[at[k]] = xs[k];
+  }
+
+  // A sex's preference under the threshold cull, as keep-value bonuses into out (goat -> meat units): each goat of the sex in the
+  // herd ranked by the rule's key (cullBySex's keys: calm = fewest run-offs seen per year watched, large = biggest for its sex
+  // and age, homebred = most generations of camp-born dams up to herdMemory; 'random' = a fixed per-goat draw, a liking that
+  // tracks no trait), ties sharing their mean rank, centered to +0.5 for the most preferred and -0.5 for the least, times w.
+  // Centered, so the preference moves which goats cross the threshold more than how many do.
+  prefScores(m, sex, rule, w, out) {
+    const P = PARAMETERS, Y = P.yearDays, now = this.year * Y + this.day, xs = m.filter(g => g.sex === sex);
+    if (xs.length < 2) return;
+    const mean = {};
+    if (rule === 'large') for (const g of xs) { const a = Math.floor(g.age / Y), e = mean[a] || (mean[a] = [0, 0]); e[0] += g.size; e[1]++; }
+    const ks = xs.map(g => {
+      const a = Math.floor(g.age / Y);
+      const k = rule === 'random' ? (g._prefKey === undefined ? (g._prefKey = rand()) : g._prefKey)
+        : rule === 'calm' ? g.seen[0] / ((now - g.seenFrom) / Y + 1)
+        : rule === 'large' ? -g.size / (mean[a][0] / mean[a][1])
+        : rule === 'homebred' ? -Math.min(g.gsc, P.herdMemory) : NaN;
+      if (Number.isNaN(k)) throw new Error(`${sex === SEX_M ? 'buckCull' : 'doeCull'} ${rule}: not a rule of the threshold cull (random, calm, large, homebred)`);
+      return [k, g];
+    });
+    ks.sort((a, b) => a[0] - b[0]);                             // lowest key = most preferred
+    const n = ks.length;
+    for (let i = 0; i < n;) {
+      let j = i; while (j + 1 < n && ks[j + 1][0] === ks[i][0]) j++;
+      const s = 0.5 - (i + j) / 2 / (n - 1);
+      for (let k = i; k <= j; k++) out.set(ks[k][1], w * s);
+      i = j + 1;
+    }
   }
 
   cullOrderAll(m) {
@@ -1143,6 +1180,11 @@ var World = class World {
     if (P.keepFrame === 'horizon' && (P.growthCurve === 'vb' || P.growthCurve === 'ogm')) throw new Error('keepFrame horizon: linear or curved only');
     const H = P.keepFrame === 'horizon' ? P.keepHorizon : 1, GD = H * Y;   // growth credited over GD days
     const terms = P.keepTerms ? {} : null;
+    // buckCull / doeCull under the threshold cull (with Chris, 2026-11-20): the herder's liking within a sex is part of what a goat
+    // is worth to keep, so a preferred goat crosses the threshold later (prefScores)
+    const pref = new Map();
+    if (P.buckCull && P.buckPrefValue > 0) this.prefScores(m, SEX_M, P.buckCull, P.buckPrefValue, pref);
+    if (P.doeCull && P.doePrefValue > 0) this.prefScores(m, SEX_F, P.doeCull, P.doePrefValue, pref);
     for (const g of m) {
       const ay = g.age / Y;
       let v = P.growthCurve === 'vb' ? g.vbGain(Y) : P.growthCurve === 'ogm' ? g.ogmGain(Y)    // growth: next year's gain (H years: 'horizon')
@@ -1187,6 +1229,7 @@ var World = class World {
       v += sire * live; v -= feed; v -= risk;                     // this order keeps 'year' bit-identical to the code before
       if (terms) { terms.sire = sire * live; terms.feed = -feed; terms.risk = -risk; terms.flight = 0; terms.last = 0; }
       if (P.flightCost > 0) { v -= P.flightCost * g.tr[T_R] * g.fearOfHumans; if (terms) terms.flight = -P.flightCost * g.tr[T_R] * g.fearOfHumans; }
+      if (pref.size) { const b = pref.get(g) || 0; v += b; if (terms) terms.pref = b; }
       // the last breeding doe and the last breeding buck are worth more to keep (with Chris, 2026-10-27):
       // they can still be eaten in a shortfall, but last
       if (P.lastBreederValue > 0 && ((g.sex === SEX_F && g.age >= P.femaleMinAge && does <= P.lastBreeders) ||

@@ -311,6 +311,13 @@ var PARAMETERS = {
   buckCull: '',           // the bucks' own cull rule within the herd's cull order: '' (the overall cullRule decides) |
                           // 'random' | 'calm' | 'large' | 'homebred' | 'youngMales' (World.cullBySex); sires never taken
   doeCull: '',            // the does' own cull rule: '' | 'random' | 'calm' | 'large' | 'homebred'
+                          // Under the threshold cull (econCull 1, cullRule 'opportunity') neither rule reorders the cull: each
+                          // becomes a term of the keep value, weighted by buckPrefValue / doePrefValue (World.prefScores, 2026-11-20)
+  buckPrefValue: 0,       // threshold cull: what buckCull's preference is worth, in meat units from the herd's least- to its
+                          // most-preferred buck (centered rank by the rule, -0.5 .. +0.5, times this); 'random' is a fixed
+                          // per-goat liking that tracks no trait (the control). With Chris, 2026-11-20 ("merge the doe/buck cull
+                          // rules into the threshold"); 0 = off, and a rule set without a value is an error
+  doePrefValue: 0,        // the same for doeCull
   exchangeN: 0,           // adults each camp gives another camp a year (exchangeGoats; 0 = no exchange)
   keepLastSires: 0,       // random cull: adult herd bucks are not culled while the herd has keepSires or fewer (1);
                           // sires otherwise eaten as any goat (Chris, 2026-11-04)

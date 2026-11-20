@@ -369,6 +369,13 @@ None.
     *large* (smallest for its sex and age in years first); *homebred* (fewest generations of camp-born dams,
     up to `herdMemory`, first: captives first); bucks only, *youngMales* (0.5-2.5 y, then older, then kids).
     A buck rule never takes the herder's sires (as `sireRule` picks them).
+    Under the threshold cull (`econCull` 1, rule *opportunity*; with Chris 2026-11-20) there is no count to work
+    within, so a sex's rule is a term of the keep value instead: each goat of that sex in the herd is ranked by the
+    rule (ties share their mean rank), the rank is centered to +0.5 for the most preferred and -0.5 for the least,
+    and it is multiplied by `buckPrefValue` / `doePrefValue` (meat units; a weaned kid is worth 0.3). A preferred goat
+    crosses the threshold later. *random* is a fixed per-goat liking that tracks no trait (the control); *youngMales* is
+    not offered, since the keep value already culls grown non-sire bucks. A rule without a value, or a value without a
+    rule or under the quota cull, is an error.
 - **C58 Habituation**: every kept herd goat each night, fearOfHumans → 0.05 at rate 0.1 inside the
   socialisation window (age < 180 (1 − R) d), 0.02 after.
 - **C59a Exchange between camps** (`exchangeN`, 0; with Chris 2026-11-10): at each year's end every camp with a herd
