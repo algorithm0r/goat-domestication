@@ -188,7 +188,7 @@ var DataManager = class DataManager {
       } } : {}),
     };
     for (const sw in DIAG_FIELDS) if (diagOff(sw)) delete rec[DIAG_FIELDS[sw]];   // switched-off diagnostics left out
-    this.years.push(rec);
+    if ((w.year + 1) % Math.max(1, Math.round(PARAMETERS.recordEvery || 1)) === 0) this.years.push(rec);   // recordEvery (2026-11-19)
     w.resetYearStats();
     this._adultsAtYearStart = this.countAdults();
   }

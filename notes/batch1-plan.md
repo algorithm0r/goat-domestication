@@ -13,7 +13,7 @@
    within a count the overall cull sets, and the threshold cull has no count. The code refuses the combination.
 3. **Body size is now the meat cull's signature** (the growth credit, exp001-exp003 and the crossover), not part of
    the syndrome. The outline's B results (3.2, 3.4, 3.5) were all on the old linear growth, where the credit was hidden.
-4. **The reference culture changes** from milksel S0 (offtake 0.1, old growth) to R15 husbandry on v0.1.0, which is the
+4. **The reference culture changes** from milksel S0 (offtake 0.1, old growth) to the reference culture (REF; called R15 up to exp004, after its offtake rate, which no longer exists) on v0.1.0, which is the
    exp004 anchor: herd 286, R gap -0.63, B gap -0.25, breadth 6, males dead before 2.5 y 0.69.
 5. **Run length and file size.** The outline set 4000 years (EXPLOG c16de77). A 1600-year run is 22 minutes and 9 MB
    of BSON; 4000 years would be about 55 minutes and about 23 MB, over Mongo's 16 MB. 4000 years needs a smaller
@@ -24,7 +24,7 @@ Seeds are per cell or arm. Windows are 401-500, 801-900, 1201-1300 and 1501-1600
 
 | block | arms | claim (section) | seeds | runs |
 |---|---|---|---|---|
-| B0 pilot | R15 leave-one-out: each of the 9 behaviours off in turn, on v0.1.0 | does the threshold cull keep herds alive in poor cultures? A check before the sweep: with the wrong charges (exp002 TS), herds never grew | 4 | 36 |
+| B0 pilot (exp005, running) | REF leave-one-out: each behaviour off in turn (8 arms plus REF; exchange is already off), to 4000 years, on v0.1.0; also measures settling | does the threshold cull keep herds alive in poor cultures? A check before the sweep: with the wrong charges (exp002 TS), herds never grew | 4 | 36 |
 | B1 controls | Wild Type I (no humans); hunting only | hunting raises wild R; wild means (3.1, Table 2) | 10 | 20 |
 | B2 husbandry sweep | 2^9 factorial: cull (threshold / random at 13%), penning, guarding, provisioning, kid shelter, buck management, tethering, milking, exchange | which behaviour selects which gene; persistence; the emergent kill-off (3.2-3.3b) | 8 | 4,096 |
 | B3 sire rules | sireRule oldest, random, calm, large, milk, homebred (memory 3), marked, in the reference culture | strong selection through bucks (3.2) | 8 | 56 |

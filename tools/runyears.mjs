@@ -8,7 +8,8 @@
 //       (animalDomestication.expNNN_<slug>, the record) and results/expNNN_<slug>/<name>.json (the plain JSON copy),
 //       with PARAMETERS.id = {project, exp, run, seed, commit, dirty, host, started}. Run names: see DEVPLAN "Run names".
 //       Experiment runs are lean by default (LEAN below: the diagnostics no table reads are off, gene histograms every
-//       5 years, the census yearly), so a 1600-year run is about 9 MB of BSON, under Mongo's 16 MB; any key=value
+//       5 years, the census yearly), so a 1600-year run is about 9 MB of BSON, under Mongo's 16 MB. Longer runs thin every
+//       record in proportion (thin() below: 4000 years keeps every 3rd year row, histograms every 15 years); any key=value
 //       overrides them, and they are saved in the run's parameters like every other setting.
 //   node tools/runyears.mjs <years> --scratch --run <name> [key=value ...]
 //       a probe or smoke run: animalDomestication_scratch and results/_scratch.
@@ -31,6 +32,12 @@ const has = n => argv.includes('--' + n);
 const flag = n => { const i = argv.indexOf('--' + n); return i >= 0 ? argv[i + 1] : null; };
 const die = m => { console.error(m); process.exit(2); };
 const LEAN = { logKilloff: 0, logWolfAtk: 0, logKidLife: 0, logKidDeathCause: 0, logHistDepth: 0, histPeriod: 5, reportingPeriod: 360 };
+// 2026-11-19 (Chris: thinning relative to the length): a protocol run keeps about RECORD_SPAN years' worth of rows whatever
+// its length. k = ceil(years / RECORD_SPAN) multiplies every record period (year rows, gene histograms, census samples), so a
+// 1600-year run is unchanged (k = 1) and a 4000-year run keeps every 3rd year (k = 3), about the same size in Mongo.
+const RECORD_SPAN = 1600;
+const thin = (lean, years) => { const k = Math.max(1, Math.ceil(years / RECORD_SPAN));
+  return Object.assign({}, lean, { recordEvery: k, histPeriod: lean.histPeriod * k, reportingPeriod: lean.reportingPeriod * k }); };
 
 const openDB = (scratch, P) => {                                   // P: the loaded PARAMETERS (loadSim again would reset them)
   const { createDB } = require('../src/db.js');
@@ -64,7 +71,7 @@ if (label) {
   const text = fs.existsSync(path.join(ROOT, 'EXPLOG.md')) ? fs.readFileSync(path.join(ROOT, 'EXPLOG.md'), 'utf8') : '';
   if (!new RegExp('^##\\s+' + label + '\\b', 'm').test(text)) die(`EXPLOG.md has no "## ${label}" entry. Pre-register before running (conventions §4).`);
 }
-const over = protocol ? Object.assign({}, LEAN) : {};
+const over = protocol ? thin(LEAN, years) : {};
 for (const a of kv) { const i = a.indexOf('='), k = a.slice(0, i), v = a.slice(i + 1); over[k] = isNaN(+v) ? v : +v; }
 const G = loadSim(over), P = G.PARAMETERS;
 process.title = 'Animal Domestication runyears';

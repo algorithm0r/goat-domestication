@@ -384,6 +384,9 @@ var PARAMETERS = {
   reportingPeriod: 30,    // sample scalars (the census, samples[]) every N days; each row carries its tick, year and day
   histPeriod: 1,          // record the gene histograms (hist, histHerd) every N years, at the end of years N-1, 2N-1, ...;
                           // histYears lists the year of each row; histDepth pools max(10, N) years per record (2026-11-13)
+  recordEvery: 1,         // keep the year row (years[]) every N years, at the end of years N-1, 2N-1, ...; each row carries
+                          // its year and is that one year's record (totals are per year, not summed over N). Output only:
+                          // the run is the same. Experiment runs scale it with run length (runyears, 2026-11-19)
   epoch: 360 * 200,       // a run ends (and ships a packet) at N ticks
   // diagnostics, each a named switch (conventions §4 "Keep packets small", 2026-11-13): 1 records it, 0 leaves it out
   // of the saved run. All on by default so runs stay comparable with saved ones; a sweep turns off what it no longer

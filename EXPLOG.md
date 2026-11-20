@@ -5115,6 +5115,108 @@ M -0.12, W -0.04, L +0.21, C +0.00; breadth 6, depth 13.9, IBD 0.90. Herd B 0.62
 **Predictions:** 5 of 5 met; both checks met. Males dead before 2.5 y 0.61-0.72 (0.69); R gap within 0.1 of -0.6
 (-0.63); B gap -0.10 to -0.30 (-0.25); herd 260-300 (286); wild B 0.75 or above (0.873).
 
+## exp005 — B0 pilot: the reference culture with each behaviour off in turn, to 4000 years: do herds persist under the threshold cull, and when do the gaps settle?
+**Pre-registered:** 2026-11-19. Mongo animalDomestication.exp005_b0-pilot; results/exp005_b0-pilot; job list
+tools/exp005.jsonl; code cda20ea (v0.1.0 plus record thinning, output only).
+**Why** (notes/batch1-plan.md, decision 1): the 2026-11-11 run-length pilot (c16de77, old model: quota cull, linear
+growth) set the suite at 4000 years: R settled by 1600 in every arm, but the minor traits and the lineage and gene-flow
+arms did not, and 6 arms never settled. Batch 1 changes the cull, so settling may differ. Chris, 2026-11-19: thin the
+record relative to the length, then run a test on B0. B0 is also the plan's check that the threshold cull keeps herds
+alive in poorer cultures (exp002 TS: with sex-sized charges, herds never grew).
+**Naming:** the reference culture (REF) is the husbandry called R15 up to exp004 (that name was the 0.15 arm of the
+offtake-rate sweep; there is no rate under the threshold cull).
+**Settings:** REF = exp004's arguments (herdingAt=400 cullRule=opportunity penning=1 offtakeRate=0.15 (unused)
+guarding=1 provision=2160 kidShelter=1 buckManagement=1 tetherNew=1 milkIntensity=0.5 twinMax=1 tripletMax=0.2
+leanBuffer=12000 herdRange=8 herdTravel=2 surplusCull=0 fodderRation=1 milkCondition=0.5 winterCull=0), v0.1.0
+defaults otherwise. Arms, one change each: REF; RAND cullRule=random offtakeRate=0.13 (exp004's 37.8 culled a year from
+286, so the quota cull at the threshold cull's rate); noPen penning=0; noGuard guarding=0; noProv provision=0;
+noShelter kidShelter=0; noBuck buckManagement=0; noTether tetherNew=0; noMilk milkIntensity=0. Exchange is off in REF
+(exchangeN 0), so it has no leave-one-out arm. 9 arms x seeds 1-4, 4000 years, lean protocol runs thinned by length
+(k = 3: year rows every 3rd year, gene histograms every 15 years, census every 1080 days).
+**Measure:** tools/settle_tab.py results/exp005_b0-pilot, the 11-11 rule as rebuilt (it reproduces that pilot's
+settled-at in all 19 arms): gap = herd - wild genotype mean per histogram row, averaged over a window's rows; bias =
+seed mean of (200-year window ending at E - the 3201-4000 window), E = 1600, 2000, 2400, 2800, 3200; ok = every core
+trait (R A S B H T M W L) within 0.05; settled at = the first E from which every later E is ok. Herd = mean of the
+year rows' herded over 3201-4000; an arm whose herd is under 30 is reported and does not set the length.
+**Decision rule (a recommendation to Chris, who decides):** the suite's run length = the latest settled-at over the
+counted arms; if any counted arm is not settled at 3200, 4000. Also reported, not part of the rule: the first E at
+which R and B alone are within 0.05 in every counted arm.
+**Checks:** every run exits 0 and saves (a 4000-year thinned run fits Mongo's 16 MB); the run's saved parameters show
+recordEvery 3, histPeriod 15, reportingPeriod 1080.
+**Prediction** (mine):
+1. Herds persist (herd 30 or more over 3201-4000) in every arm and every seed.
+2. R bias within 0.05 at E = 1600 in every counted arm.
+3. At least 5 of the 9 arms are not ok at E = 1600.
+4. RAND's long-run B gap is within 0.10 of 0; REF's is -0.15 or below.
+5. REF settles at 3200 or earlier.
+6. The rule gives 4000 (at least one counted arm not settled at 3200).
+7. A thinned 4000-year run is under 9 MB.
+
+## exp005 results (raw)
+36 of 36 runs exit 0 (cpuslot, shared with another project at 6 slots), 2983-5033 s each; every run saved, 7.8-7.9 MB
+of BSON. Saved parameters (REF_seed1): recordEvery 3, histPeriod 15, reportingPeriod 1080, commit v0.1.0-5-gdbbfa1e,
+clean. Tables: results/exp005_b0-pilot/settle.txt (tools/settle_tab.py), perseed.txt.
+Long run 3201-4000, seed means (n = core traits with abs(gap) >= 0.10):
+
+| arm | herd | R | A | S | B | H | T | M | W | L | C | n |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| REF | 291.1 | -0.629 | -0.146 | +0.125 | -0.291 | -0.093 | +0.468 | -0.092 | -0.067 | +0.108 | -0.008 | 6 |
+| RAND | 127.5 | -0.364 | -0.083 | +0.049 | -0.029 | -0.032 | +0.091 | -0.043 | +0.017 | +0.128 | +0.028 | 2 |
+| noPen | 498.0 | -0.617 | -0.231 | +0.278 | -0.399 | -0.242 | +0.654 | +0.126 | -0.043 | +0.392 | -0.082 | 8 |
+| noGuard | 301.9 | -0.629 | -0.085 | +0.164 | -0.482 | -0.057 | +0.487 | -0.072 | +0.013 | +0.088 | -0.028 | 4 |
+| noProv | 103.8 | -0.402 | -0.018 | +0.036 | -0.060 | -0.046 | +0.117 | -0.034 | -0.054 | +0.015 | -0.012 | 2 |
+| noShelter | 291.4 | -0.634 | -0.137 | +0.170 | -0.388 | -0.145 | +0.401 | -0.065 | -0.183 | +0.169 | -0.021 | 8 |
+| noBuck | 264.0 | -0.622 | -0.510 | +0.094 | -0.018 | -0.002 | +0.309 | -0.054 | -0.063 | +0.077 | +0.042 | 3 |
+| noTether | 301.3 | -0.642 | -0.113 | +0.326 | -0.475 | -0.117 | +0.569 | +0.121 | -0.099 | +0.267 | -0.127 | 8 |
+| noMilk | 290.9 | -0.627 | -0.117 | +0.065 | -0.448 | -0.107 | +0.480 | -0.006 | -0.105 | +0.055 | -0.001 | 6 |
+
+Bias (window ending E minus 3201-4000), largest abs over core traits [trait]; R and B bias:
+
+| arm | 1600 | 2000 | 2400 | 2800 | 3200 | settled at |
+|---|---|---|---|---|---|---|
+| REF | 0.106 [T] (R +0.002, B +0.033) | 0.092 [B] (R -0.001, B +0.092) | 0.141 [B] (R +0.019, B +0.141) | 0.155 [B] (R +0.016, B +0.155) | 0.079 [M] (R -0.001, B +0.064) | not settled |
+| RAND | 0.289 [R] (R +0.289, B +0.025) | 0.281 [R] (R +0.281, B +0.017) | 0.250 [R] (R +0.250, B +0.019) | 0.128 [R] (R +0.128, B +0.015) | 0.057 [A] (R -0.014, B +0.011) | not settled |
+| noPen | 0.233 [S] (R +0.017, B +0.170) | 0.154 [B] (R +0.016, B +0.154) | 0.106 [B] (R +0.004, B +0.106) | 0.086 [B] (R +0.014, B +0.086) | 0.049 ok (R +0.005, B +0.049) | 3200 |
+| noGuard | 0.219 [B] (R +0.001, B +0.219) | 0.194 [B] (R -0.004, B +0.194) | 0.149 [B] (R -0.013, B +0.149) | 0.111 [B] (R -0.025, B +0.111) | 0.092 [L] (R -0.018, B +0.055) | not settled |
+| noProv | 0.051 [B] (R +0.047, B +0.051) | 0.045 ok (R +0.045, B +0.027) | 0.053 [R] (R +0.053, B +0.046) | 0.048 ok (R +0.048, B +0.026) | 0.034 ok (R +0.029, B +0.010) | 2800 |
+| noShelter | 0.145 [B] (R +0.000, B +0.145) | 0.079 [W] (R +0.005, B +0.068) | 0.213 [W] (R +0.010, B +0.050) | 0.142 [W] (R +0.020, B -0.010) | 0.080 [L] (R +0.010, B -0.017) | not settled |
+| noBuck | 0.152 [A] (R +0.018, B +0.004) | 0.094 [S] (R +0.014, B -0.006) | 0.056 [L] (R +0.012, B +0.014) | 0.034 ok (R +0.010, B -0.013) | 0.042 ok (R +0.007, B -0.011) | 2800 |
+| noTether | 0.199 [B] (R +0.004, B +0.199) | 0.190 [B] (R +0.008, B +0.190) | 0.197 [B] (R +0.008, B +0.197) | 0.088 [B] (R +0.012, B +0.088) | 0.088 [B] (R +0.001, B +0.088) | not settled |
+| noMilk | 0.335 [B] (R +0.008, B +0.335) | 0.255 [B] (R -0.009, B +0.255) | 0.253 [B] (R -0.009, B +0.253) | 0.128 [B] (R +0.011, B +0.128) | 0.114 [M] (R +0.015, B +0.058) | not settled |
+
+B bias SEs over seeds 0.04-0.21 in REF, noGuard, noMilk, noTether, noShelter (settle.txt).
+Per seed, herd over 3201-4000 (lowest year row) and R / B gap in windows 1401-1600, 2001-2200, 2601-2800, 3201-3400,
+3801-4000:
+- RAND: s1 36.8 (18) R -0.08 -0.08 -0.09 -0.08 -0.11, B about 0; s2 216.0 (155) R -0.10 -0.06 -0.62 -0.67 -0.63;
+  s3 41.3 (16) R -0.07 -0.13 -0.05 -0.09 -0.10; s4 215.7 (155) R -0.06 -0.11 -0.18 -0.64 -0.62. B -0.05 to +0.00 in all.
+- noProv: s1 65.6 (20) R -0.09 -0.09 -0.08 -0.08 -0.46; s2 47.0 (18) R -0.08 -0.10 -0.07 -0.09 -0.24; s3 153.3 (107)
+  R -0.62 -0.61 -0.59 -0.61 -0.59, B +0.03 -0.06 -0.10 -0.21 -0.08; s4 149.4 (106) R -0.63 -0.64 -0.67 -0.64 -0.60,
+  B -0.05 -0.05 -0.04 -0.10 -0.05.
+- REF B: s1 -0.23 +0.00 -0.03 -0.16 -0.11; s2 -0.25 -0.37 -0.36 -0.42 -0.74; s3 -0.39 -0.25 -0.13 -0.33 -0.27;
+  s4 -0.16 -0.10 -0.03 -0.14 -0.12. R -0.59 to -0.66 in every window and seed.
+- noTether B: s1 -0.29 -0.26 -0.27 -0.11 -0.29; s2 -0.74 -0.74 -0.76 -0.73 -0.78; s3 -0.08 -0.10 -0.19 -0.24 -0.17;
+  s4 +0.01 -0.09 -0.33 -0.73 -0.76.
+- noMilk B: s1 -0.11 -0.05 -0.25 -0.70 -0.68; s2 -0.25 -0.37 -0.60 -0.75 -0.74; s3 -0.02 -0.09 -0.26 -0.09 -0.19;
+  s4 -0.07 -0.18 -0.17 -0.19 -0.17.
+- noGuard B: s1 -0.39 -0.56 -0.67 -0.75 -0.69; s2 -0.16 -0.22 -0.09 -0.33 -0.07; s3 +0.01 -0.05 -0.21 -0.22 -0.30;
+  s4 -0.50 -0.38 -0.51 -0.70 -0.78.
+- noShelter B: s1 -0.16 -0.20 -0.19 -0.13 -0.10; s2 -0.33 -0.21 -0.35 -0.41 -0.24; s3 -0.11 -0.37 -0.39 -0.42 -0.42;
+  s4 -0.38 -0.61 -0.66 -0.71 -0.65 (lowest year row 43).
+- noPen B: s1 -0.25 -0.45 -0.52 -0.51 -0.45; s2 -0.14 -0.09 -0.10 -0.20 -0.40; s3 -0.24 -0.23 -0.28 -0.42 -0.52;
+  s4 -0.29 -0.35 -0.36 -0.27 -0.38. noBuck B -0.07 to +0.01 in every window and seed.
+- In every seed of every arm other than RAND s1-s4 and noProv s1-s2, R is -0.55 to -0.68 in every window.
+**Decision rule:** counted arms (herd 30 or more): all 9. Not settled at 3200: REF, RAND, noGuard, noMilk, noShelter,
+noTether. The rule gives 4000. R and B alone within 0.05 in every arm: at no E (at 3200, B: REF 0.064, noGuard 0.055,
+noMilk 0.058, noTether 0.088).
+**Predictions:** 5 of 7 met; checks met.
+1. Herds persist (30 or more over 3201-4000) in every arm and seed: met (lowest RAND s1 36.8; single years to 16).
+2. R bias within 0.05 at 1600 in every arm: not met (RAND +0.289).
+3. At least 5 of 9 arms not ok at 1600: met (9 of 9).
+4. RAND B within 0.10 of 0, REF -0.15 or below: met (-0.029, -0.291).
+5. REF settles by 3200: not met (not settled).
+6. The rule gives 4000: met.
+7. A thinned 4000-year run under 9 MB: met (7.8-7.9).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

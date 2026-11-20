@@ -12,7 +12,7 @@ Batch 1 frozen at v0.1.0. Smoke PASS @ 88ad485. Defaults: curve at the wild pace
 growth credit toward the herd mean from 2 y, threshold cull (econCull 1, keep value below 0, opportunity rule only),
 charges at the size for sex and age, feedCost 0.085. Experiments go through db.js v2 (exp001-exp004 so far).
 
-## Metrics (exp004 A1: R15 husbandry + defaults, years 1501-1600, 4 seeds)
+## Metrics (exp004 A1: the reference culture (REF, formerly R15) + defaults, years 1501-1600, 4 seeds)
 - Herd 286; R gap -0.63; B gap -0.25 (seeds -0.12 to -0.41); breadth 6
 - Males dead before 2.5 y 0.69 (slaughter; calibrated via feedCost, exp003); aged 4+ 0.14; other Ganj Dareh measures miss
 - Herd starvation 53 a year: accepted artefact (Chris 2026-11-18)
