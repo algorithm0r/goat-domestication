@@ -110,6 +110,10 @@ def main(a):
         res = []
         for s, f in sorted(R[arm].items()):
             d = json.load(open(f, encoding="utf-8"))
+            # its times assume herding at 400 (the reviewer's exp013 prereg review, point 3): a run herding later is
+            # scored by tools/late_tab.py, which takes every time from the run's own herdingAt
+            h = (d.get("_parameters") or {}).get("herdingAt", 400)
+            if h != 400: sys.exit(f"{os.path.basename(f)}: herdingAt {h}, not 400; jump_tab's times assume 400 (use tools/late_tab.py)")
             if marker == "herd": rs = [r for r in herd_series(d, smooth) if r[0] > 400 + smooth]
             else: rs = [r for r in r_series(d) if r[0] > 400]
             J, end, falls, late = jump(rs, on, hold); res.append((J, end, falls, late))

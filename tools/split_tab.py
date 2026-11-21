@@ -23,6 +23,10 @@ def mc(c):
     n = sum(c); return None if n == 0 else sum((k + 0.5) / 20 * v for k, v in enumerate(c)) / n
 
 def split(d, y0, y1, f0, f1, bad=None):
+    # the founders are the century before herding: the window must end at the run's own herdingAt (the reviewer's exp013
+    # prereg review, point 3: a late run read with the default 301-400 would take founders from before humans arrived)
+    h = (d.get("_parameters") or {}).get("herdingAt")
+    if h is not None and h < 1e8 and f1 != h: sys.exit(f"founders' window {f0}-{f1} does not end at the run's herdingAt {h}")
     fr = [i for i, y in enumerate(d["histYears"]) if f0 <= y + 1 <= f1]
     if not fr: sys.exit(f"no histogram row in the founders' window {f0}-{f1}")
     if any(sum(d["histHerd"]["R"][i]) for i in fr): sys.exit(f"herd goats in the founders' window {f0}-{f1}")

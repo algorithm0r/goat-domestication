@@ -6182,6 +6182,237 @@ herd mean under 60 for 300+ years).
   -0.062 (0.008) and -0.014 (0.003), paired. Persisting fixed-load herds are open (about a third of conceptions by
   captured sires) and shallow, and their losses have made the wild mostly herd-descended. REF's herd is closed and deep.
 
+## exp011 results (raw)
+48 of 48 runs complete (complete: true, last year row 3998), every exit 0, every run on a clean tree. Arms as registered,
+8 seeds each: FLAT; NUIS03, NUIS10 and NUIS30 (nuisanceCost 0.03, 0.1, 0.3); LARD (larder 1, selfDoes 10); TAPER
+(captureTaper 1, selfDoes 10). Every run has herdPerHerder 1e9, minLoad 1, runOffLoss 0 and logHistDepth 1. Parameters
+are identical across runs except id, seed, larder, captureTaper, nuisanceCost and selfDoes. Hosts: 37 on the desktop and
+11 on mint. Run times 5045-12654 s. Commits: 78ca109 (10), 0831d1f (3), 736c15d (8) and 4c92797 (27).
+`git diff 78ca109 4c92797 -- src load.mjs tools/runyears.mjs` is empty, and src is unchanged from a659a59 to 78ca109, so
+every run carries a659a59's sim: the code note's identity chain, which says amendment 1's registered 1dd4fa7 behaves the
+same. FLAT is exp010's LOAD1 with runOffLoss 0 (a run-off is always brought back); compared row by row with
+tools/cmp_years.py, 1200 of 1333 records differ from year 401 on, as they should: herding starts at 400. So FLAT is not
+an identity check; it is the registered loss-off contrast. Mongo animalDomestication.exp011_herder-culture on mint; JSON in
+results/exp011_herder-culture/. Scoring: the analysis session, with tools/culture_tab.py as amended (8) and
+tools/cohort_tab.py.
+
+## exp011 results (scored)
+**Scored** 2026-11-21 by the analysis session, as registered (65e8cc0) and amended through amendment 8 (d68a794):
+`python tools/culture_tab.py "results/exp011_herder-culture;results/exp010_fixed-load;results/exp005_b0-pilot;results/exp006_two-corner;results/exp007_design-checks" --perseed`
+(the tool at 903b4b1; selftest passes, `selftest bad` fails as it should; its parameter guard passed on every run).
+Standing measures: tools/jump_tab.py; split_tab.py 3201-4000 (--perseed, --min-herd 100); flow_tab.py 3201-4000
+(--perseed, --pairs each arm against FLAT, and FLAT-LOAD1). Tables in results/exp011_herder-culture/: scored.txt,
+selftest.txt, selftest_bad.txt, jump_herd.txt, split_3201-4000.txt, split_est_3201-4000.txt, flow_3201-4000.txt. Window
+3201-4000. Divergence is plain breadth (abs(gap) >= 0.10, per-seed votes) and nothing else. The tool prints the
+exploratory null readings and checks that the registered reading is the same under each one (it is). They are not
+reported here; nor is cohort_tab, which was not run (the steward: Chris put both out of the paper).
+
+**Arms** (established by the jump_tab criterion; everything after herd over established seeds; R vs FLAT paired by seed):
+
+| arm | est (KM median) | herd | R gap | R vs FLAT | breadth | traits | depth | csire | closed | diverged |
+|---|---|---|---|---|---|---|---|---|---|---|
+| FLAT | 8 (501) | 260.1 | -0.030 | - | 0 | - | 6.87 | 0.218 | 0 of 8 | 0 of 8 |
+| NUIS03 | 8 (501) | 253.9 | -0.041 | -0.010 (0.003) | 0 | - | 6.44 | 0.239 | 0 of 8 | 0 of 8 |
+| NUIS10 | 8 (708) | 255.1 | -0.055 | -0.025 (0.007) | 0 | - | 5.94 | 0.259 | 0 of 8 | 0 of 8 |
+| NUIS30 | 0 | 2.0 | - | - | - | - | - | - | not read | not read |
+| LARD | 8 (501) | 271.2 | -0.069 | -0.039 (0.029) | 6 | A S B H T W | 20.80 | 0.005 | 8 of 8 | 8 of 8 |
+| TAPER | 8 (501) | 267.8 | -0.117 | -0.087 (0.034) | 6 | R A S H T W | 22.23 | 0.003 | 8 of 8 | 8 of 8 |
+| REF | 8 (705) | 287.8 | -0.636 | -0.605 (0.003) | 6 | R A S B T L | 14.69 | 0.064 | 8 of 8 | 8 of 8 |
+| LOADLO | 8 (501) | 261.6 | -0.055 | -0.025 (0.005) | 0 | - | 4.66 | 0.288 | 0 of 8 | 0 of 8 |
+| LOAD1 | 7 (1614), 1 late | 245.8 | -0.274 | -0.246 (0.044, 7) | 1 | R | 4.94 | 0.302 | 0 of 7 | 0 of 7 |
+
+(scored.txt's "median year" is the upper median of the established runs' years, 771 for NUIS10; the KM median from
+jump_tab is given here.) Per-seed breadth, LARD: 8, 3, 5, 3, 3, 3, 9, 6; TAPER: 6, 8, 5, 5, 6, 4, 4, 3. Every
+per-seed and arm-mean reading agrees, so no arm is mixed. "Closed" is far from its line in every arm (depth 20.8-22.2
+and csire <= 0.005 for LARD and TAPER; 5.9-6.9 and 0.22-0.26 for FLAT and NUIS).
+
+**Predictions:**
+1. FLAT established in >= 6 of 8, breadth <= 2, R gap above -0.20: **met** (8, 0, -0.030).
+2. LARD and TAPER closed, R gap above -0.30 (vs FLAT), breadth >= 3: **met** for both (LARD -0.039, breadth 6; TAPER
+   -0.087, breadth 6).
+3. Nuisance dose-response: NUIS30 established in no seed, so it is read over FLAT, NUIS03 and NUIS10 (amendment 1). R gap
+   falls with nuisanceCost: met (+0.000, -0.010, -0.025 vs FLAT). Captive-sire share falls: **not met** (0.218, 0.239,
+   0.259; NUIS10 - FLAT +0.042, SE 0.012, paired). NUIS30 closed with R <= -0.30: not applicable. Prediction 3: **not
+   met**.
+
+**Decision rule:**
+- LARD and TAPER closed and diverged with R near the wild: closure by herder culture gives divergence without any rule
+  reading reactivity; tameness is then a separate question, answered by NUIS.
+  "Near the wild" is the registered line, R gap above -0.30 against FLAT. TAPER's R gap is -0.117 against 0, so R also
+  counts in its breadth at 0.10 (REF -0.636).
+- NUIS30 established in 2 or fewer seeds (0 of 8): the cost exceeds what a herd can bear.
+- The NUIS branch (closed with R diverged) does not fire: no NUIS arm closes, and its R moves by -0.010 and -0.025.
+- The selfDoes follow-up does not apply: LARD and TAPER are self-maintaining on 0.991 and 0.994 of camp-days (every seed
+  0.988 or more; the bar is 0.95).
+- The reading is the same with R read against 0 instead of paired against FLAT.
+
+**Registered measures beside the rule:**
+- FLAT - LOAD1 by seed (runOffLoss 0 against 1, the same load; 8 seeds): R gap +0.217 (0.048); captive-sire share -0.093
+  (0.023); depth +2.31 (0.56); run-offs +0.582 (0.084) and escapes -0.154 (0.020) per herd goat-year. With loss
+  switched off, the R gap that LOAD1 builds (-0.247 over the same 8 seeds, load_tab) is gone (FLAT -0.030).
+- Selection on R (selSire / selDam R, kids-weighted, established seeds): FLAT +0.000 / -0.001; NUIS03 +0.001 / -0.001;
+  NUIS10 +0.002 / -0.001; LARD +0.000 / -0.001; TAPER +0.000 / -0.000; REF +0.005 / -0.001; LOAD1 +0.014 / -0.004.
+- Gene flow, paired against FLAT (8 seeds): LARD csire -0.213 (0.004), depth +13.93 (0.24), first breedings per
+  captured doe -0.563 (0.024) and buck -0.152 (0.005); captures unchanged (-0.001). TAPER csire -0.215 (0.004), depth
+  +15.36 (0.18), captures -0.015 (0.000) per herd goat-year (8-20 captures per seed over the window against about 1000).
+  The wild's herd-born share (wildHerdShare) is 0.33-0.36 in every established exp011 arm, against 0.73 in LOAD1 and
+  0.13 in REF.
+- Loss rates (per herd goat per recorded year): run-offs 1.31-1.49 and fetched back 0.92-1.05 in the established
+  exp011 arms; lost 0 and died loose 0 in every exp011 run (escapes counted: 0, checked).
+- Split (established seeds, herd change / wild change against founders): LARD T +0.353 / +0.001, B -0.143 / +0.014,
+  A -0.011 / +0.093, H -0.025 / +0.083, S -0.139 / -0.250, W +0.109 / +0.209, R -0.120 / -0.051. TAPER T +0.390 /
+  +0.003, A -0.039 / +0.083, H -0.064 / +0.082, S -0.125 / -0.256, W +0.101 / +0.239, R -0.177 / -0.060. FLAT and NUIS
+  herds track their wild: every gap is under 0.07 in size (largest T, +0.051 to +0.066).
+- Branch 2, breadth against depth (exp007, exp010, exp011 arms; established seeds; arm means): breadth 0-1 at depth
+  under 7 (LOADLO, CTLSHAL, LOAD05, LOAD1, FLAT, NUIS03, NUIS10), and 0 at CTLRAND (10.06); 3 at NOCULL (17.05); 6 at
+  REF (14.69), CTLDEEP (19.61), LARD (20.80) and TAPER (22.23).
+
+**Exploratory** (not registered): the signs of LARD's and TAPER's nine core gaps all match REF's (R, A, B, H, M and W
+negative; S, T and L positive). In LARD and TAPER the R gap is small (-0.069, -0.117), against REF's -0.636.
+
+**Exploratory, added after the reviewer's 8fee17d** (culture_tab 48a8de9; the rerun adds only this table, and every
+other line of scored.txt is unchanged). Not read by the predictions or the decision rule. The carrier of each breadth
+trait uses exp007's more-than-half rule within the arm (gap = herd change - wild change). Breadth over the 8 NT_CORE
+traits (genome.js:34) leaves out L.
+
+| arm | breadth | traits (carrier) | herd-carried (arm mean) | seeds herd-carried >= 3 | 8-trait | seeds 8-trait >= 3 |
+|---|---|---|---|---|---|---|
+| LARD | 6 | A wild, S wild, B herd, H wild, T herd, W wild | 2 | 4 of 8 | 6 | 6 of 8 |
+| TAPER | 6 | R herd, A wild, S wild, H wild, T herd, W wild | 2 | 5 of 8 | 6 | 7 of 8 |
+| REF | 6 | R herd, A wild, S wild, B herd, T herd, L herd | 4 | 8 of 8 | 5 | 8 of 8 |
+| LOAD1 | 1 | R herd | 1 | 0 of 7 | 1 | 0 of 7 |
+
+FLAT, NUIS03, NUIS10 and LOADLO are 0 on all four counts. Per seed, herd-carried / 8-trait: LARD 6/7, 1/2, 4/5, 2/3,
+2/2, 2/3, 5/8, 4/5; TAPER 5/6, 5/8, 3/5, 4/4, 2/6, 2/4, 3/4, 1/2. In LARD and TAPER the wild carries the A, S, H and W
+gaps; the herd carries T, plus B (LARD) or R (TAPER). Read by amendment 2's vote, herd-carried breadth is mixed in both
+arms (4 and 5 of 8 seeds at 3 or more) and 2 at the arm mean. The 8-trait breadth leaves LARD diverged at 6 of 8 (on the
+line) and TAPER at 7 of 8.
+
+## exp013 — Herding after the wild has settled: are the closed herds' gaps carried by the herd, or by the wild still settling after the burn-in?
+**Pre-registered:** 2026-11-21. Mongo animalDomestication.exp013_late-herding (mint); results/exp013_late-herding; job list
+tools/exp013.jsonl (24 runs, cpuslot --anywhere, queued behind exp012); code 577ec9b's sim (a659a59, unchanged).
+**Why** (the reviewer's exp011 review, 8fee17d): four of LARD's and TAPER's six breadth traits (A, S, H, W) are carried
+by the wild, not the herd. The herd stays near its 301-400 founders while the wild moves the same way in every arm (S
+about -0.25, A +0.09, H +0.08, W +0.16 to +0.25). That matches the wild still settling under the wolves after the
+300-year burn-in: an old-model no-human run settled only by about year 2900. REF's A and S gaps are wild-carried too.
+If so, much of the closed-herd breadth across exp007, exp009 and exp011 measures an unsettled wild, not the herd.
+The old S0late check (herding at 2000) ran on the pre-v0.1.0 model and read only R, B and herd size, so it does not
+answer this.
+**Arms** (seeds 1-8, 6600 years): REFlate, LARDlate, TAPERlate. Each is its year-400 arm exactly (REF: exp005 and
+exp006; LARD, TAPER: exp011) with humansAt 2900, herdingAt 3000 and ibdFrom 3000: the same 100 years of hunting
+before herding, after 2900 years with no humans. Thinning k = 5.
+**Measure** (the analysis session; standing measures of notes/batch1-plan.md): read at equal time since herding.
+Window 5801-6600 against the year-400 arms' 3201-4000; founders 2901-3000 against 301-400. Per arm and trait: gap, herd
+change hc, wild change wc; breadth (core traits with abs(gap) >= 0.10, per-seed votes as in exp011 amendment 2);
+closure (depth, captive-sire share). The wild's settling, from the late arms' own years before 2900 (no humans): per
+trait, the century from which the wild mean stays within 0.02 of its 2801-2900 mean.
+**Predictions** (mine):
+1. The wild has settled before humans arrive: for every core trait, the wild mean stays within 0.02 from century 2701
+   at the latest.
+2. In the late arms, wild change from founders to window on A, S, H and W is within 0.05, against the year-400 arms'
+   0.08-0.25.
+3. LARDlate and TAPERlate stay closed (captive-sire share below 0.05 in at least 6 of 8 seeds) and herd change carries
+   their gaps: for each trait with abs(gap) >= 0.10, abs(hc) > abs(wc). Whether their breadth reaches 3 I do not
+   predict. exp009's mutation pull (pooled C fraction 0.84) says relaxed traits drift toward 0.5 in a closed herd, but
+   how far by 3600 years after herding from a settled wild is the question.
+4. REFlate keeps an R gap of -0.30 or below, herd-carried.
+**Decision rule:**
+- If prediction 2 holds and closed late breadth is below 3: the closed-herd breadth of exp007, exp009 and exp011 was
+  mostly the wild settling. The re-plan with Chris moves herding to after the wild settles for every arm, and the
+  paper reports closure as herd change until then.
+- If prediction 2 holds and closed late breadth is 3 or more with herd-carried gaps: the herd diverges from a settled
+  wild by itself (relaxation and selection in a closed herd), and the reading "closure gives divergence" stands on
+  the late design. The re-plan still moves herding later.
+- If prediction 2 fails (the wild still moves 0.05 or more from 2901-3000): the wild is not settled by 2900 either,
+  and the settling time goes to Chris before any later design.
+
+## exp013 amendment, 2026-11-21 (before any run started: 0 of 24 begun; the reviewer's prereg review, 92a6acd)
+- **Correction to Why:** the old WT run was within 0.05 on every core trait from 1501-1600 on; "settled only by about
+  year 2900" overstated it. Herding at 3000 stays, as the safe choice.
+- **Control arm WTlate** (seeds 1-8, 6600 years): REFlate's arguments with humansAt 1e9 (no humans, so no herds). It
+  shares each seed's history to 2900 with the late arms. Job list tools/exp013_wt.jsonl.
+- **P1 restated:** the wild has settled before humans arrive if, for every core trait, the seed-mean wild in 2701-2900 is
+  within 0.02 of 2401-2600, and WTlate's wild moves less than 0.05 from 2901-3000 to 5801-6600.
+- **P2 restated as human-caused wild change:** per trait (A, S, H, W) and late arm, the wild change from 2901-3000 to
+  5801-6600 minus WTlate's over the same span, paired by seed, with a 95% interval. Prediction: under 0.05 in size.
+  Also reported: the year-400 arms' wild change minus the late arms' (the burn-in's share).
+- **Primary reading** (new): per arm (LARD, TAPER, REF) and per trait (A, S, H, W), the late gap against the year-400
+  gap, unpaired 8 v 8, 95% interval of the difference. Prediction: abs(late gap) < 0.10 for A, S, H and W in LARDlate
+  and TAPERlate, and for A and S in REFlate, with the difference's interval excluding 0.
+- **Which breadth governs:** plain breadth (abs gap >= 0.10, per-seed votes, the 9 traits as in exp011), as amendment 8
+  of exp011 set. Herd-carried breadth (culture_tab 48a8de9) and breadth over the 8 NT_CORE traits are reported beside
+  it, exploratory. A "mixed" vote fires no divergence branch and is reported as mixed. If LARDlate and TAPERlate
+  disagree, each is reported alone, and a claim about closure rests only on what both show.
+- **Decision rule, replaced:**
+  - P1 fails: the wild's settling time on this code goes to Chris before any later design.
+  - P1 holds, human-caused wild change under 0.05 on A, S, H and W: the year-400 closed-herd gaps on those traits were
+    the burn-in's settling. The re-plan moves herding to after the wild settles, for every arm, and the paper reads
+    closure from the late design.
+  - P1 holds, human-caused wild change 0.05 or more on any of A, S, H, W: humans move the wild (hunting, herding), and
+    a closed herd's gap on that trait is the herd sheltered from human-driven selection on the wild, a model result.
+    Said per trait.
+  - In every branch, whether LARDlate and TAPERlate still diverge (plain breadth 3 or more) is read on the late design.
+- **Tools:** jump_tab, culture_tab and split_tab hard-code years 300-500 (the reviewer's 92a6acd point 3). The scorer
+  offsets founders, the herd series and the generation records by each run's saved herdingAt, and its selftest passes
+  on a planted late run before any exp013 result is read.
+
+## exp013 amendment 2, 2026-11-21 (before any run started; the reviewer's 5b1722f)
+- **P1's WTlate clause** is restricted to A, S, H and W: WTlate's wild moves less than 0.05 on each from 2901-3000 to
+  5801-6600. WTlate's drift on the other core traits is reported beside P1 and decides nothing; the paired P2 already
+  removes drift.
+- **Branch 2 reads per trait and requires the primary reading.** Where P1 holds and human-caused wild change on a trait
+  is under 0.05:
+  - late gap under 0.10, with the late-vs-400 interval excluding 0: that trait's year-400 gap was the burn-in's settling;
+  - late gap 0.10 or more: the trait is herd divergence from a settled wild;
+  - anything else (late gap under 0.10 but the interval includes 0): unresolved, said so.
+  The re-plan's move of herding to after the wild settles follows if the burn-in reading holds on any of A, S, H, W in
+  either closed arm.
+- **Two named checks:**
+  - The scorer's selftest must fail when the herdingAt offset is removed.
+  - The shared history to 2900 is checked, not assumed: years 1-2900 of WTlate_seed1 against REFlate_seed1,
+    LARDlate_seed1 and TAPERlate_seed1 with tools/cmp_years.py (the same thinning, k = 5), 0 rows may differ.
+
+## exp013 clarification, 2026-11-21 (before any run started; the analysis session's reading choices for late_tab)
+Adopted, under amendments 1 and 2:
+- P1's seed-mean clause is read on each late arm's seed-mean wild, per core trait: 2701-2900 against 2401-2600, within
+  0.02. Per-seed settling years, and the count of seeds settled by 2701, print beside it. If the three late arms share
+  their history to 2900 seed by seed (checked), the settling rests on 8 histories, not 24, and is reported as such.
+- Prediction 3's closure: captive-sire share under 0.05 in 6 or more of 8 seeds; a seed that is not established counts
+  as not closed.
+- "Diverge" in every branch is plain breadth by per-seed vote (exp011 amendment 2), read for LARDlate and TAPERlate
+  separately; a mixed vote reads no divergence.
+- An arm is read only if 2 or more of its seeds are established.
+The analysis session's other choices, (b) arm-mean wild change as P2, (d) the carrying test on arm-mean breadth traits
+and (f) the "neither branch" label, were written to 9522ce9's rule and are superseded by amendments 1 and 2.
+Two more (the reviewer's da67400):
+- P2's paired human-caused wild change uses all 8 seeds (the wild needs no herd). Both sides are computed the same way:
+  the wild mean over every histogram row in the window (WTlate: all goats; late arms: hist minus histHerd), not only
+  rows with a herd.
+- The per-seed vote answers only the arm-level question, whether LARDlate or TAPERlate still diverges. Amendment 2's
+  per-trait burn-in reading uses each trait's arm-mean late gap and the late-vs-400 interval, not a vote.
+
+## exp013 clarification 2, 2026-11-21 (before any run started; late_tab 3f43114's reading choices, accepted)
+- P1's seed-mean clause is read on WTlate's 8 seeds (2401-2600 against 2701-2900, abs <= 0.02), with the late arms
+  printed beside it. That rests on the shared history to 2900 (amendment 2's check); if any late arm does not share it,
+  P1 is read on each late arm separately.
+- "Under 0.05" (P1's WTlate clause and P2) means abs(mean) < 0.05. P2's interval is reported and need not exclude
+  anything.
+- P2's wild change is the window mean of hist minus histHerd minus the founders' all-goat mean. It is defined for
+  WTlate, and is paired over all 8 seeds, established or not.
+- The primary reading uses gaps over established seeds, unpaired: SE = hypot(SE_late, SE_400), t at min(n) - 1 df.
+  "Late gap under 0.10" means abs(arm-mean gap).
+- Per-trait branch readings print for REFlate too, marked not governing. The re-plan trigger reads LARDlate and
+  TAPERlate only. A closed arm with fewer than 6 closed seeds is still read, flagged "not closed".
+- P3 and P4 stand as registered: the amendments replaced the rule, not those predictions. P3's carrying test is read on
+  the arm-mean breadth traits, and is vacuous if none reaches 0.10. Correction to the first clarification: its
+  superseding of choice (d) applied to the rule, not to P3.
+- Gap-based readings need 2 or more established seeds.
+- The re-plan trigger reads only a closed late arm (closed as in the first clarification). A late gap that shrinks in an
+  open herd can be herd and wild merging, not the burn-in. A "burn-in" reading also needs the gap to have shrunk, not
+  flipped sign (the reviewer's 74b70f3).
+- "Shrunk" means abs(late gap) < abs(year-400 gap). A late gap of the opposite sign that is 0.05 or more in size (an
+  overshoot through zero, e.g. -0.105 to +0.09) reads unresolved, not burn-in.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

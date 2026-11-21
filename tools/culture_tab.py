@@ -39,7 +39,9 @@ import glob, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import split_tab, flow_tab, jump_tab, inflow_tab
+from exp007_tab import carried
 gaps, herd, CORE = split_tab.gaps, split_tab.herd, split_tab.CORE
+CORE8 = ["R", "A", "S", "B", "H", "T", "M", "W"]   # NT_CORE (genome.js:34): the core traits without L
 BASE = {"minLoad": 1, "runOffLoss": 0, "logHistDepth": 1}
 OFF = {"nuisanceCost": 0, "larder": 0, "captureTaper": 0}
 ARMS = [("FLAT", OFF), ("NUIS03", {**OFF, "nuisanceCost": 0.03}), ("NUIS10", {**OFF, "nuisanceCost": 0.1}),
@@ -168,6 +170,12 @@ def summary(runs, pull=PULL, gen=1.0, use_off=False, r_gen=None):
         r["breadth"] = r["b10"] = len(r["traits10"])
         if r["hc"]: _, r["bnull"], r["tnull"], _ = counts(r["gap"], r["hc"], r["wc"], r["F"], pull, gen, off)
         r["diverged"] = r["breadth"] >= 3
+        # exploratory (the reviewer's 8fee17d; not read by the predictions or the rule): the pool carrying each breadth
+        # trait by exp007's more-than-half rule within the arm (gap = herd change - wild change), and breadth over the
+        # 8 NT_CORE traits (genome.js:34; L excluded)
+        r["carrier"] = {t: carried(r["gap"][t], r["hc"][t], r["wc"][t]) for t in r["traits10"]} if r["hc"] else {}
+        r["bherd"] = sum(1 for c in r["carrier"].values() if c == "herd") if r["hc"] else None
+        r["b8"] = sum(1 for t in r["traits10"] if t in CORE8)
     v = {"n": len(runs), "nE": len(E), "E": E, "runs": runs, "late": sum(1 for r in runs if r["late"]),
          "fell": [r for r in E if r["herd"] < 100], "win100": sum(1 for r in runs if r["herd"] >= 100),
          "herd": ms([r["herd"] for r in runs])[0], "off": ms([r["off"] for r in runs])[0], "gen": gen,
@@ -188,6 +196,11 @@ def summary(runs, pull=PULL, gen=1.0, use_off=False, r_gen=None):
     v["breadth"] = v["b10"] = len(v["traits"]) if E else None
     if Es: _, v["bnull"], v["tnull"], _ = counts(g0, v["hc"], v["wc"], v["F"], pull, gen, off)
     else: v["bnull"], v["tnull"] = None, []
+    # exploratory (8fee17d): carrier of each arm-mean breadth trait, herd-carried and 8-trait breadth, with per-seed votes
+    v["carrier"] = {t: carried(g0[t], v["hc"][t], v["wc"][t]) for t in v["traits"]} if Es else {}
+    v["bherd"] = sum(1 for c in v["carrier"].values() if c == "herd") if Es else None
+    v["b8"] = sum(1 for t in v["traits"] if t in CORE8) if E else None
+    v["nherd3"] = sum(1 for r in Es if r["bherd"] >= 3); v["n8"] = sum(1 for r in E if r["b8"] >= 3)
     v["Cgap"], v["Cok"], v["Cfrac"], v["offset"] = Cg, Cok, Cfrac, off
     # secondary: inflow-aware null at two m from herdWildAnc (window means): arrival = the depth-0 share (equal to m
     # per generation if depths were geometric); core = the depth 10-19 share / 10 (flow reaching the deep herd); with
@@ -375,6 +388,18 @@ def main():
     print("| arm | " + " | ".join(CORE + ["C"]) + " |\n|---|" + "---|" * (len(CORE) + 1))
     for arm in show:
         if S[arm]["gap"]: print(f"| {arm} | " + " | ".join(mse(S[arm]["gap"][t], f3) + ("*" if t in S[arm]["traits"] else "") for t in CORE + ["C"]) + " |")
+    print("\nEXPLORATORY (the reviewer's 8fee17d; not read by the predictions or the decision rule). Carrier of each breadth trait"
+          " by exp007's more-than-half rule within the arm (herd: herd change has the gap's sign and is more than half of it;"
+          " wild: minus the wild change does; mixed: both or neither); herd-carried breadth; breadth over the 8 NT_CORE"
+          " traits (L excluded). Arm means over established seeds; per-seed counts = seeds at 3 or more of established")
+    print("| arm | breadth | traits (carrier) | herd-carried | seeds herd-carried >= 3 | 8-trait | seeds 8-trait >= 3 |\n|---|---|---|---|---|---|---|")
+    for arm in show:
+        v = S[arm]
+        if not v["read"]: continue
+        tc = ", ".join(f"{t} {v['carrier'].get(t, '-')}" for t in v["traits"]) or "none"
+        print(f"| {arm} | {v['breadth']} | {tc} | {v['bherd']} | {v['nherd3']} of {v['nE']} | {v['b8']} | {v['n8']} of {v['nE']} |")
+    print("  per seed, herd-carried / 8-trait breadth: " + "; ".join(
+        f"{arm} " + " ".join(f"s{r['seed']} {r['bherd']}/{r['b8']}" for r in S[arm]["E"]) for arm in show if S[arm]["read"]))
     print(f"\nWithin-arm split (split_tab, founders 301-400), established seeds, arm means: herd change / wild change / "
           f"mutational expectation E = {pull:.3f} x gen x (0.5 - F) (E exploratory)")
     print("| arm | " + " | ".join(CORE + ["C"]) + " |\n|---|" + "---|" * (len(CORE) + 1))
@@ -535,6 +560,20 @@ def selftest(bad=False):
     want = (3, 0, 8, True) if not bad else (0, 0, 0, False)
     res = got == want; ok &= res
     print(f"{'ok  ' if res else 'FAIL'} amendment 8: diverged from plain breadth, null exploratory" + ("" if res else f": got {got}, want {want}"))
+    # exploratory carrier and 8-trait breadth (8fee17d), gap = hc - wc, by hand: A -0.105 = -0.011 - 0.094 -> wild;
+    # T +0.352 = 0.353 - 0.001 -> herd; B -0.12 = -0.06 - 0.06 -> mixed (neither more than half); L +0.11 = 0.11 - 0 ->
+    # herd. Breadth 4 (A T B L), herd-carried 2 (T L), 8-trait 3 (L out); no seed herd-carried >= 3, all 8-trait >= 3.
+    def run2(seed):
+        hc = {t: 0.01 for t in CORE}; wc = {t: 0.0 for t in CORE}
+        for t, h, w in (("A", -0.011, 0.094), ("T", 0.353, 0.001), ("B", -0.06, 0.06), ("L", 0.11, 0.0)): hc[t], wc[t] = h, w
+        hc["C"] = wc["C"] = 0.0; g = {t: hc[t] - wc[t] for t in hc}
+        return {**run(seed), "gap": g, "hc": hc, "wc": wc}
+    v = summary([run2(s) for s in range(1, 9)])
+    got = (v["breadth"], v["carrier"], v["bherd"], v["b8"], v["nherd3"], v["n8"], v["diverged"])
+    want = (4, {"A": "wild", "B": "mixed", "T": "herd", "L": "herd"}, 2, 3, 0, 8, True)
+    if bad: want = (4, {"A": "herd", "B": "mixed", "T": "herd", "L": "herd"}, 3, 4, 8, 8, True)
+    res = got == want; ok &= res
+    print(f"{'ok  ' if res else 'FAIL'} exploratory carrier and 8-trait breadth" + ("" if res else f": got {got}, want {want}"))
     print("selftest " + ("passes" if ok else "FAILS")); return ok
 
 if __name__ == "__main__":
