@@ -5738,6 +5738,450 @@ below; "diverged" = breadth 3 or more on established seeds.
   filter can be retired from the reference culture in favour of it.
 - No arm closes: these rules, at these settings, do not close a herd; selfDoes and the nuisance levels go to Chris.
 
+## exp011 amendment, 2026-11-20 (before any run started: 0 of 48 begun; the reviewer's prereg review, d265982, and the analysis session's reading questions)
+**Code:** the runs will carry 1dd4fa7, which adds two output-only counters to aab0e86 (looseDeaths, herd goats dying
+while loose; selfMaintDays, camp-days self-maintaining); identity: 500 y REF seed 3, 0 of 500 year rows differ outside
+the new keys. Not done: cInitLo=0.6 on every job (the queued jobs could not be replaced without clearing the shared
+queue); the mutation-pull reference comes from exp009 instead.
+**"Diverged", restated:** a trait counts toward breadth only if, on established seeds, its herd change against the
+founders exceeds both the mutational expectation (exp009's pooled C fraction × (0.5 - F) for that trait, F the arm's
+301-400 founders' mean) and the size of its wild change. Branch 1 is read only once exp009 is scored, and through
+this restated count.
+**Nuisance arms:** NUIS reads observed run-offs, which spooking produces in proportion to R × fear, so it is culture
+acting on what spooking shows. Registered for every arm: realized selection on R (selSire, selDam, from the year
+rows), so selection on R is told apart from captives being eaten first through their fear. Branch 3 restated: NUIS
+closed with R diverged means herder culture can replace the spook filter's loss and its herd-size scaling, not the
+spooking itself. New branch: if NUIS30 establishes in 2 or fewer seeds, the cost exceeds what a herd can bear; the
+dose-response is then read over FLAT, NUIS03 and NUIS10.
+**R gaps** are read paired against FLAT by seed, not against 0. Registered: FLAT - exp010 LOAD1 by seed (they differ
+only in runOffLoss: the cleanest test of "loss is the filter"); exp010's LOAD1 is the same-load context arm.
+**"Closed"** is classified per established seed, with counts per arm, beside the arm-mean reading. Branch 2 ("closure
+necessary but not sufficient") is read with breadth against depth across exp007, exp010 and exp011 together.
+**selfDoes 10** encodes demographic self-replacement (enough home-born breeding does), not "captives can be told apart".
+If established herds are self-maintaining on 95% or more of camp-days over 3201-4000 (selfMaintDays), no selfDoes
+sweep; otherwise a follow-up at 5 and 20, stated now.
+**Reading choices (the analysis session's, accepted):** established by the jump_tab herd-size criterion with a
+Kaplan-Meier interval, the herd >= 100 count beside it; an arm is read with 2 or more established seeds; "closed" and
+"diverged" judged on arm means over established seeds, with per-seed counts; nuisance "falls" = strictly lower at each
+step over FLAT, NUIS03, NUIS10, NUIS30 among the levels read; "R near the wild" = R gap above -0.30, "R diverged" = -0.30
+or below. Added branch: LARD or TAPER closed and diverged with R at -0.30 or below means closure without any rule built
+for it still made herds tamer; read through selection on R (selSire, selDam) and the remaining R-reading rules (tether,
+capture's approach test, retrieval).
+
+## exp009 results (raw)
+40 of 40 runs complete (complete: true, last year row 3998), every exit 0; every run has cInitLo 0.6 and logHistDepth 1.
+34 on the desktop (3535-4679 s), 6 on mint (4901-5371 s). Commits recorded 6367599 to 4afb749 (other sessions'
+commits while the batch ran); `git diff 6367599 4afb749 -- src load.mjs tools/runyears.mjs` is empty. Five runs
+started with a dirty tree (at d9c3fbe, 75478a4, f2555ff); the uncommitted files then were analysis tools, none in src
+(the herder-culture edits to src began after 4afb749, and every 4afb749 run recorded a clean tree). Mongo
+animalDomestication.exp009_mutation-pull on mint; JSON in results/exp009_mutation-pull/. Scoring: the analysis
+session's "exp009 results (scored)" (tools/shiftc_tab.py, as amended twice).
+
+## exp011 amendment 2, 2026-11-20 (before any result; the reviewer's f3b8433)
+- When an arm's mean reading and its per-seed counts disagree on "closed" or "diverged", the per-seed count governs:
+  an arm is closed (or diverged) if 6 or more of its established seeds are, not (or not diverged) if 6 or more are
+  not, and "mixed" otherwise.
+- The mutational expectation scales with generations, not Ne: each arm's generation time (mean age of parents at birth,
+  from the records) is reported, and where an arm's generations from year 400 to the window differ from exp009's, the
+  expectation from exp009's pooled C is scaled by the ratio of generations.
+
+## exp009 results (scored)
+**Scored** 2026-11-20 by the analysis session, as pre-registered and amended twice (a2f5c04, d9c3fbe):
+`python tools/shiftc_tab.py 3201-4000 results/exp009_mutation-pull CTLDEEP,CTLRAND,REF` (the tool at 75478a4; its
+selftest passes). Standing measures: tools/jump_tab.py; split_tab.py (--perseed, --show-founders); flow_tab.py (--pairs
+CTLDEEP-CTLRAND); admix_tab.py (exploratory). Tables in results/exp009_mutation-pull/: scored.txt, jump_herd.txt,
+split_3201-4000.txt, split_founders.txt, flow_3201-4000.txt, admix_3201-4000.txt. Window 3201-4000; founders = each
+run's own 301-400; fraction = herd change / (0.5 - F).
+
+**As amended:**
+1. Validity: herd C fraction CTLRAND - CTLDEEP = -0.074 [-0.349, +0.200] (paired SE 0.129, 16 seeds), within 2 SE: C
+   is a valid reference.
+2. Pooled C fraction (herd and wild averaged within each run; interval over the 32 CTLDEEP and CTLRAND runs): +0.843
+   [+0.719, +0.968]. Width bar: half-width 0.125 <= 0.20, passes.
+3. Per trait, paired within-run fraction(C) - fraction(trait), 95% interval:
+
+| arm | runs | A | H | T | R | B |
+|---|---|---|---|---|---|---|
+| CTLDEEP | 16 | +0.419 [+0.152, +0.686] | +0.521 [+0.194, +0.847] | +0.496 [+0.285, +0.708] | +0.260 [+0.053, +0.467] | +0.706 [+0.514, +0.897] |
+| REF | 8 | +0.542 [+0.154, +0.930] | +0.695 [+0.239, +1.150] | -0.663 [-1.081, -0.244] | -1.669 [-2.009, -1.329] | +0.016 [-0.561, +0.593] |
+
+   CTLDEEP: all five traits moved less than C (pull partly opposed by selection in the herd). REF: A and H moved less
+   than C; T and R moved more (selection beyond the pull); B inside.
+4. Thresholds: the pooled C, 0.843, lies above every range the rule names (selection: below 0.15; unresolved: 0.15-0.3;
+   mutational: 0.3-0.6 with A, H and T inside). None of A, H, T is inside. The tool's reading: neither stated case.
+   Seed-level sensitivity (each seed's two runs averaged, interval over 16 seeds): +0.843 [+0.713, +0.973], half-width
+   0.130, the same reading. It is wider than the run-level interval (0.130 against 0.125), so it is the conservative line.
+5. Secondary: CTLDEEP's herd C alone +0.915 [+0.735, +1.094], half-width 0.180.
+
+The fractions (seed mean, 95% t interval in scored.txt): CTLDEEP C +0.91, A +0.50, H +0.39, T +0.42, R +0.65, B +0.21;
+CTLRAND C +0.84, A -0.41, H -0.54, T -0.01, R +0.29, B -0.02; REF C +0.79, A +0.25, H +0.09, T +1.45, R +2.46, B +0.77.
+
+**Predictions:**
+- The reviewer's mutational case (pooled C 0.3-0.6 with A, H, T inside): not met (0.843; none inside).
+- The reviewer's selection case (pooled C below 0.15 with A, H, T near 0.4-0.5): not met. A, H and T sit at 0.39-0.50,
+  but the pooled C is 0.843, not below 0.15.
+- The steward's (C's fraction in CTLDEEP between 0.15 and 0.45): not met (+0.915 herd C alone).
+- CTLRAND's predictions were withdrawn by the amendment; the validity check that replaced them passes.
+
+**Decision rule:** none of its three outcomes (mutational / selection / unresolved) applies, because the pooled C lies
+above the ranges it names. What the registered measures show: under the same pull, the neutral marker moved 0.84 of the
+way to 0.5 over 3201-4000. In the same runs each of A, H, T, R and B in the deep herd moved significantly less than C
+(paired intervals entirely above 0). So the pull alone would have carried these traits further toward 0.5 than they
+went. The amended per-trait reading for all five is "pull partly opposed by selection in the herd". How the paper words
+this is for the steward and the author.
+
+**Standing measures:**
+- Establishment (herd size): CTLDEEP 16 of 16 and CTLRAND 16 of 16 at once (501); REF 8 of 8, median 705, KM 0.75
+  [0.44-0.96] by 800. No fall-backs; no late crossings.
+- Split (seed means): CTLDEEP herd / wild change R -0.191 / -0.058, A -0.114 / +0.090, H -0.108 / +0.098, T +0.131 /
+  -0.018, B -0.078 / +0.019, C -0.258 / -0.213. CTLRAND's herd tracks its wild on every trait (largest gap R -0.026).
+- Gene flow, CTLDEEP - CTLRAND paired over 16 seeds: captive-sire share -0.060 (0.003) (CTLDEEP 0.000, CTLRAND 0.060);
+  depth +9.46 (0.20) generations (19.61 against 10.15); wildHerdShare -0.119 (0.009); first breedings per captured buck
+  -0.039 (0.003). Captures, captive-dam share and wildConc's herd-sire share are equal. No escapes in either CTL arm.
+
+**Exploratory** (not registered):
+- The neutral C has a gap in the deep herd: -0.045 (SE 0.018; herd change -0.258 against wild -0.213), against
+  CTLRAND's +0.007 (0.008). So a trait that nothing reads differs between herd and wild by about 0.05 in a closed herd
+  of about 209. Not tested: more generations per year in the herd (so more mutations per year), or drift in the small
+  herd. It bears on the 0.10 breadth threshold, and on exp011's scaling of the expectation by generations.
+- Founders' genotype SD (split_tab --show-founders, seed means): C 0.080; A 0.108, H 0.109, T 0.079, R 0.068, B 0.059.
+  The first amendment expected C's founders' spread to be wider than A, H and T's. At the genotype level it is narrower
+  than A's and H's and equal to T's. The SD is of goats' allele means, not of alleles; no record holds alleles.
+- admix_tab: no wild goat in the CTL arms is free of herd-born ancestry (CTLDEEP has 83% of wild goat-years in the 1/4-1/2
+  herd-born bin), so the low-admixture comparison cannot be made there. REF: herd against wild goats with no herd-born
+  ancestry, R -0.598 (0.008), against -0.636 for all wild.
+
+## exp011 clarification, 2026-11-20 (before any result; the analysis session's questions on amendment 2)
+- Generation scaling: exp009's runs lack a parent-age record, so the ratio uses the same proxy on both sides: median
+  age at first kidding (herd and wild pooled as the pooled C is). exp011's runs carry parentAge (0850eb3, output only;
+  identity: 500 y, 0 of 500 rows differ outside the new keys), and the mean parent age at birth is reported beside it.
+- The mutational expectation uses exp009's pooled C fraction (+0.843, as registered); herd C alone (+0.915) is
+  reported beside it as a sensitivity line.
+- "Herd change exceeds the mutational expectation", signed: a trait counts if its herd change goes further than the
+  expected pull in the pull's direction, or goes against the pull (away from 0.5); and, as before, its herd change
+  exceeds its wild change in size and abs(gap) >= 0.10.
+- R thresholds are read paired against FLAT; FLAT itself against 0. Branch 2 reads exp007 and exp010 when their
+  folders are given.
+
+## exp011 amendment 3, 2026-11-20 (before any run started: 0 of 48 begun; the reviewer's exp009 results review, 65cc886)
+**The divergence null, revised.** The C-fraction null (exp009's pooled C × (0.5 - F)) holds only for a herd closed to
+inflow: C relaxes in herd and wild alike, while a trait the wild holds by selection keeps flowing into the herd. With
+inflow m (wild genome share entering the herd per generation) and the pull r per generation (from exp009's C over its
+generations), a herd without selection on a trait sits at about its wild mean + r / (m + r) × (0.5 - wild mean), plus
+the arm's own C herd-wild gap. A trait counts toward breadth if its herd-wild gap departs from that null (signed, as in
+the clarification) and abs(gap) >= 0.10. The C-fraction null is kept only for herds closed to inflow (m near 0, e.g.
+TAPER once it stops capturing).
+**Validation of the null, before it is used:** it must predict the neutral marker C's own herd-wild gap in REF,
+CTLDEEP and CTLRAND (exp009, and exp005/006/007 where C is unshifted) within its interval. It is not calibrated
+against any selected trait; in particular no target is set for REF's B.
+**m** is estimated per arm from the conception records (half the share of herd conceptions by captive sires plus
+half that by captive dams, per generation) and reported beside depth; depth is capped at 23 (WV_DEPTH 24), so TAPER
+may saturate it.
+**"Closed" set aside as a binary.** exp007 and exp009 show its line (depth >= 10, captive-sire share <= 0.10) does not
+separate herds that diverge from herds that track the wild: CTLRAND passes it (depth 10.15, captive-sire 0.063) and
+tracks the wild, while REF (14.7, 0.064) diverges. Changed after seeing exp009, before any exp011 result: branch
+readings use m as a continuous measure, with breadth against m across exp007, exp009, exp010 and exp011, read as
+migration-selection balance (divergence where selection in the herd outweighs inflow). The closed/not counts still
+print, for reference only.
+
+## exp011 amendment 4, 2026-11-20 (before any run started; the reviewer's e72dff2)
+- **Validation restated so it can fail:** the C-gap part of the null is checked on C without C's own gap inside it:
+  the null must predict C's herd-wild gap as about 0 within its interval in REF, CTLDEEP and CTLRAND. The inflow term
+  r / (m + r) × (0.5 - wild mean) has no neutral test in the record (C's wild relaxes too, so the term is about 0 for C
+  whatever m is); it is model-derived and untested, and is reported as such. Breadth is reported twice: with that
+  term at 0, and at the m used. A test of the term needs a neutral marker held away from 0.5 in the wild (new code;
+  for the re-plan).
+- **Which m:** divergence is read on the realized inflow, from the herd's wild ancestry (herdWildAnc / herdAncDepth,
+  with the depth cap at 23 undone), by a committed conversion in tools/; the conception-based m (half the captive-sire
+  share plus half the captive-dam share) is reported beside it. The conception figure is larger where captives'
+  lineages do not persist (CTLDEEP about 0.043 against about 0.015 realized) and would shrink the null, so it is the
+  anti-conservative choice and is not used for the reading.
+
+## exp011 amendment 5, 2026-11-20 (before any run started; the reviewer's ac4160d)
+The restated C check already fails in exp009's CTLDEEP: C's herd-wild gap is -0.045 (SE 0.018), excluding 0; REF and
+CTLRAND pass. What that means for exp011, decided now:
+- The C part of the null is validated only for arms where C's gap is about 0 (checked per exp011 arm by the same
+  test). In an arm where C's gap departs from 0, the arm's own C gap is used as an empirical neutral offset, labelled
+  unvalidated, and that arm's breadth is reported with and without it.
+- Two candidate causes of a neutral offset, neither yet tested: (a) selection on ancestry (CTLDEEP's sire rule,
+  world.js sireRule 'deep'; LARD's unbred-captive rule), which is correlated with every allele that differs between
+  herd and wild, C included (the reviewer's); (b) herd generations shorter than the wild's (herd parents about 4.5 y
+  at a litter against about 6 y in the wild, parentAge, 0850eb3), so a closed herd takes more mutation steps per year
+  and relaxes faster toward 0.5 than its wild. (b) predicts the offset in any arm with low inflow, scaled by the
+  generation ratio; (a) predicts it only where ancestry is selected. exp011's TAPER (low inflow, no ancestry
+  selection) against LARD separates them; parentAge gives the generation ratio per arm.
+- The analysis session reports, for exp009's CTLDEEP, C's gap by seed (sign count) and herd against wild first-kid
+  age, before exp011 is scored.
+
+## exp011 amendment 6, 2026-11-20 (before any run started; the steward's decision after the analysis session's inflow table, a96d554)
+The inflow-aware null of amendments 3-5 needs a single inflow m, and exp009's CTLDEEP shows a herd that one number
+misdescribes: wild genes arrive (herdWildAnc depths 0-4 hold about 15% of the genome) but are lost within about four
+generations, while the persistent core (84% at depth 20+) takes in about 0.0006 a generation, below the pull. Rather
+than choose among m definitions or build a two-pool null now, divergence is read as follows:
+- **Primary (conservative):** against the closed-herd null, exp009's pooled C fraction × (0.5 - F), scaled by the
+  arm's generation ratio (amendment 2, clarification). Inflow from a selection-held wild can only reduce the drift a
+  herd shows, so a trait whose herd change goes beyond this null toward 0.5, or moves away from 0.5, has diverged
+  whatever the inflow; together with abs(herd change) > abs(wild change) and abs(gap) >= 0.10. This bound can miss
+  divergence; it cannot invent it.
+- **Secondary (model-dependent):** the inflow-aware null at two m: the arrival rate (from the depth profile's shallow
+  bins) and the flow reaching the core (depths 10-19), with the shape check reported; labelled model-dependent.
+- The per-arm C check and offset (amendment 5) stand. A two-pool null is for the re-plan if the secondary reading
+  matters to a claim.
+This supersedes the reading of amendments 3 and 4 where they differ; their measures are still reported.
+
+## exp011 amendment 7, 2026-11-20 (before any run started; the reviewer's ed0c0a5)
+- The primary (closed-herd) null's pull fraction is 0.95, CTLDEEP's core C fraction in exp009, not the pooled 0.843
+  scaled: a nearly closed core relaxed further than the pooled estimate, and exp011's runs (C unshifted) cannot
+  measure their own pull. At 0.95 the primary reading cannot invent divergence; it is the bound.
+- For arms whose ancestry profile passes the geometric shape check (REF-like), the inflow-aware null rests on measured
+  ancestry, and both readings are reported side by side as findings; for arms that fail the shape check it stays
+  secondary and model-dependent.
+
+## Code note, 2026-11-20: output-only counters added while exp010 and exp011 were queued (identity checks)
+Each was committed before it could reach a run, then checked: tools/runyears.mjs 500 years, REF arguments, seed 3, file
+mode, compared by tools/cmp_years.py with the previous code's output, the new keys excluded.
+- 8dd84a2 (wildConc, capIn, capBred): 0 of 500 year rows differ.
+- 92d8f21 (cInitLo/cInitHi, default [0,1]): 0 of 500 differ; cInitLo=0.6 differs only in C's fields.
+- aab0e86 (herder-culture switches, all off): 0 of 500 differ; smoke PASS.
+- 1dd4fa7 (looseDeaths, selfMaintDays): 0 of 500 differ.
+- 0850eb3 (parentAge): 0 of 500 differ.
+- 434ee46 (cohortBirth, cohortBreed: viability): 0 of 500 differ.
+- a659a59 (firstSireAge, a buck's age at first siring): 0 of 500 differ. exp011's runs will carry a659a59.
+exp011's runs (none begun when these landed) will carry a659a59 rather than the registered 1dd4fa7; the sim's
+behaviour is the same. exp010 spans code versions (its earlier runs predate some counters): each run's commit is in
+its saved parameters and goes in exp010's raw provenance, and the counters are not read for exp010 (the runs that
+carry them are a non-random subset).
+
+## exp011 amendment 8, 2026-11-20 (before any run started; Chris's decision)
+Chris: relaxed selection is the change the theory predicts (the grain paper's result needed it), and the
+mutation-pull and inflow analysis "doesn't belong in our paper ... it's too far down a branch". So:
+- "Diverged" goes back to the registered measure: breadth 3 or more (core traits with abs(gap) >= 0.10) on established
+  seeds, by per-seed votes (amendment 2). Relaxation-driven change counts as divergence.
+- The pull and inflow nulls of amendments 1 and 3-7 (C-fraction, closed-herd bound, inflow-aware, offsets) are
+  demoted to exploratory: computed and kept, not used for the predictions or the decision rule, not for the paper.
+- Everything else stands: the standing measures (establishment by herd size, the within-arm split, gene flow, R
+  paired against FLAT, FLAT - LOAD1, selection on R, loss rates, selfMaintDays, the per-seed closure counts).
+
+## exp012 — The genome's cost reinstated on conception chance (smooth gradient): does relaxed selection then give directional change in closed herds, as in the grain model?
+**Pre-registered:** 2026-11-20. Chris: the mutation-pull analysis is "too far down a branch" for the paper; "try an
+experiment that reinstates the gene cost ... maybe on conception chance or something that will have a smooth
+selection gradient". Mongo animalDomestication.exp012_gene-cost (mint); results/exp012_gene-cost; job list
+tools/exp012.jsonl (40 runs, cpuslot --anywhere, queued behind exp010 and exp011); code a659a59 (no new sim code).
+**Why:** the grain paper's syndrome came from relaxed selection with a cost that makes a trait whose benefit is removed
+decay toward 0. Here that cost has been off since 2026-11-03 (reproCostGrowth, reproCostFertility 0), so relaxed traits
+drift toward 0.5 under mutation instead (exp009). The cost on conception (src/animals.js fertility(): 1 -
+reproCostFertility × p, p = the goat's mean of the eight core expressed traits; each mating's conception chance ×
+both parents' fertility) is linear in p, a smooth gradient, and acts on wild and herd alike. The growth cost stays off.
+**Arms** (seeds 1-8, 4000 years; exp007's arguments):
+- REF25, REF50: the reference culture with reproCostFertility 0.25, 0.5.
+- DEEP25, DEEP50: CTLDEEP (no spooking, random cull 0.13, sireRule deep: a nearly closed herd) at 0.25, 0.5.
+- RAND50: CTLRAND (the same, sireRule random: a herd that tracks the wild) at 0.5, the open-herd contrast.
+Compared with the same cultures at cost 0: REF (exp005 seeds 1-4 + exp006 seeds 5-8), CTLDEEP and CTLRAND (exp007).
+**Measure** (the analysis session; 3201-4000; the standing measures): establishment by herd size; herd; gaps and
+breadth (abs(gap) >= 0.10, established seeds); the within-arm split; gene flow; wild means against cost 0 (the cost
+moves the wild too); per arm, the number of core traits whose herd sits below its wild by 0.10 or more (decay) and
+above by 0.10 or more.
+**Prediction** (mine):
+1. Wild means of the core traits fall with the cost: at 0.5, at least 5 of 8 core traits lower than at cost 0 by 0.05
+   or more.
+2. DEEP50: breadth at least CTLDEEP's at cost 0 (6), and at least 4 core traits with the herd below the wild by 0.10
+   or more (directional decay).
+3. RAND50: breadth 2 or less (the open herd still tracks the wild).
+4. Herds establish in at least 6 of 8 seeds at 0.25 in every arm.
+**Decision rule:** if 2 and 3 hold, the cost gives the grain model's mechanism in goats: closure plus relaxed selection
+gives directional change toward lower trait values, and an open herd does not; this goes to Chris for the re-plan
+(whether the cost returns to the reference culture). If DEEP50 is no more directional than at cost 0, the cost does
+little here, as was judged on 2026-11-03. If herds fail to establish at 0.5, the reading uses 0.25. Note: the cost
+moves the wild's calibrated means (wild B 0.873 at cost 0, exp004), so these arms are a mechanism test, not a
+recalibrated culture.
+
+## exp012 amendment, 2026-11-20 (before any run started: 0 of 40 begun; the reviewer's prereg review, 12e1e47)
+**Predictions 2 and 3 replaced** (as written they could not fail: exp007's CTLDEEP at cost 0 already has breadth 6 with
+four traits 0.10 below the wild, and CTLRAND breadth 0; breadth is also unsigned). The measured quantity is now the
+one the cost reads: the mean core gap, herd p - wild p (p = mean of the eight core genotypes), and its change from
+cost 0, same seeds 1-8 (cost-0 values: CTLDEEP -0.049, CTLRAND -0.006, REF -0.087).
+**Control arm added:** DEEPFLAT50: CTLDEEP at cost 0 with matingConception 0.356, the mean conception chance the cost
+gives at 0.5 (0.7 × (1 - 0.5 × 0.574)², 0.574 = CTLDEEP's all-goat mean core p at cost 0, exp007, 3201-4000): the same
+demography with no gradient (approximate, since p moves under the cost). Seeds 1-8. The cost's selective effect is
+read as DEEP50 - DEEPFLAT50.
+**Registered measures added:** the selection differential on p (the mean over the eight core traits of selDam and of
+selSire, from the year rows) per arm, against exp007's CTLDEEP / CTLRAND and REF at cost 0; per-trait signed gap
+change from cost 0; decay read through the within-arm split (herd change and wild change against the founders).
+There is no counter of conceptions per heat or of does ending a season unmated; the selection differential stands
+in for whether the cost selects.
+**Predictions** (replacing 1-3; 4 stands):
+1. Wild: the wild mean core p is lower at cost 0.5 than at cost 0 (interval excluding 0), with T predicted separately
+   to rise (a per-heat cost favours a longer season, as on 2026-11-03).
+2. DEEP50 - CTLDEEP (cost 0), mean core gap: below 0, 95% interval excluding 0.
+3. RAND50 - CTLRAND (cost 0), mean core gap: 95% interval including 0.
+4. (stands) herds establish in at least 6 of 8 seeds at 0.25 in every arm.
+5. DEEP50 - DEEPFLAT50, mean core gap: below 0, interval excluding 0.
+6. REF50 - REF (cost 0), mean core gap: below 0, interval excluding 0; REF25 between REF and REF50.
+7. The selection differential on p is more negative in DEEP50 than in CTLDEEP at cost 0.
+**Decision rule (replacing the first):**
+- 2, 3 and 5 hold: the cost gives directional change toward lower trait values through selection in a closed herd and
+  not in an open one: the grain model's mechanism in goats. To Chris for the re-plan.
+- 2 holds and 5 fails: the change is the cost's demographic effect, not its gradient.
+- 2 fails and 7 fails: the cost does not select here (a doe retries each cycle, so the per-heat cost is diluted); the
+  null says nothing about the mechanism.
+- 2 fails and 7 holds: selection on p is present but swamped in the herd.
+- 2 holds and 3 fails (RAND50 also below 0): the change is not specific to closed herds.
+- Herds fail to establish at 0.5 in an arm: that arm is read at 0.25.
+**Wording for the paper (the reviewer's):** at cost 0, the direction of relaxed change toward 0.5 is set by the clamped
+uniform mutation kernel (src/genome.js mutateAllele): it is relaxed selection with the mutation model's direction, not
+decay and not herder selection.
+**Identity check added (the reviewer's point 5):** CTLDEEP seed 1, 4000 years, cost 0, on the current code (a659a59),
+--scratch, against exp007's CTLDEEP_seed1 by tools/cmp_years.py (the earlier checks covered 500 years, 100 of herding).
+
+## exp012 amendment 2, 2026-11-20 (before any run started; the reviewer's 2caaf62)
+- DEEP50 and DEEPFLAT50 are reported side by side on herd births per doe-year, mean age at first kidding, herd size and
+  wild size. If they differ beyond noise, the demographic match is incomplete, and prediction 5's difference is said
+  to carry part of the demographic effect, next to it.
+- There is no flat arm at 0.25: where an arm is read at 0.25 (herds failing at 0.5), prediction 5 cannot be read.
+
+## exp012 clarification, 2026-11-20 (before any result; the analysis session's reading choices, a7b98b0, accepted)
+Prediction 1 holds only if wild p is lower (interval excluding 0) in every 0.5 arm, and T rises in every 0.5 arm;
+gap and selection changes over seeds established in both arms, wild changes over all seeds; prediction 7 on the
+mid-parent differential, paired interval below 0; "fails to establish" = fewer than 2 established seeds (DEEP50 falls
+back to DEEP25, REF50 to REF25, RAND50 has none); prediction 6's "between" on paired means; "beyond noise" = paired 95%
+interval excluding 0; breadth and the below/above counts over the 9 core traits, p over the 8 that fertility() reads.
+The cost-0 mean core gaps quoted in the amendment are -0.0485, -0.0063, -0.0865 unrounded.
+
+## exp010 provenance check, 2026-11-21 (after the 32 runs finished, before any scoring)
+All 32 runs finished, but 14 started with a dirty tree. Eleven are at 4afb749-dirty: LOAD05, LOAD1 and LOAD2 seeds
+1-3, and LOAD3 seeds 1-2, started 16:54-17:51 PST on 11-20. The herder-culture edits to src/world.js and src/params.js
+were then uncommitted and in progress; they were committed at 17:55 as aab0e86. Three more are at a659a59-dirty or
+ded6069-dirty: LOAD05, LOAD1 and LOAD2 seed 8, started about 19:00. What was uncommitted then is not recorded. So these
+14 runs may have carried a half-edited sim.
+**Check:** each of the 14 runs again for 800 years on clean committed code, with the same arguments and the same
+recording periods as a 4000-year run (recordEvery 3, histPeriod 15, reportingPeriod 1080), in --scratch, under the
+dev tag. Job list: tools/exp010_prov.jsonl. Each is compared with the first 800 years of its exp010 run by
+tools/cmp_years.py, excluding the counter keys that some runs lack. The committed code is behaviour-identical from
+4afb749 to 78ca109; see the code note's identity checks.
+**Rule:** a run whose rows all match (0 differ) stands. A run with any differing row is replaced by a full 4000-year
+re-run on clean code before exp010 is scored, and the replacement is noted here.
+**Amendment (before any re-run finished; the reviewer's b5cc0b7):**
+- LOAD1 seeds 1, 2, 3 and 8 first reach 100 herd goats after year 800 (in years 2288, 935, 1472 and 2993). An
+  800-year check never runs their code on the large herds they will be scored on. Each is re-run for the full 4000
+  years on clean code (LOAD1full_seedS) and compared over all rows. Their 800-year checks still run.
+- Positive control: LOAD1 seed 4, a clean run (65e8cc0), re-run for 800 years on the desktop host where it first ran
+  (LOAD1ctl_seed4). If it differs from its original, no "differ" among the dirty runs can be read, and the pipeline is
+  fixed first.
+- Each comparison records cmp_years' shared-key count.
+- Recorded: to answer, the reviewer read the saved parameters, the year-row key sets and the first year with 100 or
+  more herd goats in all 32 exp010 files. That last figure is close to the establishment result. Parameters are
+  identical across the 32 runs except id, seed and minLoad.
+- Job list: tools/exp010_prov2.jsonl.
+**Result, 800-year checks (2026-11-21):** all 14 are complete, at clean ca6d3ae or 0831d1f on the desktop, with rows for
+years 2-797. Each was compared by `python tools/cmp_years.py results/exp010_fixed-load/<RUN>.json
+results/_scratch/<probe>/<ARM>prov_<seed>.json`. In all 14, 0 of 266 records differ. The 4afb749-dirty runs share 68
+keys with their checks (the checks add the six later counters); the seed-8 runs share 74. The full-length checks of
+LOAD1 seeds 1, 2, 3 and 8, and the positive control, are still running.
+**Result, full-length checks and control:** LOAD1full seeds 1, 2, 3 and 8 (clean 0831d1f or 736c15d, desktop, 4000 years)
+against their exp010 runs: 0 of 1333 records differ. Seeds 1-3 share 68 keys; seed 8 shares 74. The control, LOAD1ctl
+seed 4 (clean 0831d1f, desktop, 800 years), against LOAD1_seed4 (clean 65e8cc0): 0 of 266 records differ, 68 shared keys.
+The re-run pipeline reproduces a clean original, and none of the 14 dirty-tree runs differs from clean code over its
+checked span. **All 32 exp010 runs stand.**
+
+## exp010 results (raw)
+32 of 32 runs complete (complete: true, last year row 3998), every exit 0; parameters identical across runs except id,
+seed and minLoad (0.5, 1, 2, 3; herdPerHerder 1e9). Hosts: 25 on the desktop and 7 on mint (algorithm0r-Media-2016).
+Run times were 2767-11907 s; they ran long while other projects shared the machine. Commits recorded: 4afb749-dirty
+(11 runs), 65e8cc0, d265982, ecaf9d3, bbd6259, 06c97bc, 16dfdd2, 6c1cc76, b64a201, a659a59-dirty, ded6069-dirty and
+78ca109. Every run's commit is in its saved parameters. The committed sim is behaviour-identical across these commits
+(the code note's identity checks), and the 14 dirty runs were checked against clean code above. The output-only
+counters added after 4afb749 are in some runs only, and are not read for exp010 (the code note). Mongo
+animalDomestication.exp010_fixed-load on mint; JSON in results/exp010_fixed-load/. Scoring: the analysis session, with
+tools/load_tab.py and the standing measures.
+
+## exp010 results (scored)
+**Scored** 2026-11-21 by the analysis session, as pre-registered (4aaf978), amended (071fd3e) and clarified (f2555ff):
+`python tools/load_tab.py "results/exp010_fixed-load;results/exp007_design-checks;results/exp005_b0-pilot;results/exp006_two-corner"`
+(the tool at f2555ff; its parameter guard checked every exp010 run's herdPerHerder and minLoad, and none stopped it).
+Standing measures over the same folders, arms LOADLO,LOAD05,LOAD1,LOAD2,LOAD3,LOADHI,REF: tools/jump_tab.py;
+split_tab.py 3201-4000 (--perseed, and --min-herd 100); flow_tab.py 3201-4000 (--perseed, --pairs between neighbouring
+levels). Tables in results/exp010_fixed-load/: scored.txt, jump_herd.txt, split_3201-4000.txt,
+split_est_3201-4000.txt, flow_3201-4000.txt. Window 3201-4000. The output-only counters added after 4afb749 are not read.
+
+**Dose-response** (est = herd >= 100 over the window, exp007's definition, which the predictions read; by-herd = the
+jump_tab criterion; R, breadth n and captive-sire share over established seeds):
+
+| arm | load | est | by-herd (KM median) | herd | R gap | n | csire | offtake |
+|---|---|---|---|---|---|---|---|---|
+| LOADLO | 0.25 | 8 | 8 (501) | 261.6 | -0.055 | 0 | 0.288 | 0.124 |
+| LOAD05 | 0.5 | 8 | 8 (525) | 261.9 | -0.104 | 1 | 0.333 | 0.121 |
+| LOAD1 | 1 | 8 | 7 (1614), 1 late | 245.8 | -0.247 | 1 | 0.311 | 0.121 |
+| LOAD2 | 2 | 0 | 0 | 2.1 | - | - | - | - |
+| LOAD3 | 3 | 0 | 0 | 1.4 | - | - | - | - |
+| LOADHI | 4.8 | 0 | 0 | 0.9 | - | - | - | - |
+| REF | grows | 8 | 8 (705) | 287.8 | -0.636 | 6 | 0.064 | 0.133 |
+
+(scored.txt's "median" column takes the upper of the two middle years, so it gives 528 and 717 where jump_tab's KM
+median gives 525 and 705.) No herd persists at load 2 or above: herds of 1-3 goats over the window in all 24 runs.
+These no-herd runs are counted and not scored as gaps.
+
+**Predictions:**
+1. Established in >= 6 of 8 at 0.5, 1 and 2, and in <= 4 of 8 at 3: **not met** (8, 8, 0; 0). The edge lies between
+   loads 1 and 2, not between 2 and 3.
+2. R gap of established seeds more negative at each higher level read (LOADLO, LOAD05, LOAD1; the only levels with 2
+   or more established seeds): **met** (-0.055, -0.104, -0.247).
+3. LOAD1 R gap between -0.50 and -0.20: **met** (-0.247).
+4. Breadth rises with load (non-decreasing, highest level read above lowest; clarification f2555ff): **met** (0, 1, 1).
+   It rests on LOADLO's 0: exp010's own two levels read tie at 1. The 1 at LOAD05 and LOAD1 is R alone.
+5. Captive-sire share falls with load: **not met** (0.288, 0.333, 0.311). It rises from LOADLO to LOAD05 (paired
+   +0.044, SE 0.012), then LOAD1 - LOAD05 is -0.022 (0.028).
+
+**Decision rule:** no level has established herds with R gap <= -0.30 and breadth >= 3. Registered outcome: no fixed
+load gives both a persisting herd and divergence, so REF's divergence (R -0.636, breadth 6) needs the load to grow
+with the herd. The result goes to Chris for the re-plan. The amendment's follow-up (a fixed load of 4) was conditional
+on LOAD3 establishing and does not apply.
+
+**Flag, est against the jump criterion (LOAD1):** est counts 8 of 8, the jump criterion 7 by its follow-up end (3599).
+Seed 5 crosses late (3708, inside the window; window herd 111), so part of its window is small-state. Seeds 6 and 8
+establish at 3171 and 3039, just before the window. Per-seed LOAD1 R gaps (split_tab): -0.399, -0.314, -0.292, -0.290,
+-0.056 (s5), -0.127 (s6), -0.372, -0.127 (s8). The late seeds have the smallest gaps. Dropping seed 5 cannot change a
+reading: it has the least negative R gap, so predictions 2 and 3 hold either way (no seed is below -0.50). Prediction 5
+fails at its first step, LOADLO to LOAD05, which LOAD1 does not enter. And every LOAD1 per-seed |gap| outside R and T
+is below 0.10, so breadth stays at most 2 for any subset and the decision rule cannot fire. A subset mean was not
+computed.
+
+**Observable rates** (amendment; per herd goat per recorded year, seed mean (SE)):
+
+| arm | run-offs | fetched back | lost (escaped) |
+|---|---|---|---|
+| LOADLO | 0.359 (0.004) | 0.205 (0.002) | 0.074 (0.001) |
+| LOAD05 | 0.631 (0.011) | 0.369 (0.006) | 0.122 (0.003) |
+| LOAD1 | 0.911 (0.085) | 0.550 (0.046) | 0.154 (0.020) |
+| LOAD2 | 3.764 (0.068) | 1.886 (0.036) | 1.013 (0.018) |
+| LOAD3 | 5.753 (0.092) | 2.845 (0.045) | 1.648 (0.049) |
+| LOADHI | 8.629 (0.210) | 4.115 (0.102) | 2.688 (0.052) |
+| REF | 0.859 (0.042) | 0.577 (0.029) | 0.082 (0.004) |
+
+Herds that persist lose 7-15% of their goats a year. REF loses 8%, about the rate of LOADLO, with run-offs near
+LOAD1's. Rates at loads 2 and above are over herds of 1-3 goats and are rates of the capture-and-loss cycle, not of a
+herd.
+
+**Bistability (Q1):** LOAD1 waited in the small state and then jumped in 7 of 8 seeds (plateaus of 5-12 goats before
+the jump; jump years 978-3171), with seed 5 a late crossing. LOAD05 established at once or grew (2 and 6), and
+LOADLO at once in 7. LOAD2 and LOAD3 never established. The amendment's reading: the waiting does not need the load to
+scale with herd size. Context: REF's 8 seeds are classed "grew", not "waited", by the same plateau criterion (100-year
+herd mean under 60 for 300+ years).
+
+**Standing measures:**
+- Establishment (herd size, KM): LOADLO 1.00 by 800; LOAD05 1.00 by 800; LOAD1 0.00 by 800, 0.25 [0.07-0.69] by 1200,
+  0.50 [0.23-0.85] by 2000, 0.88 [0.58-0.99] by 3200; REF 0.75 [0.44-0.96] by 800, 1.00 by 1200; LOAD2, LOAD3 and
+  LOADHI 0. No fall-backs.
+- Split (established seeds; herd change / wild change against each run's founders): R LOADLO -0.151 / -0.096, LOAD05
+  -0.234 / -0.129, LOAD1 -0.374 / -0.127, REF -0.714 / -0.078. T LOADLO +0.264 / +0.225, LOAD05 +0.320 / +0.285, LOAD1
+  +0.219 / +0.159, REF +0.459 / +0.012. At fixed loads the wild moves with the herd on T, and on R by part of the herd's
+  change; in REF it barely moves on either.
+- Gene flow (flow_tab): captive-sire share LOADLO 0.288, LOAD05 0.333, LOAD1 0.311, REF 0.064. Herd lineage depth 4.66,
+  3.95, 4.56, against REF 14.69. The wild genome's herd-born share (wildHerdShare) is 0.886, 0.844 and 0.721, against REF
+  0.128. Wild conceptions by a herd sire (wildConc share) 0.003 at LOAD05 and 0.002 at LOAD1. First breedings per capture
+  (capBred / capIn) are 0.635 for does and 0.121 for bucks at LOAD05, and 0.574 and 0.107 at LOAD1; LOAD1 - LOAD05 is
+  -0.062 (0.008) and -0.014 (0.003), paired. Persisting fixed-load herds are open (about a third of conceptions by
+  captured sires) and shallow, and their losses have made the wild mostly herd-descended. REF's herd is closed and deep.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

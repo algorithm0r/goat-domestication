@@ -6,7 +6,7 @@
 # mismatch. REF (load growing with the herd) is printed as context, not as a level.
 # Per level, over the window: seeds; established = herd >= 100 over the window (exp007's definition) and, by the herd-size
 # criterion of tools/jump_tab.py (100-year mean >= 100 held 400 y), the count established by the follow-up end and their
-# median year; herd; R gap; breadth n (core traits with abs(seed-mean gap) >= 0.10); captive-sire share (flow_tab csire:
+# upper median of the established runs' years (not the KM median: tools/jump_tab.py prints that); herd; R gap; breadth n (core traits with abs(seed-mean gap) >= 0.10); captive-sire share (flow_tab csire:
 # herd conceptions by a sire captured himself); realized offtake. Gaps, breadth and csire are given over all seeds and over
 # established seeds only (the prediction reads established seeds).
 # Then the predictions and the decision rule as registered. --alias maps an arm to another arm's files to test the tool
@@ -84,8 +84,8 @@ def main():
         if src not in F: print(f"{arm}: no runs ({src})"); continue
         S[arm] = summary([score(f, y0, y1, load, arm in alias) for s, f in sorted(F[src].items())])
     print(f"\nyears {y0}-{y1}. est = seeds with herd >= 100 over the window; by-herd = established by the jump_tab criterion"
-          " by the follow-up end (median year; late crossings); R, n, csire over all seeds | established seeds only")
-    print("| arm | load | seeds | est | by-herd (median) | late | herd | R all | R est | n all | n est | csire all | csire est | offtake |")
+          " by the follow-up end (upper median of the established runs' years, not the KM median; late crossings); R, n, csire over all seeds | established seeds only")
+    print("| arm | load | seeds | est | by-herd (upper median) | late | herd | R all | R est | n all | n est | csire all | csire est | offtake |")
     print("|---|---|---|---|---|---|---|---|---|---|---|---|---|---|")
     f3 = lambda x: "-" if x is None else f"{x:+.3f}"
     for arm, load in LEVELS + [("REF", "grows")]:

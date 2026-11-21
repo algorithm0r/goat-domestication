@@ -574,7 +574,12 @@ herd sire (`wildConc`, the herd-to-wild route through herd bucks mating wild doe
 prevents); captures by sex (`capIn`) and captives that conceive or sire while still in the herd (`capBred`; capBred /
 capIn over a window is a ratio of events, first breedings by captives per capture, close to but not the share of a
 cohort of captives that ever breed: a capture late in a window may breed in the next, and a recapture counts as a
-new entry; the cohort share would need per-captive tracking).
+new entry; the cohort share would need per-captive tracking). Also output only (2026-11-20): herd goats dying while
+loose (`looseDeaths`), camp-days a herd is self-maintaining (`selfMaintDays`, when `selfDoes` > 0), and parents' ages
+at each litter (`parentAge`, wild / herd: summed dam age, summed sire age at birth, litters), for generation time; and
+viability (`cohortBirth`, `cohortBreed`: summed genotype per trait and count, wild / herd × female / male, of each kid at
+birth and of each goat at its first breeding, a doe's first kidding or a buck's first siring; birth minus first
+breeding is the selection between).
 Realized selection differentials
 per trait (diploid): each herd kid's maternal allele mean minus the genotype mean of its camp's adult herd does
 at the year's start (`selDam`), and its paternal allele mean minus the bucks' (`selSire`; not for wild sires),

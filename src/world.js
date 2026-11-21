@@ -797,6 +797,14 @@ var World = class World {
     }
   }
 
+  // Viability counters (output only): add goat g's genotype trait means to c[h][sex] = [sums per trait..., count]
+  cohortAdd(c, h, g) {
+    const G = this._cohortG || (this._cohortG = new Float64Array(NT)), row = c[h][g.sex];
+    genotypicValues(g.genome, G);
+    for (let t = 0; t < NT; t++) row[t] += G[t];
+    row[NT]++;
+  }
+
   // A camp's herd is self-maintaining once it holds selfDoes home-born breeding does (counted each night in herdNight;
   // with Chris 2026-11-20: until then the herder treats every animal as herd). Read by larder and captureTaper.
   selfMaint(cid) {
@@ -865,6 +873,7 @@ var World = class World {
       members[g.herd].push(g);
       if (g.sex === SEX_F && g.gsc >= 1 && g.age >= P.femaleMinAge) homeDoes[g.herd]++;   // home-born breeding does (selfMaint)
     }
+    if (P.selfDoes > 0) for (let c = 0; c < homeDoes.length; c++) if (homeDoes[c] >= P.selfDoes) ys.selfMaintDays++;   // camp-days self-maintaining (output only)
     for (const m of members) for (const g of m)                     // herd composition per camp-day (counter only): kids, does, bucks, other
       ys.herdComp[g.age < P.yearDays ? 0 : g.age >= g.breedAge ? (g.sex === SEX_F ? 1 : 2) : 3]++;
     for (const c of this.camps) { const h = this.herders[c.id]; if (h) { c.lastX = h.x; c.lastY = h.y; } }
@@ -1537,6 +1546,12 @@ var World = class World {
       ys.firstKidStats[herd ? 1 : 0].push([mother.age, mother.tr[T_B], mother.growMult]); // her age, B, growth multiplier
     }
     ys.litters[herd ? 1 : 0][n - 1]++;
+    // parents' ages at this litter (2026-11-20, output only; generation time): [dam days, sire days, litters], wild / herd
+    const pa = ys.parentAge[herd ? 1 : 0]; pa[0] += mother.age; pa[1] += (mother.fetusFatherAge || 0) + PARAMETERS.gestationDays; pa[2]++;
+    // viability counters (2026-11-20, output only): genotype means of each kid at birth, and of a doe at her first kidding
+    // (a buck at his first siring, at conception below), by wild / herd and sex; birth minus first breeding = selection between
+    for (const k of [kid, kid2, kid3]) if (k) this.cohortAdd(ys.cohortBirth, herd ? 1 : 0, k);
+    if (mother.firstKidAge === mother.age) this.cohortAdd(ys.cohortBreed, herd ? 1 : 0, mother);
   }
 
   bornKid(mother, genome, n) {
@@ -1583,6 +1598,7 @@ var World = class World {
     if (g.ledBy) { g.ledBy.captive = null; g.ledBy = null; }
     const ys = this.ys;
     ys.deaths[cause]++;
+    if (g.herd >= 0 && g.loose) ys.looseDeaths++;                // a herd goat dying while loose (2026-11-20, output only)
     if (g.age >= PARAMETERS.yearDays) ys.adultDeaths++;
     const ay = Math.min(15, Math.floor(g.age / PARAMETERS.yearDays));
     ys.killoff[cause][g.sex][ay]++;
@@ -1635,7 +1651,7 @@ var World = class World {
       f.fetus2 = P.twinMax > 0 && rand() < P.twinMax * f.tr[T_L] ? meiosis(f.genome, best.genome) : null;   // twins (fraternal, one sire)
       // triplets: only twins can become triplets, and only for L above 0.5 (chance rising to tripletMax at L = 1)
       f.fetus3 = f.fetus2 && P.tripletMax > 0 && rand() < P.tripletMax * Math.max(0, 2 * f.tr[T_L] - 1) ? meiosis(f.genome, best.genome) : null;
-      f.fetusFather = best.id; f.fetusFatherWild = best.herd < 0;
+      f.fetusFather = best.id; f.fetusFatherWild = best.herd < 0; f.fetusFatherAge = best.age;
       f.fetusFatherPgs = best.herd < 0 ? -1 : best.pgs; f.fetusFatherWv = best.wv;   // a wild buck's too (2026-11-11: feral lines)
       f.gestation = 1; f.receptive = false;
       this.ys.conceptions++;
@@ -1649,6 +1665,10 @@ var World = class World {
       else this.ys.wildConc[best.herd < 0 ? 0 : 1]++;
       if (f.capBred === false && f.herd >= 0) { f.capBred = true; this.ys.capBred[SEX_F]++; }
       if (best.capBred === false && best.herd >= 0) { best.capBred = true; this.ys.capBred[SEX_M]++; }
+      if (!best.firstSired) {                                  // viability (output only): a buck's first siring, and his age then
+        best.firstSired = true; const bh = best.herd >= 0 ? 1 : 0;
+        this.cohortAdd(this.ys.cohortBreed, bh, best); this.ys.firstSireAge[bh][0] += best.age; this.ys.firstSireAge[bh][1]++;
+      }
     }
   }
 
@@ -1867,7 +1887,9 @@ var World = class World {
       captured: 0, exchanged: 0, immigrants: 0, surplusBucks: 0, winterCulled: 0, offtakeDue: 0, offtakeCredited: 0, huntTries: 0, wildNearCamp: 0, campDays: 0,
       cullTally: { offtake: [0, 0, 0, 0, 0], surplus: [0, 0, 0, 0, 0], winter: [0, 0, 0, 0, 0] }, herdComp: [0, 0, 0, 0], herdStarve: { lean: [0, 0, 0, 0, 0, 0], grow: [0, 0, 0, 0, 0, 0] }, herdStarveMonth: new Array(12).fill(0), fodderSpring: 0,
       herdDeathHalf: [0, 1, 2].map(() => [new Array(30).fill(0), new Array(30).fill(0)]),   // [kids, does, bucks, other, captured themselves]
-      concOrigin: [[0, 0, 0, 0], [0, 0, 0, 0]], wildConc: [0, 0], capIn: [0, 0], capBred: [0, 0],
+      concOrigin: [[0, 0, 0, 0], [0, 0, 0, 0]], wildConc: [0, 0], capIn: [0, 0], capBred: [0, 0], looseDeaths: 0, selfMaintDays: 0, parentAge: [[0, 0, 0], [0, 0, 0]],
+      firstSireAge: [[0, 0], [0, 0]],
+      cohortBirth: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))), cohortBreed: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))),
       selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
       dried: 0, driedLost: 0, fodderLost: 0, gatherScored: 0, meatHunted: 0, huntScored: 0, shots: 0, shotKills: 0, altKills: 0, unmetQ: [0, 0, 0, 0], slaughterQ: [0, 0, 0, 0], herdQ: [0, 0, 0, 0], labourQ: [0, 0, 0, 0],
       roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0,

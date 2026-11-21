@@ -145,6 +145,12 @@ var DataManager = class DataManager {
       learnedFear: { wolves: n ? +(fW / n).toFixed(4) : null, humans: n ? +(fH / n).toFixed(4) : null },
       herded: nh, captured: ys.captured, exchanged: ys.exchanged, concOrigin: ys.concOrigin,
       wildConc: ys.wildConc, capIn: ys.capIn, capBred: ys.capBred,   // [wild sire, herd sire]; [does, bucks] (2026-11-20)
+      looseDeaths: ys.looseDeaths, selfMaintDays: ys.selfMaintDays,
+      parentAge: ys.parentAge.map(a => [Math.round(a[0]), Math.round(a[1]), a[2]]),   // [wild, herd]: [sum dam age, sum sire age (days), litters]
+      // viability (2026-11-20): [wild, herd][female, male] = [sum genotype per trait (TRAITS order)..., n] at birth / first breeding
+      firstSireAge: ys.firstSireAge.map(a => [Math.round(a[0]), a[1]]),   // [wild, herd]: [summed age at first siring (days), bucks]
+      cohortBirth: ys.cohortBirth.map(h => h.map(r => Array.from(r, v => +v.toFixed(3)))),
+      cohortBreed: ys.cohortBreed.map(h => h.map(r => Array.from(r, v => +v.toFixed(3)))),  // herd goats dying while loose; camp-days self-maintaining (selfDoes > 0)
       selSire: ys.selN[1] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selSire[k] / ys.selN[1]).toFixed(5)])) : null,
       selDam: ys.selN[0] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selDam[k] / ys.selN[0]).toFixed(5)])) : null, selN: ys.selN, escaped: ys.escaped, runOffLost: ys.runOffLost, refetched: ys.refetched, ranOff: ys.ranOff, rejoined: ys.rejoined, culledHerd: ys.culledHerd, milk: +ys.milk.toFixed(1),
       wolvesKilled: ys.wolvesKilled, wolvesChased: ys.wolvesChased, fodder: +ys.fodder.toFixed(1), fodderSpring: +ys.fodderSpring.toFixed(1), foraged: +ys.foraged.toFixed(1),
