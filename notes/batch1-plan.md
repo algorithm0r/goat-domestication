@@ -60,3 +60,10 @@ seed gaps under 0.1 are drift).
   Differences in its components between arms take paired SEs over shared seeds (the wild's trajectory is mostly the
   seed's own: same-seed r 0.45-0.81, tools/pair_tab.py); differences in gaps take unpaired SEs (same-seed r about 0).
 - Established and small-state herds scored apart, never pooled; no-herd runs counted, never scored as gap 0.
+- Gene flow, registered (2026-11-20, after exp007; the reviewer's request): conceptions by sires and by dams captured
+  themselves, herd lineage depth (herdAncDepth), the wild's herd-born genome share (wildHerdShare; wildAnyHerd
+  saturates and is not used), and from runs on code 8dd84a2 on: wild conceptions by a herd sire (wildConc) and the
+  first breedings by captives per capture (capBred / capIn: a ratio of events, not a cohort share). Scored by tools/flow_tab.py, paired SEs over shared seeds.
+- The within-arm split (each arm's herd change and wild change against its own founders) is the instrument for
+  "the herd stopped tracking the wild". The between-arm "carried by" rule of exp007 cannot see it (exp007 note).
+- logHistDepth 1 where herd-vs-unadmixed-wild matters (review finding 10); about 7% slower, thinned with the rest.

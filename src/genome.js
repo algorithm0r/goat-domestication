@@ -45,10 +45,14 @@ function allelesPerTrait() {
 // analogue). relabelGenome gives every allele a fresh id, so IBD is measured from that moment.
 var _nextAllele = 1;
 
-// Fresh random genome (world initialisation): every allele ~ U[0,1].
+// Fresh random genome (world initialisation): every allele ~ U[0,1], except the neutral marker C ~ U[cInitLo, cInitHi]
+// (default [0,1]). 2026-11-20, the reviewer's mutation-pull test: a C started far from 0.5 shows how fast mutation
+// (uniform ±mutationStep, clamped to [0,1]: stationary mean 0.5) pulls an unselected trait back. One draw per allele
+// either way, so every random stream, C's own (rand3) included, is used exactly as before.
 function randomGenome() {
-  const K = allelesPerTrait(), g = new Float32Array(NT * K);
-  for (let i = 0; i < g.length; i++) g[i] = traitRand((i / K) | 0)();
+  const K = allelesPerTrait(), g = new Float32Array(NT * K), P = PARAMETERS;
+  const lo = P.cInitLo ?? 0, span = (P.cInitHi ?? 1) - lo;
+  for (let i = 0; i < g.length; i++) { const t = (i / K) | 0, u = traitRand(t)(); g[i] = t === T_C ? lo + span * u : u; }
   relabelGenome(g);
   return g;
 }

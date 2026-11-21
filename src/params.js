@@ -262,6 +262,16 @@ var PARAMETERS = {
   herdTravel: 2,          // cells per sub-tick a herd and its herder cover walking out at dawn and home at dusk (1: every
                           // run before 2026-11-11; 2 the default from then); a penned herd can use pasture up to about duskSteps × herdTravel away
   herdPull: 1.0,          // pull toward the herder, × (0.5 + S)
+  // Herder-culture tests (with Chris, 2026-11-20: "can we write a rule about human culture that has the same effect?"):
+  runOffLoss: 1,          // 1: a run-off or night stray can be lost (beyond searchRange, or it bolts on the approach test); 0: the
+                          // herder always brings it back, so spooking selects nothing by loss (goats still bolt, and the herder sees it)
+  selfDoes: 0,            // a camp's herd is self-maintaining once it holds this many home-born breeding does (gsc >= 1, age >=
+                          // femaleMinAge), counted each night; 0 = never. Read by larder and captureTaper
+  larder: 0,              // 1 (threshold cull): once the herd is self-maintaining, a captive that has not yet bred in the herd is
+                          // larder, kept as meat: no kid, milk or sire credit in its keep value. Before that every goat counts as herd
+  captureTaper: 0,        // 1: once the camp's herd is self-maintaining, its hunters stop taking goats alive
+  nuisanceCost: 0,        // threshold cull: the keep value is charged this × the goat's observed run-offs per year watched × its
+                          // expected years ahead (the herder's chasing labour, meat units per run-off; judged only from what he saw)
   herderAlarm: 0.05,      // daily chance × R × fearOfHumans × herder load that the herder spooks a herd goat (spread over the day sub-ticks)
   refetchRunOffs: 2,      // run-offs (a goat spooked beyond keepRadius): 0 drifts back on its own; 1 gone after at once (approach
                           // test); 2 loose: moves as a wild goat, rejoins if it comes back near, keepers chase one a sub-tick
@@ -381,6 +391,8 @@ var PARAMETERS = {
   ploidy: 'diploid',      // 'diploid' | 'haploid'
   loci: 2,                // loci per trait (diploid)
   mutationStep: 0.04,     // uniform ±step on every allele at meiosis (grain model's value); copies never mutate
+  cInitLo: 0,             // the neutral marker C's initial alleles ~ U[cInitLo, cInitHi] (goats and wolves, world start);
+  cInitHi: 1,             // default [0,1]. 2026-11-20: [0.6,1] tests the mutation pull toward 0.5 (randomGenome)
   pleioW: 0,              // β: weight of R's genotype in expressed pigmentation W (neural-crest switch)
   pleioA: 0,              // weight of R's genotype in expressed aggression A (shared HPA axis switch)
 

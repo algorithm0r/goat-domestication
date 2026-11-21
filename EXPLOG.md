@@ -5557,6 +5557,187 @@ Exploratory, beside the registered reading:
 - *NOCULL.* 8 of 8 established against NONE's 0 of 8: the bottom corner's lack of herds was the 13% quota's doing. The
   factorial's cull factor compares the threshold cull with no cull.
 
+## exp007 note, 2026-11-20 (after scoring; the reviewer's results review, 3af3969 and a353b1b)
+The between-arm "carried by" rule (amendment 2) cannot detect a herd that stopped tracking the wild: arms run on the
+same seeds share a wild whose trajectory is mostly the seed's own (tools/pair_tab.py), so a deep herd that stands
+still while the wild moves shows as herd change against a random herd that follows it. The within-arm split (each
+arm's herd change and wild change against its own founders, tools/split_tab.py) is the instrument for that from
+exp008 on. The reviewer withdraws the claim that herd-born escapees add little to the wild: in the CTL arms escapes
+are 0 and the wild is 28-41% herd-descended, through herd bucks siring wild kids (world.js mating; counted from
+8dd84a2 as wildConc). Open hypothesis (reviewer, 9f67403): CTLDEEP's own herd change on R, A, B, H, T, all toward 0.5
+from founders far from it, may be the mutation model's pull (uniform ±0.04 clamped to [0,1], stationary mean 0.5)
+acting once wild selection is relaxed; to be tested with a shifted neutral marker (cInitLo).
+
+## exp007 correction, 2026-11-20 (the identity check)
+"exp007 results (raw)" says the identity check "did not run (its job list was written to /tmp ...)". Wrong: it ran,
+on mint, and its result came back late, to results/_scratch/exp008_probe/REFid_seed1.json (commit a0a2e12; the sim
+code is the same as exp007's runs). tools/cmp_years.py against exp005's REF_seed1.json: 1333 records compared, 0
+differ; hist and histHerd identical. So the code exp007 ran reproduces exp005 exactly. A duplicate submission from
+the desktop was also made; it adds a second host and changes nothing here. Later code (8dd84a2 counters, 92d8f21
+cInitLo) was identity-checked separately at 500 years.
+
+## exp008 — not used
+A stray `--register` on 2026-11-20 (see the exp007 entry) claimed exp008 and made an empty results/exp008_design-checks
+folder; the registry entry was deleted, but the folder kept the number taken. Nothing ran under it; folder removed
+2026-11-20. The next experiment is exp009.
+
+## exp009 — Does the deep-sire herd's own change come from the mutation model's pull toward 0.5? A neutral marker started at U[0.6,1] against A, H, T, R, B.
+**Pre-registered:** 2026-11-20. Mongo animalDomestication.exp009_mutation-pull (mint); results/exp009_mutation-pull; job
+list tools/exp009.jsonl (40 runs, cpuslot --anywhere); code 92d8f21.
+**Why:** the reviewer's exp007 results review (notes/review/2026-11-20-exp007-results.md, 9f67403, prediction 405e315).
+Mutation is a uniform ±mutationStep 0.04 step clamped to [0,1] (src/genome.js mutateAllele), whose stationary mean is
+0.5 for any trait no selection holds. In exp007 CTLDEEP's herd moved toward 0.5 on all five traits whose founders sit
+far from it (R, A, B, H, T) and not on the four near it, which a relaxation of wild selection plus that pull would
+also produce. The neutral marker C is read by nothing and has its own random stream; started far from 0.5, its herd
+change measures the pull alone at the deep herd's depth and size. The switch cInitLo/cInitHi (92d8f21) draws C's
+initial alleles from U[0.6,1] with one draw per allele as before (identity: defaults 0 of 500 year rows differ from
+8dd84a2; shifted C differs only in C's fields). The mutationStep 0.02 arm first proposed is dropped: a deep, inbred
+herd's selection responses also wait on new mutation, so a slower change at 0.02 would not separate the two.
+**Arms** (4000 years; exp007's arguments plus cInitLo=0.6 cInitHi=1 logHistDepth=1):
+- CTLDEEP: no spooking, random cull 0.13, sireRule deep. Seeds 1-16.
+- CTLRAND: the same with sireRule random. Seeds 1-16.
+- REF: the reference culture. Seeds 1-8 (context: REF's own herd change on A/H/T bears on the same question).
+logHistDepth is on (histDepth every 15 years at k = 3; measured 19.2 kB a record, about 5.1 MB a run, so about 13 MB of
+BSON a run, under Mongo's 16 MB). Code from 8dd84a2 on also records wildConc, capIn, capBred.
+**Measure** (the analysis session; years 3201-4000; founders = the run's own 301-400 means):
+- Primary: tools/shiftc_tab.py 3201-4000 results/exp009_mutation-pull CTLDEEP,CTLRAND,REF: per run, herd change as a
+  fraction of (0.5 - F) for C and for A, H, T, R, B; per arm the seed mean with a 95% t interval; within-run paired
+  differences fraction(C) - fraction(trait).
+- Width bar: if C's 95% half-width in CTLDEEP exceeds 0.20, the reading is "unresolved" whatever the point estimate.
+- Standing measures (notes/batch1-plan.md): establishment by herd size, the within-arm split, gene flow by
+  tools/flow_tab.py (now with wildConc and capBred / capIn, first breedings by captives per capture, a ratio of events).
+**Prediction** (the reviewer's, 405e315, quoted): "if the deep herd's own change is mutational: a shifted C (initial
+alleles U[0.6, 1.0], scored from its own 301-400 F) reaches a fraction of 0.3-0.6 in CTLDEEP over 3201-4000, with A, H
+and T inside its 95% interval, and near 0 in CTLRAND. If C's fraction is below 0.15 while A, H and T stay near 0.4-0.5,
+the deep herd's own change is selection, not mutational pull. Between 0.15 and 0.3 I'd call it unresolved at 8 seeds."
+(Here 16 seeds, and the width bar above.) Mine: C's fraction in CTLDEEP between 0.15 and 0.45, and in CTLRAND within
+0.10 of 0.
+**Decision rule:** mutational: CTLDEEP's own change on A, H and T (its direction toward 0.5) is reported as the
+mutation model's pull acting where wild selection no longer reaches the herd, a property of the clamped uniform
+mutation; the re-plan then puts the mutation model on the list of assumptions to vary. Selection: the deep herd's own
+change is selection in the herd's environment, carried by isolation. Unresolved: neither is claimed; the paper reports
+the deep herd's change against the wild only.
+
+## exp009 amendment, 2026-11-20 (before any result: 0 of 40 runs finished, no JSON; the reviewer's prereg review, fdbb68f)
+**Predictions about CTLRAND withdrawn.** C is neutral in every population and unlinked, so it relaxes toward 0.5 in
+CTLRAND's herd and in the wild exactly as in CTLDEEP's herd (drift does not move its expected mean). The reviewer's
+"near 0 in CTLRAND" and my "CTLRAND within 0.10 of 0" would fail under the very hypothesis tested. Replaced by a validity
+check: C's fraction in CTLRAND's herd equals CTLDEEP's within noise (difference within 2 SE); if it does not, C is not a
+valid reference and the experiment is reported as not resolving the question.
+**Primary measure changed to a pooled pull estimate.** The pull on C is the same everywhere, so: the pooled C fraction
+over herd C in CTLDEEP and CTLRAND and wild C in the same runs (each run's change against its own 301-400 founders' C,
+as a fraction of 0.5 - F), with its 95% interval over runs, after the validity check above. The width bar (95%
+half-width <= 0.20, else "unresolved") applies to the pooled estimate. CTLDEEP's herd C alone is secondary.
+**Readings, per trait (A, H, T, R, B), CTLDEEP's herd fraction against the pooled C:**
+- inside the pooled C's 95% interval: the trait's own change in the deep herd is accounted for by the mutation pull;
+- clearly below it (below the interval): pull, partly opposed by selection in the herd;
+- clearly above it (above the interval): selection beyond the pull.
+The reviewer's thresholds stand for the pooled C: pooled C below 0.15 while A, H and T sit near 0.4-0.5 means the deep
+herd's own change is selection; pooled C 0.3-0.6 with A, H and T inside its interval means it is mutational; 0.15-0.3
+is unresolved. Expected, and read accordingly: C's founders' spread is wider than A, H and T's, so its pull per unit
+distance may be faster.
+**REF, stated comparison:** REF's herd fractions for A, H, T, R, B against the pooled C, read the same way.
+**Decision rule** unchanged in its three outcomes (mutational / selection / unresolved), now read from the pooled C.
+
+## exp009 amendment 2, 2026-11-20 (before any result: 0 of 40 finished, no JSON; the reviewer's three refinements)
+- Pooling: each run's herd C fraction and wild C fraction are averaged within the run first; the pooled estimate and
+  its 95% interval are then taken over the 32 CTLDEEP and CTLRAND runs.
+- Validity check: the CTLRAND - CTLDEEP difference in herd C fraction is reported with its 95% interval beside the
+  pass/fail (within 2 SE), so a pass that comes only from a noisy C shows as a wide interval.
+- Per-trait readings come from the paired within-run difference fraction(C) - fraction(trait) and its 95% interval
+  over CTLDEEP runs (REF runs for REF): spanning 0 = inside (the pull accounts for it); entirely above 0 = the trait
+  moved less than C (pull partly opposed by selection in the herd); entirely below 0 = the trait moved more than C
+  (selection beyond the pull). This replaces reading a trait's point estimate against C's interval.
+
+## exp010 — Herder spooking at a fixed load, not tied to herd size: at which spook loads do herds persist, and do they diverge from the wild?
+**Pre-registered:** 2026-11-20. Chris: "can we run a test run where herder spooks is not tied to herd size?". Mongo
+animalDomestication.exp010_fixed-load (mint); results/exp010_fixed-load; job list tools/exp010.jsonl (32 runs, cpuslot
+--anywhere, queued behind exp009); code 6367599 (counters wildConc/capIn/capBred recorded).
+**Why:** exp007 fixed the spook load at its two ends: LOADLO (0.25) gave herds of about 262 in 8 of 8 seeds with every
+gap within 0.04 of zero; LOADHI (4.8, REF's established level) let no herd survive. REF's load rises with the herd
+(herd goats / 20 per herder, src/world.js:181-183). This fills in the dose-response between the ends with the load
+fixed, so the herd's size no longer sets the strength of the spook filter.
+**Arms:** REF with herdPerHerder=1e9 and minLoad = 0.5, 1, 2, 3 (LOAD05, LOAD1, LOAD2, LOAD3): spooking as if each
+herder always watched 10, 20, 40 or 60 goats. Seeds 1-8, 4000 years. Compared with exp007's LOADLO (0.25) and LOADHI
+(4.8), and REF (exp005 seeds 1-4 + exp006 seeds 5-8).
+**Measure** (the analysis session; 3201-4000; the standing measures of notes/batch1-plan.md): establishment by herd
+size (and time to it), herd, gaps, breadth, the within-arm split, gene flow (flow_tab: captive sires and dams, depth,
+wildHerdShare, wildConc, capBred / capIn as first breedings by captives per capture), realized offtake; across the six
+load levels (with LOADLO and LOADHI), herd, R gap, breadth and captive-sire share against load.
+**Prediction** (mine): herds establish in at least 6 of 8 seeds at 0.5, 1 and 2, and in at most 4 of 8 at 3. Among
+established seeds, the R gap falls with load (more negative at each higher level), with LOAD1 between -0.20 and -0.50;
+breadth rises with load; the captive-sire share falls with load.
+**Decision rule:** if established herds diverge at a fixed load (R gap -0.30 or below and breadth 3 or more at some
+level), the divergence needs a spook filter of that strength, not its scaling with herd size, and the paper's question
+becomes how strong a filter herders would plausibly impose. If no fixed load gives both a persisting herd and
+divergence, the divergence in REF needs the load to grow with the herd: a herd that starts small under a weak filter
+and tightens it as it grows. Either way the result goes to Chris for the re-plan.
+
+## exp010 amendment, 2026-11-20 (before any result: 0 of 32 runs finished; the reviewer's prereg review)
+- Observable rates per level, registered: run-offs, run-offs fetched back and goats lost (escaped) per herd goat per
+  year, from the year rows (ranOff, refetched, escaped over herded), so a level reads as "losses of x% a year" and can
+  be set against herd-loss figures.
+- Bistability (Q1): if herds at fixed loads 1-3 wait in the small state and then jump (establishment by herd size
+  after year 500 with a small-state plateau before it), the waiting does not need the load to scale with herd size;
+  if they establish at once or never, the waiting in REF is the scaling rule's doing.
+- At a fixed load, herderAlarm and the load enter the spook chance only as their product (src/animals.js:363), so
+  this is also a herderAlarm sweep (herderAlarm × load = 0.025, 0.05, 0.1, 0.15 a day for a goat with R × fear 1).
+- Follow-up stated now: if LOAD3 establishes in 6 or more of 8 seeds, the edge lies in 3-4.8, and the next run is a
+  fixed load of 4, 8 seeds, the same arguments.
+- Comparability with exp007 and REF rests on the identity checks: exp007's code reproduces exp005's REF seed 1 (0 of
+  1333 year rows differ, 710f1eb); the counters (8dd84a2) and cInitLo (92d8f21) change no run (500-year checks).
+
+## exp010 clarification, 2026-11-20 (before any result; the analysis session's question)
+"Breadth rises with load": breadth is an integer count, so it is read as non-decreasing across the levels read (those
+with at least 2 established seeds, in load order) AND higher at the highest level read than at the lowest. A tie
+between neighbouring levels does not fail it. The continuous measures (R gap falling, captive-sire share falling)
+stay strict at each step.
+
+## exp011 — Herder-culture rules in place of the spook filter: do a larder, capture tapering or a nuisance cull close the herd, and does it then diverge from the wild?
+**Pre-registered:** 2026-11-20. Mongo animalDomestication.exp011_herder-culture (mint); results/exp011_herder-culture; job
+list tools/exp011.jsonl (48 runs, cpuslot --anywhere, queued behind exp009 and exp010); code aab0e86.
+**Why** (Chris, 2026-11-20): the paper read "we built a rule where herding selects against reactivity, and our claim is
+that herding selects against reactivity". The spook rule is about goats, not culture. "Can we write a rule about human
+culture that has the same effect? An opportunistic one?" exp007 showed divergence needs the herd to stop breeding
+from captives (closure). Three opportunistic herder rules, each a reason to keep captives out of breeding (aab0e86,
+MODEL C57 "Herder-culture rules"):
+- larder: once the herd is self-maintaining, a captive that has not yet bred in the herd is kept as meat (no kid,
+  milk or sire credit in its keep value); before that every animal counts as herd (Chris: "the larder only is a rule
+  once a herd and captives can be distinguished ... it also solves the founding problem mechanically").
+- capture tapering: once the herd is self-maintaining, hunters take no goat alive (live capture and orphans).
+- nuisance cull: the keep value is charged the herder's chasing labour, nuisanceCost × the goat's observed run-offs
+  per year watched × its expected years ahead; judged from behaviour only.
+Self-maintaining = at least selfDoes 10 home-born breeding does in the camp's herd (a first choice; herds of ~90 a camp
+held about 40 in the probes).
+**Baseline for every arm (FLAT):** REF with the spook load fixed at 1 (herdPerHerder 1e9, minLoad 1: spooking as if each
+herder watched 20 goats) and runOffLoss 0 (a run-off is always brought back), so spooking removes no goat and selects
+nothing by loss; goats still bolt and the herder sees it. logHistDepth 1.
+**Probes before registering** (1000 y, seed 3; not results): runOffLoss 0 gives 0 escapes; larder cuts captives' first
+breedings per capture from about 0.41 (FLAT) to about 0.1; captureTaper stops all captures once every camp is
+self-maintaining (tools/camp_probe.mjs; orphan capture first bypassed it and was then covered); nuisanceCost 0.03 showed
+no effect at that seed, so the nuisance cull runs as a dose-response, levels fixed here: 0.03, 0.1, 0.3 meat units
+per run-off (0.3 = a weaned kid's worth; herd goats ran off about 1.5 times a year each in the probes).
+**Arms** (seeds 1-8, 4000 years): FLAT; NUIS03, NUIS10, NUIS30; LARD (larder 1, selfDoes 10); TAPER (captureTaper 1,
+selfDoes 10). REF (exp005 + exp006) and exp007's LOADLO as context.
+**Measure** (the analysis session; 3201-4000; the standing measures of notes/batch1-plan.md): establishment by herd size
+and time to it; herd; gaps, breadth; the within-arm split; gene flow (captive-sire and captive-dam shares, depth,
+wildHerdShare, wildConc, capBred / capIn as first breedings by captives per capture); realized offtake; run-offs,
+fetched back and lost per herd goat per year. "Closed" = depth 10 generations or more AND captive-sire share 0.10 or
+below; "diverged" = breadth 3 or more on established seeds.
+**Prediction** (mine):
+1. FLAT: established in 6 or more of 8; breadth 2 or less; R gap above -0.20 (the herd tracks the wild, as LOADLO).
+2. LARD and TAPER: both closed; R gap above -0.30 (no rule reads R); breadth 3 or more.
+3. NUIS: the R gap falls (more negative) and the captive-sire share falls with nuisanceCost; NUIS30 closed with an R
+   gap of -0.30 or below.
+**Decision rule:**
+- LARD or TAPER closed and diverged with R near the wild: closure by herder culture gives divergence without any rule
+  reading reactivity; tameness is then a separate question, answered by NUIS.
+- LARD or TAPER closed but not diverged: closure is necessary (exp007) but not sufficient; the paper says what else
+  divergence needs.
+- NUIS closed with R diverged: a herder judging behaviour recreates REF's pattern through culture, and the spook
+  filter can be retired from the reference culture in favour of it.
+- No arm closes: these rules, at these settings, do not close a herd; selfDoes and the nuisance levels go to Chris.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

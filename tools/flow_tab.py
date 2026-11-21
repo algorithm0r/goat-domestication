@@ -17,9 +17,16 @@
 #                   (feral and anyh are stocks, not flows. The flow from herd to wild by herd bucks siring wild kids is
 #                   not recorded, and histDepth, which splits the wild by herd-born share, is empty in lean runs:
 #                   runyears.mjs sets logHistDepth 0.)
+#                   hsw   = wild does' conceptions by a herd sire / all wild does' conceptions   (wildConc, from 8dd84a2)
+#                   hout  = wild does' conceptions by a herd sire / herded: the herd-to-wild mating flow per herd goat
+#   captive fate    bredF, bredM = first breedings by captives / captures, does and bucks (capBred / capIn, from
+#                   8dd84a2): a ratio of events, not a cohort share (a captive taken before the window can breed in it;
+#                   a recapture is a new entry)
+#   (hsw, hout, bredF, bredM print "-" for runs without these keys, i.e. before exp009.)
 #   turnover        birth = herdBirths / herded;  death = herd deaths of every cause / herded;  cull = culledHerd / herded
-# Check: herdMatGen (herd goats by maternal generations since capture) sums to herded in every row read; the tool stops if
-# not. --bad shift: herded taken from the next row, which must fail that check.
+# Checks: herdMatGen (herd goats by maternal generations since capture) sums to herded in every row read; capIn sums to
+# captured; concOrigin + wildConc sums to conceptions. The tool stops if any fails. --bad shift: herded taken from the next
+# row; --bad capin: one doe added to capIn; each must fail.
 # --pairs HI-LO[,HI-LO...]: paired differences HI - LO over the seeds both arms have (same seed = same history to year
 # 400), mean (SE of the paired differences), for every measure.
 # Not in the records: a captive's survival to its first breeding. Year rows count herd deaths, losses and conceptions,
@@ -29,9 +36,16 @@ import glob, json, os, re, sys
 def run_flow(d, y0, y1, bad=None):
     rows = [r for r in d["years"] if y0 <= r["year"] + 1 <= y1]
     if bad == "shift": rows = [dict(r, herded=rows[i + 1]["herded"]) for i, r in enumerate(rows[:-1])]
+    if bad == "capin": rows = [dict(r, capIn=[r["capIn"][0] + 1, r["capIn"][1]]) if r.get("capIn") else r for r in rows]
     for r in rows:
         if r.get("herdMatGen") is not None and sum(r["herdMatGen"]) != r["herded"]:
             sys.exit(f"check failed: year {r['year'] + 1}: herdMatGen sums to {sum(r['herdMatGen'])}, herded {r['herded']}")
+        # counters from 8dd84a2 on (absent in older runs): capIn counts captures by sex, so it sums to captured; every
+        # conception is a herd dam's (concOrigin) or a wild dam's (wildConc), so the two sum to conceptions
+        if r.get("capIn") is not None and sum(r["capIn"]) != r["captured"]:
+            sys.exit(f"check failed: year {r['year'] + 1}: capIn sums to {sum(r['capIn'])}, captured {r['captured']}")
+        if r.get("wildConc") is not None and sum(map(sum, r["concOrigin"])) + sum(r["wildConc"]) != r["conceptions"]:
+            sys.exit(f"check failed: year {r['year'] + 1}: concOrigin + wildConc = {sum(map(sum, r['concOrigin'])) + sum(r['wildConc'])}, conceptions {r['conceptions']}")
     H = sum(r["herded"] for r in rows)
     if H == 0: return None
     S = lambda k: sum(r.get(k) or 0 for r in rows)
@@ -42,7 +56,12 @@ def run_flow(d, y0, y1, bad=None):
     dep = [r["herdAncDepth"] for r in rows if r.get("herdAncDepth") is not None]
     fer = [r["wildHerdShare"] for r in rows if r.get("wildHerdShare") is not None]
     anyh = [r["wildAnyHerd"] for r in rows if r.get("wildAnyHerd") is not None]
-    return {"herd": H / len(rows), "capt": S("captured") / H, "wsire": wsired / births if births else None,
+    new = all(r.get("wildConc") is not None for r in rows)
+    wc = [sum(r["wildConc"][k] for r in rows) for k in (0, 1)] if new else None
+    ci = [sum(r["capIn"][k] for r in rows) for k in (0, 1)] if new else None
+    cb = [sum(r["capBred"][k] for r in rows) for k in (0, 1)] if new else None
+    return {"hsw": wc[1] / sum(wc) if new and sum(wc) else None, "hout": wc[1] / H if new else None,
+            "bredF": cb[0] / ci[0] if new and ci[0] else None, "bredM": cb[1] / ci[1] if new and ci[1] else None,"herd": H / len(rows), "capt": S("captured") / H, "wsire": wsired / births if births else None,
             "cwild": (co[0][0] + co[1][0]) / conc if conc else None,
             "csire": (co[0][1] + co[1][1]) / conc if conc else None, "cdam": sum(co[0]) / conc if conc else None,
             "own0": sum(r["herdMatGen"][0] for r in rows if r.get("herdMatGen")) / H,
@@ -50,7 +69,8 @@ def run_flow(d, y0, y1, bad=None):
             "feral": sum(fer) / len(fer) if fer else None, "anyh": sum(anyh) / len(anyh) if anyh else None,
             "birth": births / H, "death": deaths / H, "cull": S("culledHerd") / H}
 
-KEYS = ["herd", "capt", "wsire", "cwild", "csire", "cdam", "own0", "depth", "esc", "feral", "anyh", "birth", "death", "cull"]
+KEYS = ["herd", "capt", "wsire", "cwild", "csire", "cdam", "own0", "depth", "esc", "feral", "anyh", "hsw", "hout",
+        "bredF", "bredM", "birth", "death", "cull"]
 
 def ms(xs):
     xs = [x for x in xs if x is not None]

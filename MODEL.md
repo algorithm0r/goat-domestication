@@ -433,6 +433,18 @@ None.
     worth 0.3). A preferred goat crosses the threshold later. *random* is a fixed per-goat liking that tracks no trait
     (the control); *youngMales* is not offered, since the keep value already culls grown non-sire bucks. A rule
     without a value above 0, or a value without a rule or under the quota cull, is an error.
+  - **Herder-culture rules** (with Chris 2026-11-20; all off by default; tested in exp011 against spooking at a fixed
+    load with no loss):
+    - `runOffLoss` (1): 0 = a run-off or night stray is always brought back (no searchRange limit, no approach test), so
+      spooking removes no goat; goats still bolt and the herder still sees it (`seen`).
+    - Self-maintaining herd: a camp's herd holding at least `selfDoes` home-born breeding does (gsc ≥ 1, age ≥
+      femaleMinAge), counted each night (`World.selfMaint`); `selfDoes` 0 = never.
+    - `larder` (threshold cull): once the herd is self-maintaining, a captive that has not yet bred in the herd (gsc 0,
+      `capBred` not set) is kept as meat: no kid, milk or sire credit in its keep value. Before that every goat counts
+      as herd, which lets herds found from captives.
+    - `captureTaper`: once a camp's herd is self-maintaining, its hunters take no goat alive (live capture and orphans).
+    - `nuisanceCost` (threshold cull): the keep value is charged this × the goat's observed run-offs per year watched
+      (seen[0] / (years watched + 1)) × its expected years ahead: the herder's chasing labour, judged from behaviour only.
 - **C58 Habituation**: every kept herd goat each night, fearOfHumans → 0.05 at rate 0.1 inside the
   socialisation window (age < 180 (1 − R) d), 0.02 after.
 - **C59a Exchange between camps** (`exchangeN`, 0; with Chris 2026-11-10): at each year's end every camp with a herd
@@ -560,7 +572,9 @@ in the herd, so a doe captured pregnant is not counted): dam captured or camp-bo
 camp-born, or another camp's. From 2026-11-20 (output only; runs identical): wild does' conceptions by a wild or a
 herd sire (`wildConc`, the herd-to-wild route through herd bucks mating wild does, which nothing in the mating rule
 prevents); captures by sex (`capIn`) and captives that conceive or sire while still in the herd (`capBred`; capBred /
-capIn over a window is the share of captures that breed before they die or escape; a recapture counts again).
+capIn over a window is a ratio of events, first breedings by captives per capture, close to but not the share of a
+cohort of captives that ever breed: a capture late in a window may breed in the next, and a recapture counts as a
+new entry; the cohort share would need per-captive tracking).
 Realized selection differentials
 per trait (diploid): each herd kid's maternal allele mean minus the genotype mean of its camp's adult herd does
 at the year's start (`selDam`), and its paternal allele mean minus the bucks' (`selSire`; not for wild sires),
@@ -798,3 +812,5 @@ camp. Not cold-checked at the time.
   by k = ceil(years / 1600)).
 - 2026-11-20 (commit 1468afe): `buckCull` / `doeCull` as keep-value terms under the threshold cull (`buckPrefValue`,
   `doePrefValue`, 0).
+- 2026-11-20: output-only counters `wildConc`, `capIn`, `capBred` (8dd84a2); `cInitLo` / `cInitHi` (92d8f21); the
+  herder-culture rules `runOffLoss`, `selfDoes`, `larder`, `captureTaper`, `nuisanceCost` (all off; defaults unchanged).

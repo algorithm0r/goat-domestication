@@ -650,7 +650,7 @@ var World = class World {
       // that is not a capture try is a shot if a wild goat is in sight within shotRange, else a stalk.
       let cap = null;
       if (P.shotChance > 0 && !P.economy) {
-        cap = capOpen && this.herdCount[h.camp.id] < P.herdTarget && rand() < P.captureRate;
+        cap = capOpen && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id)) && rand() < P.captureRate;
         if (!cap && this.shoot(h)) continue;
       }
       if (this.wild3x3(h.x, h.y) === 0) continue;
@@ -660,7 +660,7 @@ var World = class World {
         if (g) { if (this.approach(g, P.captureSteps)) { h.camp.sd.capture[0] += P.meatYield * g.size; this.capture(g, h); } else g.learnFear('fearOfHumans', 0.5); }
         continue;
       }
-      if (!P.economy && (cap === null ? capOpen && this.herdCount[h.camp.id] < P.herdTarget && rand() < P.captureRate : cap)) {
+      if (!P.economy && (cap === null ? capOpen && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id)) && rand() < P.captureRate : cap)) {
         // try to take a goat alive: pick one he can see, then close in; it is caught only if it
         // never bolts on the way (the approach test, MODEL C53)
         const g = this.visibleWild(h);
@@ -690,7 +690,7 @@ var World = class World {
         h.meat += P.meatYield * prey.size;
         h.attemptsLeft = 0;                                        // one carcass a day
         const kid = prey.orphan();                                  // her orphaned kid is taken home alive (one of a litter)
-        if (managing && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget) this.capture(kid, h);
+        if (managing && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id))) this.capture(kid, h);
       } else { prey.alarmed = true; prey.learnFear('fearOfHumans', 1); }
     }
   }
@@ -721,7 +721,7 @@ var World = class World {
       h.meat += P.meatYield * prey.size;
       h.attemptsLeft = 0;                                        // one carcass a day
       const kid = prey.orphan();
-      if (this.managing() && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget) this.capture(kid, h);
+      if (this.managing() && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id))) this.capture(kid, h);
       return true;
     }
     prey.learnFear('fearOfHumans', 1);
@@ -766,7 +766,7 @@ var World = class World {
   refetch(g, h) {
     const P = PARAMETERS, d = Math.max(Math.abs(g.x - h.x), Math.abs(g.y - h.y));
     if (d <= P.keepRadius) return;
-    if (d > P.searchRange || !this.approach(g, d)) { g.herd = -1; this.ys.escaped++; this.ys.runOffLost++; return; }
+    if (P.runOffLoss && (d > P.searchRange || !this.approach(g, d))) { g.herd = -1; this.ys.escaped++; this.ys.runOffLost++; return; }
     g.x = h.x; g.y = h.y; this.ys.refetched++;
   }
 
@@ -791,10 +791,17 @@ var World = class World {
         if (!best || bd > P.searchRange) continue;
         best.loose = false;
         if (bd <= P.keepRadius) continue;
-        if (this.approach(best, bd)) { best.x = k.x; best.y = k.y; this.ys.refetched++; }
+        if (!P.runOffLoss || this.approach(best, bd)) { best.x = k.x; best.y = k.y; this.ys.refetched++; }
         else { best.herd = -1; this.ys.escaped++; this.ys.runOffLost++; }
       }
     }
+  }
+
+  // A camp's herd is self-maintaining once it holds selfDoes home-born breeding does (counted each night in herdNight;
+  // with Chris 2026-11-20: until then the herder treats every animal as herd). Read by larder and captureTaper.
+  selfMaint(cid) {
+    const P = PARAMETERS;
+    return P.selfDoes > 0 && !!this._homeDoes && this._homeDoes[cid] >= P.selfDoes;
   }
 
   // A captive joins the camp's herd and is led home by the hunter (walking with him).
@@ -836,6 +843,7 @@ var World = class World {
     ys.campDays += this.camps.length;
     const members = this._members || (this._members = this.camps.map(() => []));
     for (const m of members) m.length = 0;
+    const homeDoes = this._homeDoes || (this._homeDoes = this.camps.map(() => 0)); homeDoes.fill(0);
     for (const g of this.goats) {
       if (g.dead || g.herd < 0 || g.ledBy) continue;
       const h = this.herders[g.herd], c = this.camps[g.herd];
@@ -847,7 +855,7 @@ var World = class World {
           // the herder goes back for it: beyond searchRange it is lost; otherwise he closes in over the
           // distance, and it is lost if it bolts (the approach test), else brought in
           const from = P.penning ? c : h, d = Math.max(Math.abs(g.x - from.x), Math.abs(g.y - from.y));
-          if (d > P.searchRange || !this.approach(g, d)) { g.herd = -1; g.loose = false; ys.escaped++; continue; }
+          if (P.runOffLoss && (d > P.searchRange || !this.approach(g, d))) { g.herd = -1; g.loose = false; ys.escaped++; continue; }
           g.x = from.x; g.y = from.y;                              // brought back to the pen / the herder
         }
       }
@@ -855,6 +863,7 @@ var World = class World {
       g.habituate();
       if ((P.cullRule === 'attack' || P.sireRule === 'gentle') && rand() < P.buttRate * g.tr[T_A]) g.seen[2]++;   // butts the herder (seen only; no draw otherwise)
       members[g.herd].push(g);
+      if (g.sex === SEX_F && g.gsc >= 1 && g.age >= P.femaleMinAge) homeDoes[g.herd]++;   // home-born breeding does (selfMaint)
     }
     for (const m of members) for (const g of m)                     // herd composition per camp-day (counter only): kids, does, bucks, other
       ys.herdComp[g.age < P.yearDays ? 0 : g.age >= g.breedAge ? (g.sex === SEX_F ? 1 : 2) : 3]++;
@@ -1192,7 +1201,10 @@ var World = class World {
         : P.growthCurve === 'curved' ? (credit === 'own' ? g.curveGain(GD) : g.curveGainTo(ref[g.sex], GD))
         : Math.max(0, Math.min((credit === 'own' ? g.target : ref[g.sex]) - g.size, yearGrowth * H));
       if (terms) { terms.growth = v; terms.kids = 0; terms.milk = 0; }
-      if (g.sex === SEX_F && ay < P.senescenceAge) {
+      // larder (with Chris 2026-11-20): once the herd is self-maintaining, a captive that has not yet bred in the herd is
+      // meat in store, with no kid, milk or sire credit (capBred: set at its first conception or siring in the herd)
+      const lard = P.larder && camp && g.gsc === 0 && g.capBred !== true && this.selfMaint(camp.id);
+      if (g.sex === SEX_F && ay < P.senescenceAge && !lard) {
         // expected kidding: her own record weighted by its length, blended with the camp's rate for
         // does of her age class (or the herd mean while the camp has little experience)
         const yrs = Math.max(0, (g.age - P.femaleMinAge) / Y);
@@ -1225,12 +1237,18 @@ var World = class World {
         const a = ay + k, sz = szAt(a), hz = Math.min(1, hzAt(a));
         feed += surv * P.feedCost * Math.pow(sz, 0.75); risk += surv * hz * sz; live += surv; surv *= 1 - hz;
       }
-      const sire = sires.includes(g) ? P.kidValue * herdRate * does / Math.max(1, sires.length)
+      const sire = lard ? 0 : sires.includes(g) ? P.kidValue * herdRate * does / Math.max(1, sires.length)
         : heirs.includes(g) ? 0.5 * P.kidValue * herdRate * does / Math.max(1, sires.length) : 0;
       v += sire * live; v -= feed; v -= risk;                     // this order keeps 'year' bit-identical to the code before
       if (terms) { terms.sire = sire * live; terms.feed = -feed; terms.risk = -risk; terms.flight = 0; terms.last = 0; }
       if (P.flightCost > 0) { v -= P.flightCost * g.tr[T_R] * g.fearOfHumans; if (terms) terms.flight = -P.flightCost * g.tr[T_R] * g.fearOfHumans; }
       if (pref.size) { const b = pref.get(g) || 0; v += b; if (terms) terms.pref = b; }
+      // nuisance cull (with Chris 2026-11-20): the herder's chasing labour, judged from the run-offs he has seen this goat
+      // make (per year watched, as the 'calm' rules read it), over its expected years ahead
+      if (P.nuisanceCost > 0) {
+        const nz = P.nuisanceCost * g.seen[0] / ((this.year * Y + this.day - g.seenFrom) / Y + 1) * live;
+        v -= nz; if (terms) terms.nuisance = -nz;
+      }
       // the last breeding doe and the last breeding buck are worth more to keep (with Chris, 2026-10-27):
       // they can still be eaten in a shortfall, but last
       if (P.lastBreederValue > 0 && ((g.sex === SEX_F && g.age >= P.femaleMinAge && does <= P.lastBreeders) ||
