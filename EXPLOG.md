@@ -6527,6 +6527,96 @@ count, and changes no other number). The registered reading stands. These narrow
 - **Per-trait intervals.** 7 of the per-trait gap table's 70 intervals exclude 0, where about 3.5 would by chance at
   95%. None of the reading aid's per-trait lines is to be cited alone.
 
+## exp013 results (raw)
+32 of 32 runs complete (complete: true, 6600 years), every exit 0 (cpuslot-logs/), every run on a clean tree. Arms, 8
+seeds each: REFlate, LARDlate, TAPERlate, WTlate. Hosts: 26 on the desktop and 6 on mint. Commits: a7e3d14 (1), 72c8473 (11)
+and d63d785 (20); src unchanged since a659a59, so one sim. **Shared history (amendment 2's check):** WTlate_seed1
+against REFlate_seed1, LARDlate_seed1 and TAPERlate_seed1 with tools/cmp_years.py: in each, the first differing record
+is year 2904, the first recorded after humans arrive at 2900 (k = 5). Every record to 2899 is identical, 72 shared
+keys. P1 can rest on WTlate's 8 histories. Mongo animalDomestication.exp013_late-herding on mint; JSON in
+results/exp013_late-herding/. Scoring: the analysis session, with tools/late_tab.py as frozen (ae0f6f5).
+
+## exp013 results (scored)
+**Scored** 2026-11-22 by the analysis session, as registered (9522ce9), amended (f752422, 37df366) and clarified
+(clarifications 1 and 2):
+`python tools/late_tab.py results/exp013_late-herding "results/exp005_b0-pilot;results/exp006_two-corner;results/exp011_herder-culture" --perseed`
+(the tool as frozen, ae0f6f5; selftest passes all 17 checks, `selftest bad` fails 3). Every time is taken from each run's
+herdingAt: founders 2901-3000 against 301-400, window 5801-6600 against 3201-4000. The parameter guard passed on all 32
+runs. Each late arm differs from its year-400 run of the same seed only in humansAt, herdingAt and ibdFrom, thinning
+(k 5 against 3), and REFlate's keys added since exp005/006. WTlate differs from REFlate only in humansAt. The tool's
+shared-history test agrees with the steward's cmp_years check: every late run's P1 span change equals WTlate's, seed by
+seed, so P1 rests on 8 histories, not 32. Tables in results/exp013_late-herding/: scored.txt, selftest.txt,
+selftest_bad.txt. The standing measures (establishment by herd size with KM, the split, closure) are in late_tab's output.
+
+**Arms** (established seeds; herd and wild change against each run's own founders):
+
+| arm | est (y after herding) | herd | breadth (vote) | traits | depth | csire | herd-carried breadth (exploratory) |
+|---|---|---|---|---|---|---|---|
+| REFlate | 8 (median 300) | 296.5 | 8 (8 of 8 diverged) | R A S B H T W L | 14.28 | 0.073 | 7 |
+| REF | 8 (305) | 287.8 | 6 (8 of 8) | R A S B T L | 14.69 | 0.064 | 4 |
+| LARDlate | 8 (105) | 268.0 | 4 (7 of 8 diverged) | A B H T | 20.81 | 0.007 | 4 |
+| LARD | 8 (101) | 271.2 | 6 (8 of 8) | A S B H T W | 20.80 | 0.005 | 2 |
+| TAPERlate | 8 (105) | 269.8 | 6 (8 of 8 diverged) | A S B H T L | 22.00 | 0.003 | 5 |
+| TAPER | 8 (101) | 267.8 | 6 (8 of 8) | R A S H T W | 22.23 | 0.003 | 2 |
+| WTlate | 0 (no humans, no herd) | 0.0 | - | - | - | - | - |
+
+A, S, H and W, gap / herd change / wild change (arm means; the full table is in scored.txt):
+
+| arm | A | S | H | W |
+|---|---|---|---|---|
+| LARDlate | -0.111 / -0.105 / +0.006 | +0.063 / +0.091 / +0.028 | -0.110 / -0.105 / +0.005 | -0.053 / -0.075 / -0.022 |
+| LARD | -0.105 / -0.011 / +0.093 | +0.111 / -0.139 / -0.250 | -0.107 / -0.025 / +0.083 | -0.100 / +0.109 / +0.209 |
+| TAPERlate | -0.132 / -0.143 / -0.010 | +0.165 / +0.181 / +0.016 | -0.119 / -0.129 / -0.009 | -0.084 / -0.090 / -0.007 |
+| TAPER | -0.121 / -0.039 / +0.083 | +0.131 / -0.125 / -0.256 | -0.147 / -0.064 / +0.082 | -0.138 / +0.101 / +0.239 |
+| REFlate | -0.121 / -0.142 / -0.021 | +0.111 / +0.160 / +0.049 | -0.131 / -0.151 / -0.020 | -0.130 / -0.196 / -0.066 |
+| REF | -0.148 / -0.060 / +0.088 | +0.174 / -0.073 / -0.247 | -0.083 / -0.023 / +0.060 | -0.090 / +0.067 / +0.158 |
+
+**Predictions:**
+1. The wild settled before humans: **met**. (i) WTlate's seed-mean wild, 2701-2900 minus 2401-2600, is within 0.02 on
+   every core trait (largest M -0.011, W +0.012). (ii) WTlate's wild moves under 0.05 from 2901-3000 to 5801-6600 on
+   A +0.003, S -0.011, H +0.003 and W +0.007. On the other core traits, deciding nothing: R -0.008, B +0.003, T +0.001,
+   M +0.001, L +0.044. The registration's settling year per trait (each seed's first century from which every century
+   stays within 0.02 of 2801-2900) is late in many seeds: M 2601-2801, H 2501-2801, and A 1601-2801 (scored.txt).
+2. Human-caused wild change (late arm - WTlate, paired by seed) under 0.05 on A, S, H, W in every late arm: **not met**,
+   on REFlate alone: S +0.060 [+0.016, +0.104] and W -0.073 [-0.135, -0.012]. In the closed arms every mean is under
+   0.05. LARDlate: A +0.002, S +0.039 [-0.002, +0.079], H +0.002, W -0.029 [-0.059, -0.000]. TAPERlate: A -0.014, S
+   +0.027 [+0.009, +0.044], H -0.012, W -0.014.
+   The burn-in's share (year-400 arm wild change - late arm wild change, unpaired): REF A +0.109, S -0.296, H +0.080,
+   W +0.224; LARD A +0.087, S -0.277, H +0.078, W +0.231; TAPER A +0.093, S -0.272, H +0.092, W +0.246. Every
+   interval excludes 0. The year-400 wild moved this far after founding; the late wild does not.
+3. Primary, late gap - year-400 gap (unpaired), predicted abs(late gap) < 0.10 with the interval excluding 0: **not met
+   on any trait of any arm**. No difference's interval excludes 0. LARDlate A -0.006 [-0.088, +0.075], S -0.048, H
+   -0.003, W +0.047. TAPERlate A -0.011, S +0.035, H +0.027, W +0.054. REFlate A +0.028, S -0.063. The late gaps
+   stand at 0.10 or more on A and H in both closed arms and on S in TAPERlate.
+4. (Registration's P3) LARDlate closed and every trait at 0.10 herd-carried: **met** (csire < 0.05 in 8 of 8; A, B,
+   H, T with abs(hc) > abs(wc)). TAPERlate: **not met**. It is closed in 8 of 8, but L (gap +0.111) is wild-carried
+   (herd -0.088, wild -0.199). Its other five traits are herd-carried.
+5. (Registration's P4) REFlate R gap <= -0.30, herd-carried: **met** (-0.634; herd -0.687, wild -0.053).
+
+**Decision rule** (amendments 1-2, clarification 2): P1 holds. Per closed arm and trait:
+- LARDlate: A and H herd divergence from a settled wild; S and W unresolved (late gap under 0.10, interval includes 0).
+- TAPERlate: A, S and H herd divergence from a settled wild; W unresolved.
+- REFlate (not governing): A and H herd divergence; S and W, humans move the wild (human-caused change 0.05 or more),
+  and the gap is the herd sheltered from human-driven selection on the wild, a model result.
+- The burn-in reading holds on no trait of either closed arm, so the registered re-plan trigger (move herding after
+  the wild settles) does not fire.
+- Plain breadth, per-seed vote: LARDlate diverged (7 of 8 seeds at 3 or more; breadth 4), TAPERlate diverged (8 of 8;
+  breadth 6). The two agree.
+
+**What the registered measures show together.** On the late design, from a wild that had settled, the closed herds'
+A and H gaps (and TAPER's S) are as large as at year 400, but now the herd carries them. LARDlate A: herd -0.105 / wild
++0.006, against LARD's herd -0.011 / wild +0.093. At year 400 the same gaps were carried by the wild's post-founding
+move, the burn-in's share above. So on these traits the year-400 and late gaps match in size but are carried by
+opposite pools: at year 400 the herd held its founders while the wild settled; from a settled wild, the closed herd
+moves away by itself (the rule's "herd divergence from a settled wild").
+
+**Exploratory** (not registered):
+- Herd-carried breadth (exp007's carrier) rises on the late design: LARDlate 4 (7 of 8 seeds at 3+), TAPERlate 5 (8 of
+  8), REFlate 7 (8 of 8), against LARD 2, TAPER 2, REF 4. 8-trait breadth: LARDlate 4, TAPERlate 5, REFlate 7.
+- L's wild moves in every late arm after humans arrive (wild change REFlate -0.131, LARDlate -0.154, TAPERlate
+  -0.199), against WTlate's +0.044. L is outside A, S, H, W, so no registered test reads it.
+- REFlate's breadth is 8 against REF's 6. R is unchanged (-0.634 against -0.636).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
