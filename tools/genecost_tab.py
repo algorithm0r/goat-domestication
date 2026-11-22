@@ -140,12 +140,14 @@ def score(f, y0, y1, bad=None):
            "wT": wm["T"], "allp": all_p(d, y0, y1), "selD": pd, "selS": psr,
            "selp": (pd + psr) / 2 if pd is not None and psr is not None else None,
            "hc": {t: v[0] for t, v in sp[0].items()} if sp else None, "wc": {t: v[1] for t, v in sp[0].items()} if sp else None,
+           "F": sp[1] if sp else None,
            "bpd": sum(r.get("herdBirths") or 0 for r in rows) / does if does else None,
            "fkh": fk["herd"], "fkw": fk["wild"], "wsize": sum((r.get("goats") or 0) - (r.get("herded") or 0) for r in rows) / len(rows) if rows else None,
            "flow": fl}
     if sp:
         run["hcp"] = sum(run["hc"][t] for t in core) / len(core); run["wcp"] = sum(run["wc"][t] for t in core) / len(core)
-    else: run["hcp"] = run["wcp"] = None
+        run["Fp"] = sum(run["F"][t] for t in core) / len(core)   # founders' p (301-400, all goats wild): the reviewer's ba50e23
+    else: run["hcp"] = run["wcp"] = run["Fp"] = None
     return run
 
 def summary(runs):
@@ -314,7 +316,7 @@ def main():
     print("| arm | " + " | ".join(TRAITS) + " |\n|---|" + "---|" * len(TRAITS))
     for x in show:
         if S[x]["gap"]: print(f"| {x} | " + " | ".join(mse(S[x]["gap"][t]) for t in TRAITS) + " |")
-    print("\nSplit (split_tab, founders 301-400), established seeds, arm means: herd change / wild change")
+    print("\nSplit (split_tab, founders 301-400), established seeds, arm means: herd change / wild change after founding (each against its own run's founders, which differ across cost levels: the cost acts from year 0)")
     print("| arm | p | " + " | ".join(TRAITS) + " |\n|---|---|" + "---|" * len(TRAITS))
     for x in show:
         E = [r for r in S[x]["E"] if r["hc"]]
@@ -324,19 +326,43 @@ def main():
     C = {}
     G = {"pgap": (lambda r: r["pgap"], True), "wp": (lambda r: r["wp"], False), "wT": (lambda r: r["wT"], False),
          "selp": (lambda r: r["selp"], True), "selD": (lambda r: r["selD"], True), "selS": (lambda r: r["selS"], True),
-         "hcp": (lambda r: r["hcp"], True), "wcp": (lambda r: r["wcp"], True)}
+         "hcp": (lambda r: r["hcp"], True), "wcp": (lambda r: r["wcp"], True), "Fp": (lambda r: r["Fp"], False)}
     for A, B in PAIRS:
         for k, (g, est) in G.items(): C[(A, B, k)] = paired(seeds, A, B, g, est)
-    print("\nChanges paired by seed, mean [95% interval] n: mean core gap, herd change p, wild change p and the selection"
+    print("\nChanges paired by seed, mean [95% interval] n: mean core gap, herd change p and wild change p after founding (against each run's own founders), and the selection"
           " differential over seeds established in both; wild p and wild T over every seed both have")
-    print("| pair | mean core gap | herd change p | wild change p | wild p | wild T | sel p (mid) | sel p dam | sel p sire |\n|---|---|---|---|---|---|---|---|---|")
+    print("| pair | mean core gap | herd change p after founding | wild change p after founding | wild p | founders' p (301-400, before herding) | wild T | sel p (mid) | sel p dam | sel p sire |\n|---|---|---|---|---|---|---|---|---|---|")
     for A, B in PAIRS:
-        if A in S and B in S: print(f"| {A} - {B} | " + " | ".join(iv(C[(A, B, k)]) for k in ("pgap", "hcp", "wcp", "wp", "wT", "selp", "selD", "selS")) + " |")
+        if A in S and B in S: print(f"| {A} - {B} | " + " | ".join(iv(C[(A, B, k)]) for k in ("pgap", "hcp", "wcp", "wp", "Fp", "wT", "selp", "selD", "selS")) + " |")
     print("\nPer-trait signed gap change, paired by seed over seeds established in both, mean [95% interval]")
     print("| pair | " + " | ".join(TRAITS) + " |\n|---|" + "---|" * len(TRAITS))
+    nx = nall = 0
     for A, B in PAIRS:
         if A in S and B in S:
-            print(f"| {A} - {B} | " + " | ".join(iv(paired(seeds, A, B, lambda r, t=t: r["gap"][t] if r["gap"] else None)) for t in TRAITS) + " |")
+            cs = [paired(seeds, A, B, lambda r, t=t: r["gap"][t] if r["gap"] else None) for t in TRAITS]
+            nall += sum(1 for c in cs if c[1] is not None); nx += sum(1 for c in cs if c[1] is not None and (c[1] > 0 or c[2] < 0))
+            print(f"| {A} - {B} | " + " | ".join(iv(c) for c in cs) + " |")
+    print(f"  {nx} of these {nall} intervals exclude 0; at 95% about {nall / 20:.1f} would by chance alone, so none is to be"
+          " cited singly (the reviewer's ba50e23)")
+    # reading aid (the steward, 2026-11-22, after the reviewer's exp011 finding; not a rule): did the cost move the herd or
+    # the wild? The cost acts on every goat from year 0, so cost and cost-0 runs have different founders; the herd and wild
+    # means are read absolute (founders + herd change, founders + wild change, over split's rows), so the gap change =
+    # herd change - wild change exactly (checked), with the founders' shift beside
+    print("\nReading aid, not a rule: per trait, change from cost 0 paired by seed over seeds established in both, mean: gap / herd mean /"
+          " wild mean (absolute genotype means over split's rows; gap = herd - wild), and the founders' mean (301-400) shift in brackets")
+    print("| pair | " + " | ".join(TRAITS) + " |\n|---|" + "---|" * len(TRAITS))
+    hmn = lambda r, t: r["F"][t] + r["hc"][t] if r["hc"] else None
+    wmn = lambda r, t: r["F"][t] + r["wc"][t] if r["hc"] else None
+    for A, B in PAIRS:
+        if A in S and B in S:
+            cells = []
+            for t in TRAITS:
+                g = paired(seeds, A, B, lambda r, t=t: r["gap"][t] if r["gap"] and r["hc"] else None)[0]
+                h = paired(seeds, A, B, lambda r, t=t: hmn(r, t))[0]; w = paired(seeds, A, B, lambda r, t=t: wmn(r, t))[0]
+                fd = paired(seeds, A, B, lambda r, t=t: r["F"][t] if r["F"] else None)[0]
+                if None not in (g, h, w) and abs(g - (h - w)) > 1e-9: sys.exit(f"reading-aid identity failed: {A} - {B} {t}: gap change {g} != herd {h} - wild {w}")
+                cells.append("-" if g is None else f"{g:+.3f} / {h:+.3f} / {w:+.3f} ({fd:+.3f})")
+            print(f"| {A} - {B} | " + " | ".join(cells) + " |")
     # amendment 2: the demographic match of DEEP50 and DEEPFLAT50
     S["_demog"] = []
     if "DEEP50" in S and "DEEPFLAT50" in S:

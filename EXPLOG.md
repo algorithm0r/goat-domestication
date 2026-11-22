@@ -6413,6 +6413,120 @@ Two more (the reviewer's da67400):
 - "Shrunk" means abs(late gap) < abs(year-400 gap). A late gap of the opposite sign that is 0.05 or more in size (an
   overshoot through zero, e.g. -0.105 to +0.09) reads unresolved, not burn-in.
 
+## exp012 results (raw)
+48 of 48 runs complete (complete: true, last year row 3998). Arms as registered, 8 seeds each: REF25, REF50 (threshold
+cull, reproCostFertility 0.25 and 0.5); DEEP25, DEEP50 (random cull, sireRule deep, herderAlarm 0); RAND50 (random cull,
+random sires); DEEPFLAT50 (cost 0, matingConception 0.356). Every run's parameters match its arm. Hosts: 38 on the
+desktop and 10 on mint. Run times 7378-16693 s. Commits: 4c92797 (14), a7e3d14 (33) and 4d3ba9c-dirty (1, RAND50 seed
+3, started 20:18:58Z on 11-21). `git diff 78ca109 HEAD -- src load.mjs tools/runyears.mjs` is empty, and no file the sim
+loads (src/*.js, load.mjs, tools/runyears.mjs) was modified after 02:56Z on 11-21, so the dirty run loaded committed
+sim code; the uncommitted files then were tools or notes. Every run carries a659a59's sim.
+**Exit codes:** 45 are 0. Three ran on mint across the cpuslot agent restart at 19:56:58 PST on 11-21 (the CPU-slots
+session's notice) and record "unknown (agent restarted)": REF50 seed 7, DEEP25 seed 7, RAND50 seed 8. They were
+re-adopted and ran to the end; each result file is complete with last row 3998, and each log ends with the copy-back
+from mint.
+**Identity run** (amendment, the reviewer's point 5): CTLDEEPid seed 1, 4000 years, cost 0, current code (e53d80f-dirty,
+desktop; sim files unchanged since 02:56Z, as above) against results/exp007_design-checks/CTLDEEP_seed1.json with
+tools/cmp_years.py: 0 of 1333 records differ, 65 shared keys. Log in results/exp012_gene-cost/idlogs/. exp007's cost-0
+runs are the valid baseline for exp012. Mongo animalDomestication.exp012_gene-cost on mint; JSON in
+results/exp012_gene-cost/. Scoring: the analysis session, with tools/genecost_tab.py.
+
+## exp012 results (scored)
+**Scored** 2026-11-22 by the analysis session, as registered (5a2948f), amended (e53d80f, amendment 2) and clarified:
+`python tools/genecost_tab.py results/exp012_gene-cost "results/exp005_b0-pilot;results/exp006_two-corner;results/exp007_design-checks" --perseed`
+(the tool at db9a2a6: 2d35e92's scorer plus a reading aid that changes no reading; selftest passes, `selftest bad`
+fails). The parameter guard passed on all 48 runs: dose, DEEPFLAT50's matingConception 0.356, and every other parameter
+equal to the cost-0 run of the same seed. Keys added since the cost-0 runs are listed and allowed. Checks: the
+amendment's quoted cost-0 values recompute (mean core gap CTLDEEP -0.04848, CTLRAND -0.00631, REF -0.08646; CTLDEEP
+all-goat p 0.57428), and the split identity passes on every run. Standing measures: tools/jump_tab.py, split_tab.py
+(--perseed) and flow_tab.py (--pairs as the scorer's PAIRS), arms REF25, REF50, DEEP25, DEEP50, RAND50, DEEPFLAT50, REF,
+CTLDEEP, CTLRAND. Tables in results/exp012_gene-cost/: scored.txt, selftest.txt, selftest_bad.txt, jump_herd.txt,
+split_3201-4000.txt, flow_3201-4000.txt. Window 3201-4000. p = the mean of the eight core genotypes.
+
+**Arms** (established by the jump_tab criterion; gap columns over established seeds, wild over all seeds):
+
+| arm | est (KM median) | herd | wild size | mean core gap (SE) | wild p | wild T | sel p mid | breadth | below / above | depth | csire |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| REF25 | 8 (735) | 308.2 | 447.2 | -0.126 (0.009) | 0.582 | 0.244 | +0.000 | 7 | 4 / 3 | 14.29 | 0.072 |
+| REF50 | 8 (813) | 296.4 | 432.5 | -0.110 (0.016) | 0.557 | 0.308 | +0.000 | 7 | 4 / 3 | 13.86 | 0.070 |
+| DEEP25 | 8 (501) | 211.0 | 445.7 | -0.041 (0.013) | 0.588 | 0.222 | -0.003 | 6 | 4 / 2 | 19.98 | 0.000 |
+| DEEP50 | 8 (501) | 216.4 | 433.3 | -0.027 (0.015) | 0.560 | 0.263 | -0.002 | 6 | 4 / 2 | 20.49 | 0.000 |
+| RAND50 | 8 (501) | 212.1 | 431.8 | -0.009 (0.001) | 0.571 | 0.284 | -0.000 | 0 | 0 / 0 | 12.10 | 0.046 |
+| DEEPFLAT50 | 8 (501) | 213.3 | 424.2 | -0.050 (0.014) | 0.612 | 0.331 | -0.003 | 7 | 5 / 2 | 20.50 | 0.000 |
+| REF (cost 0) | 8 (705) | 287.8 | 456.6 | -0.086 (0.017) | 0.571 | 0.196 | +0.000 | 6 | 3 / 3 | 14.69 | 0.064 |
+| CTLDEEP (cost 0) | 8 (501) | 209.2 | 452.5 | -0.048 (0.010) | 0.590 | 0.163 | -0.004 | 6 | 4 / 2 | 19.61 | 0.000 |
+| CTLRAND (cost 0) | 8 (501) | 204.7 | 454.3 | -0.006 (0.001) | 0.596 | 0.169 | -0.000 | 0 | 0 / 0 | 10.06 | 0.063 |
+
+(KM medians from jump_tab; scored.txt's "median year" column is the upper median of the established years, 747 and 852
+for REF25 and REF50.) Every arm has 8 of 8 seeds established, so nothing falls back to 0.25. REF50 establishes later:
+KM 0.25 [0.07-0.69] by 800, against REF's 0.75 [0.44-0.96].
+
+**Predictions** (paired by seed, 95% intervals; the clarification's reading choices):
+1. Wild mean core p lower at 0.5 than at cost 0 in every 0.5 arm: **not met**. DEEP50 - CTLDEEP -0.030 [-0.046,
+   -0.014] and RAND50 - CTLRAND -0.025 [-0.040, -0.010] are lower; REF50 - REF -0.014 [-0.035, +0.007] is not. T
+   rises in every 0.5 arm, as predicted separately: +0.100 [+0.075, +0.126], +0.115 [+0.078, +0.151] and +0.112
+   [+0.090, +0.135].
+2. DEEP50 - CTLDEEP, mean core gap, below 0: **not met** (+0.021 [-0.024, +0.066]).
+3. RAND50 - CTLRAND, interval including 0: **met** (-0.002 [-0.005, +0.001]).
+4. Herds established in >= 6 of 8 at 0.25 in every arm: **met** (REF25 8, DEEP25 8).
+5. DEEP50 - DEEPFLAT50 below 0: **not met** (+0.023 [-0.029, +0.075]). Amendment 2's side-by-side: herd births per
+   doe-year +0.051 [-0.092, +0.193] and herd first-kid age +0.037 y [-0.094, +0.168] are within noise. Wild first-kid
+   age +0.136 y [+0.042, +0.230], herd size +3.1 [+0.0, +6.3] and wild size +9.1 [+0.7, +17.5] differ beyond noise. So
+   the demographic match is incomplete, and prediction 5's difference carries part of the demographic effect.
+6. REF50 - REF below 0 with REF25 between: **not met** (REF50 - REF -0.023 [-0.072, +0.025]; REF25 - REF -0.040
+   [-0.087, +0.008], not between).
+7. Selection differential on p (mid-parent) more negative in DEEP50 than CTLDEEP: **not met** (+0.003 [-0.001,
+   +0.006]).
+
+**Decision rule:** branch C fires: 2 fails and 7 fails. In the reviewer's wording (ba50e23, adopted by the steward in
+place of the registered "the cost does not select here"): the cost lowers wild p (-0.052 against its demographic
+control), mostly before herding begins. Within closed herds it adds no detectable selection on p (prediction 7), and
+the herd does not move away from its wild under it (predictions 2 and 5). The null, narrowed: the per-heat cost, as
+built, acts in the wild and not within managed herds. Whether retries in the herd dilute it (a doe retries each cycle,
+the registered candidate) is untested; there is no counter for it. No other branch fires. For context, the demographic control alone,
+DEEPFLAT50 - CTLDEEP, moves the mean core gap by -0.002 [-0.034, +0.030].
+
+**Reading aid** (the steward's, not a rule; db9a2a6): per trait, the paired change from cost 0 in gap / absolute herd
+mean / absolute wild mean (gap = herd - wild, checked), with the founders' (301-400) shift in brackets. The cost acts
+on every goat from year 0, so it moves the founders too: at 0.5, T +0.113, M -0.092, S -0.052, A -0.047 and C -0.050,
+the same in DEEP50, RAND50 and REF50. The per-trait gap changes whose intervals exclude 0:
+- DEEP50 - DEEPFLAT50: H -0.083 [-0.154, -0.013] = herd -0.118 / wild -0.035 (herd moved); W +0.160 [+0.054, +0.267]
+  = herd +0.010 / wild -0.150 (the wild moved).
+- REF50 - REF: R -0.030 [-0.046, -0.014] = herd -0.000 / wild +0.029 (the wild moved); T -0.107 [-0.147, -0.068] =
+  herd +0.005 / wild +0.112 (the wild moved).
+- REF25 - REF: B -0.266 [-0.431, -0.100] = herd -0.274 / wild -0.009 (herd moved).
+- RAND50 - CTLRAND: T +0.020 [+0.003, +0.037] = herd +0.135 / wild +0.115 (both moved, the herd slightly more).
+- DEEPFLAT50 - CTLDEEP: W -0.085 [-0.138, -0.032] = herd -0.096 / wild -0.011 (herd moved).
+In DEEP50 - CTLDEEP no per-trait interval excludes 0. The largest moves are H -0.079 (herd -0.099 / wild -0.020), W
++0.076 (herd -0.086 / wild -0.161) and M +0.076 (herd -0.015 / wild -0.090).
+Not to be quoted as cost effects until exp013 reads (the steward, 2026-11-22). The reviewer (ba50e23) reads the wild at
+cost 0.5 as still changing at year 400, the burn-in issue exp013 tests; exp013 has no cost arms.
+
+**Standing measures:**
+- Establishment (herd size, KM): all six exp012 arms 8 of 8; REF25 and REF50 later than the cost-0 REF (medians 735
+  and 813 against 705); the DEEP and RAND arms at once (501). No fall-backs, no late crossings.
+- Split (established seeds, herd change / wild change of p after founding, each against its own run's founders, which
+  differ across cost levels): DEEP50 -0.044 / -0.016,
+  CTLDEEP -0.047 / +0.001, DEEPFLAT50 -0.049 / +0.001, RAND50 -0.014 / -0.005, REF50 -0.129 / -0.019, REF -0.104 /
+  -0.017.
+- Gene flow (flow_tab, paired): the DEEP arms stay closed (captive-sire share 0.000; depth 20.0-20.5 against CTLDEEP's
+  19.6). DEEP50 - CTLDEEP: captive-dam share -0.026 (SE 0.004), depth +0.88 (0.13), herd +7.2 (1.7). RAND50 - CTLRAND:
+  captive-sire share -0.016 (0.008), depth +2.04 (0.39). REF50 - REF: captive-sire share +0.005 (0.004), depth -0.83
+  (0.46).
+
+**Added after the reviewer's ba50e23** (genecost_tab bfc19d6; the rerun adds a founders' p column and an interval
+count, and changes no other number). The registered reading stands. These narrow what branch C says:
+- **Selection in the wild.** The registered selection differential (prediction 7) is over the camp's herd adults only
+  (world.js:1492). In the wild, the gradient's effect on p is clear: DEEP50 - DEEPFLAT50 wild p -0.052 [-0.070,
+  -0.035]. Most of it is in place before herding: founders' p (301-400) -0.035 [-0.051, -0.019], with wild change
+  after founding -0.017 [-0.039, +0.004]. So the registered "the cost does not select here" was true of the closed
+  herd, not of the wild; the decision rule above now carries the reviewer's wording. DEEP50 - CTLDEEP founders' p is -0.012 [-0.032, +0.007]; DEEPFLAT50 - CTLDEEP +0.022 [+0.004, +0.041].
+- **T.** The lower conception chance alone raises wild T (DEEPFLAT50 - CTLDEEP +0.167 [+0.146, +0.189]). The gradient
+  lowers it against that (DEEP50 - DEEPFLAT50 -0.067 [-0.090, -0.044]). Prediction 1's rise in T is the conception
+  chance's, not the gradient's.
+- **Per-trait intervals.** 7 of the per-trait gap table's 70 intervals exclude 0, where about 3.5 would by chance at
+  95%. None of the reading aid's per-trait lines is to be cited alone.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
