@@ -6962,6 +6962,209 @@ and s6 the gap is small because the wild moved with the herd, and in s4 because 
 goats join the wild, and SCHEDT loses more of them for good (the entry above), but s4 has the highest loss rate (0.171) and a
 small wild change, so the cause of the spread is untested.
 
+## exp015 — Fixed spook load between 0.5 and 1 (0.6, 0.7, 0.8, 0.9): where does the wait before take-off begin, and how does the R gap grow?
+**Pre-registered:** 2026-11-22. Chris: "please sweep 0.6 0.7 0.8 0.9", after LOAD05 and LOAD1 side by side over time.
+Mongo animalDomestication.exp015_load-sweep-mid (mint); results/exp015_load-sweep-mid; job list tools/exp015.jsonl (32
+runs, cpuslot --anywhere); code HEAD at queueing (named in the raw entry). exp016 was claimed in the registry by a
+mistaken second --register call (question "x") and marked abandoned; no run uses it.
+**Why:** exp010 fixed the spook load, the herd-size factor in the spook chance (src/animals.js, herderAlarm × R × fear ×
+load), so it no longer grows with the herd. At 0.5 every herd was established by year 800 (KM 1.00; Q1 "grew" 6, "at
+once" 2), and the R gap was -0.104. At 1, 7 of 8 waited in the small state (plateaus of 5-12 goats) and jumped in years
+978-3171, the eighth crossing late, and the gap was -0.247 (exp010 results, scored). Between them the waiting appears and the gap more than doubles.
+This sweep places both. At a fixed load, herderAlarm and the load enter only as their product, so it is also a
+herderAlarm sweep (daily spook chance 0.030-0.045 for a goat with R × fear 1).
+**Identity:** 800 years of exp010's LOAD1 seed 1 at f5f92f3 (tools/exp015_id.jsonl, --scratch, thinned as a 4000-year run) reproduce exp010's run: 0 of 266 year records differ, 68 shared keys (tools/cmp_years.py). The keys added since exp010 (spookFixed, spookSchedule and others) sit at their identity values.
+**Arms** (seeds 1-8, 4000 years, herding at 400; exp010's arguments, herdPerHerder 1e9, minLoad the load):
+LOAD06 0.6, LOAD07 0.7, LOAD08 0.8, LOAD09 0.9. Read beside exp010's LOAD05 and LOAD1 (and exp007's LOADLO), same seeds.
+Herds are open, as in exp010 (captures continue).
+**Measure** (the analysis session; window 3201-4000; tools/load_tab.py with the four levels added, built and checked
+before any result): per level, established (herd >= 100 over the window) and by jump_tab's criterion with the KM median
+time; Q1 per seed (at once / grew / waited / never, load_tab's definition: waited = the 100-year herd mean under 60 for
+300+ consecutive years after year 500, then established); herd; R gap; breadth; captive-sire share; observable rates
+(ranOff, refetched, escaped per herd goat-year).
+**Predictions** (mine):
+1. Every new level establishes (herd >= 100 over the window) in 6 or more of 8 seeds.
+2. Waiting is graded, not a switch: across 0.5, 0.6, 0.7, 0.8, 0.9, 1 the count of "waited" seeds is non-decreasing,
+   and at least two of the four new levels have "waited" in 2 to 6 of 8 seeds.
+3. The KM median time to establishment is non-decreasing with load across the six levels.
+4. Among established seeds, every new level's R gap lies between -0.05 and -0.30, and LOAD09's is more negative than
+   LOAD06's.
+**Decision rule:**
+- Waiting: if each new level has "waited" in 0-1 or in 7-8 seeds, the wait switches on between two neighbouring
+  levels: a threshold in filter strength, stated as the interval between them. Otherwise the wait is graded: its
+  chance rises with the load. Either way reported to Chris with the per-seed Q1 table.
+- Divergence: if any level has established herds with R gap -0.30 or below and breadth 3 or more, exp010's registered
+  conclusion (no fixed load gives both a persisting herd and divergence) is revised and goes to Chris. Otherwise it
+  stands over 0.25-1.
+- Descriptive, not a test: within each level, the R gap of seeds that waited beside those that did not.
+
+## exp015 amendment, 2026-11-22 (before any result: 0 of 32 runs finished; the reviewer's f0c4284)
+- **Waited, censoring removed:** a seed counts as waited if its 100-year herd mean stays under 60 for 300+ consecutive
+  years after year 500, whether or not it establishes by the follow-up end. Printed in two parts: waited then
+  established, and waited and still waiting (or crossing late). LOAD05 and LOAD1 are recounted with the same line
+  (exp010's LOAD1 s5 waited and crossed at 3708, so LOAD1 reads 8, not 7).
+- **The span cut:** per seed, J, the longest span under 60 after year 500, and the median herd over that span. The
+  waited count is also printed at 200 and 400 years. If the waiting reading differs between the 200, 300 and 400 cuts,
+  it is labelled cut-dependent.
+- **Waiting decision rule, restated by resolution** (the waited fraction per level, across 0.5, 0.6, 0.7, 0.8, 0.9, 1):
+  - no level intermediate (each 0-1 or 7-8 of 8): a switch narrower than 0.1, between the two neighbouring levels;
+  - one intermediate level: the switch is located there, its width unresolved at this spacing;
+  - two or more intermediate levels: graded over at least 0.1-0.2;
+  - not monotone in load: no single threshold.
+  Prediction 2 ("graded") holds only in the third reading.
+- **Prediction 3:** "non-decreasing" admits ties, so it needs no tie rule. The median is jump_tab's KM median (the first
+  event year where the established fraction reaches 0.5), not load_tab's upper median. Ties at the 501 floor carry no
+  information and are listed as such. A level with fewer than half its seeds established has no median and reads as
+  above every defined median; two such levels tie.
+- **Prediction 4:** compares arm means over established seeds. Per seed, J is printed beside the R gap, with herd change
+  and wild change of R against the 301-400 founders, since these herds are open.
+- **exp016:** no heading is added for it. runyears.mjs refuses a label with no "## expNNN" heading in this file, so the
+  abandoned registration can run nothing; a heading would open it.
+
+## exp015 clarification, 2026-11-22 (before any result: 0 of 32 runs finished; the reviewer's a7c0fe5)
+- **Not monotone,** read first: the waited count falls by 2 or more seeds between neighbouring levels in load order. A fall
+  of 1 is within binomial noise and does not trigger it. If it fires, "no single threshold" is the reading even where two
+  or more levels are intermediate.
+- Each level's waited fraction is printed with its exact (Clopper-Pearson) 95% interval.
+- The amendment's "LOAD1 reads 8, not 7" is an expectation from exp010's s5 (waited, crossed at 3708). The recount is
+  the tool's, and the results entry quotes the tool's count.
+
+## exp015 clarification 2, 2026-11-22 (before any result; load_tab f044e6e's reading choices, accepted)
+The scorer is tools/load_tab.py --exp015 (f044e6e). Its reading choices, accepted as the registration's reading:
+1. The span under 60 is measured before J for an established seed (as exp010's Q1), and to the run's end for a seed
+   that never establishes.
+2. Span length = last minus first year of the run of points under 60; the median herd over the span = the median raw
+   herd over that run's year records.
+3. Intermediate = 2-6 of 8 waited, counted across all six levels 0.5-1, LOAD05 and LOAD1 included.
+4. Not monotone = a fall of 2 or more between neighbouring levels, read first, at each cut.
+5. No intermediate level and no change from low to high within 0.5-1 reads "no switch in 0.5-1".
+6. Prediction 2 holds only if the 300-year cut reads "graded", the waited count is non-decreasing, and at least two new
+   levels have 2-6 waited.
+7. Cut-dependent = the full reading (category and location) differs between the 200, 300 and 400 cuts.
+8. The 501-floor note is printed when two or more levels have a KM median of 501.
+9. Prediction 4's bounds, -0.30 and -0.05, are inclusive.
+10. The divergence rule reads only levels with 2 or more established seeds, as exp010's did.
+11. The guard checks each LOAD06-09 run against exp010's LOAD1 run of the same seed: only minLoad may differ, with
+    spookFixed 0 and spookSchedule '' at identity, and logHistDepth (output only).
+
+## exp015 results (raw)
+32 of 32 runs complete (complete: true, last row year 3998), every exit 0 (cpuslot-logs/, batch 1795412363107110800), no
+error in any log. Arms as registered, 8 seeds each: LOAD06, LOAD07, LOAD08, LOAD09 (herdPerHerder 1e9, minLoad 0.6-0.9);
+parameters identical across runs except id, seed and minLoad. Hosts: 26 on the desktop and 6 on mint. Run times
+5010-11238 s. **Commits:** 68edd40 (9 runs, started 05:39-05:43Z on 11-23) and 11763f2 (23, from 06:42Z). `git diff
+68edd40 11763f2 -- src load.mjs tools/runyears.mjs` is empty, so one sim. Two 68edd40 runs started on a dirty tree
+(LOAD06 seed 8 and LOAD07 seed 1, at 05:42-05:43Z); `git describe --dirty` records that a tracked file was modified,
+not which one. **Dirty-run check:** both re-run for 800 years at clean 8f8c514
+(job list tools/exp015_dirtyid.jsonl; results/_scratch/exp043_probe/LOAD06id_seed8.json and exp044_probe/LOAD07id_seed1.json)
+and compared with tools/cmp_years.py: 0 of 266 records differ in each, 74 shared keys. The registered
+Mongo collection is animalDomestication.exp015_load-sweep-mid on mint (all 32 logs print the run line that follows the save, tools/runyears.mjs:100-101); JSON in results/exp015_load-sweep-mid/. Nothing of the runs has been
+read beyond these checks. Scoring: the analysis session, with tools/load_tab.py --exp015 as accepted (f044e6e, label
+89eebfa; the reviewer's 11763f2).
+
+## exp015 results (raw), note 2026-11-23 (the reviewer's c8d6331)
+The dirty-run check covers years 1-800 only: it includes 400 years of herding and each run's J (LOAD06 s8 J 531, LOAD07
+s1 J 540; scored.txt). Years 801-4000 of those two runs rest on the code identity (no change to src, load.mjs or
+tools/runyears.mjs between 68edd40 and 11763f2, and a clean tree now). They were not re-run at full length; the
+steward's decision: the herding and spook code runs, and matches, through 400 years of herding in the checked span.
+Correction 2026-11-23 (the reviewer's 19641de): "rest on the code identity" overstates. The commit identity says nothing
+about the unknown modified file. Years 801-4000 rest on the unchecked argument that a change to the sim would have shown
+within the 800 checked years.
+
+## exp015 results (scored)
+**Scored** 2026-11-23 by the analysis session, as registered (68edd40), amended (d377a7d) and clarified (5dce596,
+449ee72):
+`python tools/load_tab.py "results/exp015_load-sweep-mid;results/exp010_fixed-load;results/exp007_design-checks" --exp015`
+(the tool as accepted, 89eebfa; selftest passes all 44 checks, `selftest bad` fails 5). Window 3201-4000, founders
+301-400. The guard passed on all 32 runs (the tool stops otherwise): each LOAD06-09 run equals exp010's LOAD1 run of the
+same seed except minLoad, with spookFixed 0 and spookSchedule '' at identity. LOADLO, LOAD05 and LOAD1 reproduce
+exp010's scored values (herd, R gap, breadth, KM median). Tables in results/exp015_load-sweep-mid/: scored.txt,
+selftest.txt, selftest_bad.txt.
+
+**Dose-response** (est = herd >= 100 over the window; by-herd = jump_tab's criterion with the KM median year; R gap,
+breadth n and captive-sire share over established seeds; run-offs per herd goat-year):
+
+| arm | load | est | by-herd (KM median) | herd | R gap | n | csire | run-offs | lost |
+|---|---|---|---|---|---|---|---|---|---|
+| LOADLO | 0.25 | 8 | 8 (501) | 261.6 | -0.055 | 0 | 0.288 | 0.359 | 0.074 |
+| LOAD05 | 0.5 | 8 | 8 (525) | 261.9 | -0.104 | 1 | 0.333 | 0.631 | 0.122 |
+| LOAD06 | 0.6 | 8 | 8 (510) | 260.6 | -0.112 | 1 | 0.349 | 0.730 | 0.137 |
+| LOAD07 | 0.7 | 8 | 8 (561) | 261.3 | -0.167 | 1 | 0.324 | 0.776 | 0.140 |
+| LOAD08 | 0.8 | 8 | 8 (609) | 262.5 | -0.214 | 1 | 0.312 | 0.800 | 0.138 |
+| LOAD09 | 0.9 | 8 | 7 (792), 1 late | 249.8 | -0.244 | 1 | 0.304 | 0.825 | 0.137 |
+| LOAD1 | 1 | 8 | 7 (1614), 1 late | 245.8 | -0.247 | 1 | 0.311 | 0.911 | 0.154 |
+
+**Waited** (the 100-year herd mean under 60 for the cut's span or more after year 500, before J if established, else to
+the run's end), by cut, with the 300 cut in two parts:
+
+| arm | @200 | @300 | @400 | @300 [95% CP] | @300 then established | @300 still waiting / late |
+|---|---|---|---|---|---|---|
+| LOAD05 | 0 | 0 | 0 | 0.000 [0.000, 0.369] | 0 | 0 |
+| LOAD06 | 0 | 0 | 0 | 0.000 [0.000, 0.369] | 0 | 0 |
+| LOAD07 | 0 | 0 | 0 | 0.000 [0.000, 0.369] | 0 | 0 |
+| LOAD08 | 3 | 2 | 1 | 0.250 [0.032, 0.651] | 2 (s7 846, s8 1578) | 0 |
+| LOAD09 | 6 | 3 | 3 | 0.375 [0.085, 0.755] | 2 (s1 1158, s6 2019) | 1 (s8, late 3630) |
+| LOAD1 | 8 | 8 | 8 | 1.000 [0.631, 1.000] | 7 | 1 (s5, late 3708) |
+
+The LOAD1 recount, from the tool: 8 waited at the 300 cut, 7 then established and s5 crossing late at 3708 (exp010's Q1,
+which required establishment, gave 7). LOADLO waits in no seed at any cut.
+
+**Predictions:**
+1. Every new level establishes in 6 or more of 8: **holds** (8, 8, 8, 8).
+2. Waiting graded at the 300 cut: **holds**. Waited is non-decreasing over 0.5-1 (0, 0, 0, 2, 3, 8), two new levels have
+   2-6 waited (LOAD08, LOAD09), and the reading is "graded". The strict non-decreasing test did not bite: no count falls
+   between neighbours at any cut.
+3. KM median non-decreasing over 0.5-1: **fails**, at the first step only: LOAD05 525, LOAD06 510. From 0.6 up it rises
+   (510, 561, 609, 792, 1614). The fall is 15 years, within the first century after herding, where LOAD05 and LOAD06 each
+   have 2 seeds "at once" (501); the registration admits no tolerance, so it fails as registered. No floor note (only
+   LOADLO has a median of 501, and it is outside 0.5-1).
+4. New levels' R gap within [-0.30, -0.05], and LOAD09 more negative than LOAD06: **holds** (-0.112, -0.167, -0.214,
+   -0.244; LOAD09 -0.244 against LOAD06 -0.112).
+
+**Decision rule, waiting: graded at the registered 300 cut; cut-dependent.** At 300, two levels are intermediate (LOAD08
+2, LOAD09 3): graded over at least 0.1-0.2. At 200 the reading is the same (LOAD08 3, LOAD09 6). At 400 only LOAD09 is
+intermediate (3; LOAD08 1): the switch is located at 0.9, its width unresolved at this spacing. Not monotone fires at no
+cut. The cut dependence comes from the spans themselves, which are continuous at the upper levels rather than split into
+short and long. Longest span under 60 after 500, per seed: LOAD08 0, 30, 81, 84, 87, 243, 324, 1053; LOAD09 45, 192, 243,
+252, 267, 633, 1500, 3102. At 0.9, three seeds that "grew" at the 300 cut spent 243-267 years under 60 first. The
+No seed below 0.8 waits at any cut (LOAD07's longest span is 177 years); from 0.8 the spans lengthen with the load.
+At no cut is it a switch narrower than 0.1. To Chris with the per-seed table in scored.txt.
+
+**Median raw herd** (read only for spans of 200 years or more): 3.0-8.0 in every waited seed at 0.8-1, and 4.5-20.5 in
+the four 0.8-0.9 seeds with spans of 243-267 years. No still-waiting seed has a median under 3: LOAD09 s8 holds 4.0 over
+3102 years and LOAD1 s5 holds 6.0 over 3183. Both kept a herd of a few goats; neither is a herd that never formed.
+
+**Decision rule, divergence:** no level has established herds with R gap <= -0.30 and breadth >= 3 (levels read:
+LOADLO to LOAD1, all with 8 established; arm means -0.055 to -0.247, breadth 0-1). exp010's
+conclusion stands over 0.25-1: no fixed load gives both a persisting herd and divergence. In the new levels, five single seeds reach R
+-0.30 or below (LOAD07 s6 -0.304, LOAD08 s5 -0.334 and s7 -0.321, LOAD09 s6 -0.310 and s7 -0.432); the rule reads
+levels, not seeds.
+
+**R gap with load** (descriptive): the arm-mean gap grows from -0.104 at 0.5 to -0.244 at 0.9, then -0.247 at 1. Per seed,
+herd change of R against the founders runs -0.215 to -0.281 at 0.5 and -0.100 to -0.504 at 1, while wild change stays
+within -0.044 to -0.194 at every level 0.5-1. Run-offs per herd goat-year rise with the load (0.631 to 0.911); goats lost for good
+are flat over 0.6-0.9 (0.137-0.140).
+
+**Waited beside not waited** (300 cut; descriptive, not a test): LOAD08 -0.250 (n 2) against -0.202 (n 6); LOAD09 -0.191
+(n 3) against -0.276 (n 5). No direction. The late-crossing seeds have the smallest gaps (LOAD09 s8 -0.088, LOAD1 s5
+-0.056), as exp010 found for LOAD1.
+
+## exp015 results (scored), correction 2026-11-23 (the reviewer's c8d6331, wording; no number changes)
+Three wording fixes. They replace the passages named below. The tables and verdicts are unchanged.
+1. **Waiting** (replaces the "Decision rule, waiting" paragraph's lead, its sentence "At no cut is it a switch narrower
+   than 0.1", and the stray "The" before "No seed below 0.8"):
+   - The spans come first. Per level, the longest span under 60 after 500 is 177 years at 0.7, 1053 at 0.8 and 3102 at
+     0.9. No seed below 0.8 waits at any cut. From 0.8 up the spans are continuous rather than split into short and
+     long.
+   - Read by category, the result is graded at the registered 300 cut and at 200, and located at 0.9 at 400:
+     cut-dependent.
+   - "Graded at 300" rests on one seed: LOAD08 s7's span is 324 years. Were it 25 or more years shorter (under 300),
+     LOAD08 would have 1 waited and the 300 cut would read "located at 0.9".
+2. **Single seeds at -0.30** (moved out of the divergence paragraph into "R gap with load"): in the new levels, five
+   single seeds reach R -0.30 or below (LOAD07 s6 -0.304, LOAD08 s5 -0.334 and s7 -0.321, LOAD09 s6 -0.310 and s7
+   -0.432). This is R gap alone. Breadth is not read per seed, and no level meets the rule.
+3. **Prediction 3** (replaces "within the first century after herding"): both medians are the 4th of 8 J within 24 years
+   of the floor (LOAD05 525, LOAD06 510). The J at 0.5 and 0.6 overlap throughout (501-669 and 501-639).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
