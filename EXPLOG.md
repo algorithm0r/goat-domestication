@@ -6874,9 +6874,7 @@ checks. Scoring: the analysis session, with tools/sched_tab.py as accepted (f237
 **Scored** 2026-11-22 by the analysis session, as registered (536bc53), amended (3dfc9bb, 1a67ab6), calibrated (1a81bb5)
 and clarified (60a121d):
 `python tools/sched_tab.py results/exp014_runoff-schedule "results/exp005_b0-pilot;results/exp006_two-corner" --perseed`
-(the tool as accepted, f237316; scored again with dfc030c, a display-only change after the reviewer's 5b57cf5: the window
-ratio to 3 decimals and a count of centuries with SCHEDT above REFT, the table otherwise identical; selftest passes all
-48 checks, `selftest bad` fails 5). Window 3201-4000, founders
+(the tool as accepted, f237316; selftest passes all 46 checks, `selftest bad` fails 4). Window 3201-4000, founders
 301-400. The parameter guard passed on all 24 runs (the tool stops otherwise): SCHEDT = SCHED but captureTaper 1 and
 selfDoes 10; REFT = SCHEDT but no schedule; SCHED = REF but the schedule, with the keys added since exp005/006 each at
 its identity value (runOffLoss 1, spookFixed 0, captureTaper 0, selfDoes 0, and the rest listed in scored.txt). Every
@@ -6899,22 +6897,56 @@ Tables in results/exp014_runoff-schedule/: scored.txt, selftest.txt, selftest_ba
 3. SCHED's herd R falls from its founders by 0.20 or more: **holds** (-0.212, near the boundary).
 
 **Decision rule: branch 2 fires.** SCHEDT is closed (csire under 0.05 in 8 of 8 seeds) with R gap -0.270, above -0.30,
+while REFT, also closed in 8 of 8, has -0.657. As registered: the filter needs the run-off side to read the goat (R x
+fear) and its herd's load. Four things differ between SCHEDT and REFT: R in the spook, fear in the spook, the per-herd
+load, and the run-off level. **Run-off rates in the window are within 15%:** SCHEDT / REFT = 1.15 (window rates 0.846
+and 0.737), so the reading is not said to carry a rate difference. It sits at the boundary. As context, not part of the
+flag: 4 of the window's 8 centuries and 19 of all 36 differ by more than 15%. The paired run-off difference is +0.108
+[+0.008, +0.209]. SCHEDT's achieved curve follows REF's (window 0.846 against REF's 0.859; the schedule was matched to
+REF). REFT's rate runs below REF's from 401-500 on (0.737 against 0.859 in the window).
+
+**Recapture stage's share of the filter** (descriptive): SCHEDT's R gap / REFT's = 0.41 (n 8). Per seed: s1 0.74, s2
+0.68, s3 0.11, s4 0.14, s5 0.55, s6 0.13, s7 0.41, s8 0.51. SCHEDT's spread across seeds is wide (SE 0.060 against
+REFT's 0.006). Seeds 3, 4 and 6 have gaps of -0.071 to -0.089; seeds 1, 2, 5 and 8 have -0.332 to -0.494. In s3 and s6 the
+wild's R moves with the herd's (wild change -0.240 and -0.383, against -0.041 to -0.148 in the other seeds). In s4 the
+herd moves little (herd change -0.187). The cause of the spread is untested.
+
+**Closure is not what differs:** SCHEDT and REFT have the same captive-sire share (0.002 each, paired -0.000 [-0.002,
++0.002]) and depth (22.40 and 22.57, paired -0.175 [-0.692, +0.342]). SCHEDT loses more goats for good (lost 0.122
+against 0.057 per herd goat-year, paired +0.065 [+0.046, +0.084]).
+
+**SCHED (open), read beside the rule:** herd change of R against founders -0.212 and wild change -0.151, so the R gap
+is -0.060. Paired SCHED - REF: R gap +0.575 [+0.558, +0.593], herd change +0.502 [+0.472, +0.533], wild change -0.073
+[-0.097, -0.048], n 8. SCHED is open (csire 0.382, depth 3.27), and the wild follows the herd. Breadth 0.
+
+Breadth is descriptive only: SCHED 0, REF 6, SCHEDT 3 (R B T; 5 of 8 seeds with 3 or more), REFT 8. The gaps by
+trait, the per-century run-off curve and the per-seed rows are in scored.txt.
+
+## exp014 results (scored), correction 2026-11-22 (the reviewer's 5b57cf5, wording; the steward's decision)
+Corrects the wording of the entry above; no number in it changes. Branch 2 stays the registered outcome. The tool was
+run again with sched_tab dfc030c, a display-only change: the window ratio to 3 decimals and a count of centuries with
+SCHEDT above REFT; the table is otherwise identical to f237316's; selftest passes all 48 checks, `selftest bad` fails 5.
+Per the steward: no tool line against exp011 TAPER, and no sentence splits the filter between the run-off and
+recapture stages; the claim is the contrast. The entry's "needs the run-off side" holds only with its threshold, and its
+"Recapture stage's share of the filter" is withdrawn as a label; read the three paragraphs below in their place.
+
+**Decision rule: branch 2 fires.** SCHEDT is closed (csire under 0.05 in 8 of 8 seeds) with R gap -0.270, above -0.30,
 while REFT, also closed in 8 of 8, has -0.657. The registered sentence is "the filter needs the run-off side to read the
 goat (R x fear) and its herd's load". That is a threshold call on an arm mean 0.03 above the line (SE 0.060), with 4
 of 8 SCHEDT seeds past -0.30 (s1 -0.494, s2 -0.451, s5 -0.363, s8 -0.332), so "needs" holds only with the threshold
 attached. What the data carry cleanly is the contrast, paired SCHEDT - REFT, n 8: R gap +0.387 [+0.253, +0.520], herd
 change of R +0.312 [+0.214, +0.410], wild change -0.075 [-0.172, +0.022]. The shortfall is mostly in the herd's own
 change, not in the wild following it. Read so: without R, fear and load in the spook, a closed herd's R gap is less
-than half of REFT's; the run-off side carries most of the filter on R; and the schedule-only arm still moves its herd
-and reaches -0.30 in 4 of 8 seeds. Four things differ between SCHEDT and REFT: R in the spook, fear in the spook, the
-per-herd load, and the run-off level. Closure is not a fifth (below).
+than half of REFT's, and the schedule-only arm still moves its herd and reaches -0.30 in 4 of 8 seeds. Four things
+differ between SCHEDT and REFT: R in the spook, fear in the spook, the per-herd load, and the run-off level. Closure is
+not a fifth (the entry above: csire paired -0.000 [-0.002, +0.002]).
 
 **Run-off rates in the window are within 15%:** SCHEDT / REFT = 1.147 (window rates 0.846 and 0.737), so the reading is
 not said to carry a rate difference. As context, not part of the flag: 4 of the window's 8 centuries and 19 of all 36
-differ by more than 15%. **SCHEDT runs off more than REFT in 36 of 36 centuries**, and the paired difference in the
-window is +0.108 [+0.008, +0.209]. Each run-off is a recapture attempt, and the approach test reads R and fear, so
-SCHEDT's goats met more recapture tests than REFT's. That favours SCHEDT's filter, so it would narrow the R-gap
-difference rather than produce it. The direction comes from the code path, not from a measurement. SCHEDT's achieved
+differ by more than 15%. **SCHEDT ran off more than REFT throughout** (36 of 36 centuries; paired in the window +0.108
+[+0.008, +0.209]), which gives its recapture stage more tests: each run-off is a recapture attempt, and the approach
+test reads R and fear. The difference in R gap is in spite of this; the rate difference would narrow it, not produce
+it. The direction comes from the code path, not from a measurement. SCHEDT's achieved
 curve follows REF's (window 0.846 against REF's 0.859; the schedule was matched to REF), while REFT's runs below REF's
 in every century (0.737 against 0.859 in the window).
 
@@ -6927,19 +6959,8 @@ between the stages is made here. SCHEDT's spread across seeds is wide (SE 0.060 
 s4 -0.089 / -0.187 / -0.098, s5 -0.363 / -0.432 / -0.069, s6 -0.084 / -0.467 / -0.383, s7 -0.276 / -0.424 / -0.148,
 s8 -0.332 / -0.373 / -0.041. Seven of 8 herds move by 0.30 or more against their founders; s4 is the exception. In s3
 and s6 the gap is small because the wild moved with the herd, and in s4 because the herd moved little. Escaped herd
-goats join the wild, and SCHEDT loses more of them for good (below), but s4 has the highest loss rate (0.171) and a
+goats join the wild, and SCHEDT loses more of them for good (the entry above), but s4 has the highest loss rate (0.171) and a
 small wild change, so the cause of the spread is untested.
-
-**Closure is not what differs:** SCHEDT and REFT have the same captive-sire share (0.002 each, paired -0.000 [-0.002,
-+0.002]) and depth (22.40 and 22.57, paired -0.175 [-0.692, +0.342]). SCHEDT loses more goats for good (lost 0.122
-against 0.057 per herd goat-year, paired +0.065 [+0.046, +0.084]).
-
-**SCHED (open), read beside the rule:** herd change of R against founders -0.212 and wild change -0.151, so the R gap
-is -0.060. Paired SCHED - REF: R gap +0.575 [+0.558, +0.593], herd change +0.502 [+0.472, +0.533], wild change -0.073
-[-0.097, -0.048], n 8. SCHED is open (csire 0.382, depth 3.27), and the wild follows the herd. Breadth 0.
-
-Breadth is descriptive only: SCHED 0, REF 6, SCHEDT 3 (R B T; 5 of 8 seeds with 3 or more), REFT 8. The gaps by
-trait, the per-century run-off curve and the per-seed rows are in scored.txt.
 
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
