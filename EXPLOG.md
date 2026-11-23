@@ -6550,15 +6550,15 @@ selftest_bad.txt. The standing measures (establishment by herd size with KM, the
 
 **Arms** (established seeds; herd and wild change against each run's own founders):
 
-| arm | est (y after herding) | herd | breadth (vote) | traits | depth | csire | herd-carried breadth (exploratory) |
-|---|---|---|---|---|---|---|---|
-| REFlate | 8 (median 300) | 296.5 | 8 (8 of 8 diverged) | R A S B H T W L | 14.28 | 0.073 | 7 |
-| REF | 8 (305) | 287.8 | 6 (8 of 8) | R A S B T L | 14.69 | 0.064 | 4 |
-| LARDlate | 8 (105) | 268.0 | 4 (7 of 8 diverged) | A B H T | 20.81 | 0.007 | 4 |
-| LARD | 8 (101) | 271.2 | 6 (8 of 8) | A S B H T W | 20.80 | 0.005 | 2 |
-| TAPERlate | 8 (105) | 269.8 | 6 (8 of 8 diverged) | A S B H T L | 22.00 | 0.003 | 5 |
-| TAPER | 8 (101) | 267.8 | 6 (8 of 8) | R A S H T W | 22.23 | 0.003 | 2 |
-| WTlate | 0 (no humans, no herd) | 0.0 | - | - | - | - | - |
+| arm | est (y after herding) | herd | breadth (vote) | traits | depth | csire | herd-carried breadth (exploratory) | 8-trait breadth (exploratory) |
+|---|---|---|---|---|---|---|---|---|
+| REFlate | 8 (median 300) | 296.5 | 8 (8 of 8 diverged) | R A S B H T W L | 14.28 | 0.073 | 7 | 7 |
+| REF | 8 (305) | 287.8 | 6 (8 of 8) | R A S B T L | 14.69 | 0.064 | 4 | 5 |
+| LARDlate | 8 (105) | 268.0 | 4 (7 of 8 diverged) | A B H T | 20.81 | 0.007 | 4 | 4 |
+| LARD | 8 (101) | 271.2 | 6 (8 of 8) | A S B H T W | 20.80 | 0.005 | 2 | 6 |
+| TAPERlate | 8 (105) | 269.8 | 6 (8 of 8 diverged) | A S B H T L | 22.00 | 0.003 | 5 | 5 |
+| TAPER | 8 (101) | 267.8 | 6 (8 of 8) | R A S H T W | 22.23 | 0.003 | 2 | 6 |
+| WTlate | 0 (no humans, no herd) | 0.0 | - | - | - | - | - | - |
 
 A, S, H and W, gap / herd change / wild change (arm means; the full table is in scored.txt):
 
@@ -6598,16 +6598,18 @@ A, S, H and W, gap / herd change / wild change (arm means; the full table is in 
 - TAPERlate: A, S and H herd divergence from a settled wild; W unresolved.
 - REFlate (not governing): A and H herd divergence; S and W, humans move the wild (human-caused change 0.05 or more),
   and the gap is the herd sheltered from human-driven selection on the wild, a model result.
+  Annotation: REFlate (not governing): the wild moves toward the open herd (S herd +0.160 / wild +0.049; W -0.196 /
+  -0.066), which reads as herd-born goats entering the wild, not shelter (reviewer 5df38b3).
 - The burn-in reading holds on no trait of either closed arm, so the registered re-plan trigger (move herding after
   the wild settles) does not fire.
 - Plain breadth, per-seed vote: LARDlate diverged (7 of 8 seeds at 3 or more; breadth 4), TAPERlate diverged (8 of 8;
   breadth 6). The two agree.
 
 **What the registered measures show together.** On the late design, from a wild that had settled, the closed herds'
-A and H gaps (and TAPER's S) are as large as at year 400, but now the herd carries them. LARDlate A: herd -0.105 / wild
-+0.006, against LARD's herd -0.011 / wild +0.093. At year 400 the same gaps were carried by the wild's post-founding
-move, the burn-in's share above. So on these traits the year-400 and late gaps match in size but are carried by
-opposite pools: at year 400 the herd held its founders while the wild settled; from a settled wild, the closed herd
+A and H gaps (and TAPER's S) do not differ detectably from year 400's (late-vs-400 intervals +-0.07 to +-0.15), but now the
+herd carries them. LARDlate A: herd -0.105 / wild +0.006, against LARD's herd -0.011 / wild +0.093. At year 400 the
+same gaps were carried by the wild's post-founding move, the burn-in's share above. So on these traits the year-400
+and late gaps do not differ detectably but are carried by opposite pools: at year 400 the herd held its founders while the wild settled; from a settled wild, the closed herd
 moves away by itself (the rule's "herd divergence from a settled wild").
 
 **Exploratory** (not registered):
@@ -6616,6 +6618,328 @@ moves away by itself (the rule's "herd divergence from a settled wild").
 - L's wild moves in every late arm after humans arrive (wild change REFlate -0.131, LARDlate -0.154, TAPERlate
   -0.199), against WTlate's +0.044. L is outside A, S, H, W, so no registered test reads it.
 - REFlate's breadth is 8 against REF's 6. R is unchanged (-0.634 against -0.636).
+- **Added after the reviewer's 5df38b3** (late_tab 22f54f7; no registered line of scored.txt changes). These are
+  absolute window means on A, S, H and W over established seeds, late arm against year-400 arm, unpaired. The
+  founders differ by design: A +0.103 [+0.078, +0.127], S -0.281 [-0.354, -0.207], H +0.086 [+0.049, +0.123] and W
+  +0.259 [+0.159, +0.359], the same in every pair. Neither the herds' absolute means nor the wilds' differ detectably
+  between the designs; every interval includes 0.
+  - Herd: LARDlate - LARD A +0.009 [-0.071, +0.089], H +0.005 [-0.082, +0.092]; TAPERlate - TAPER A -0.001 [-0.082,
+    +0.079], S +0.025 [-0.036, +0.087], H +0.021 [-0.121, +0.164].
+  - Wild: LARDlate - LARD A +0.015 [-0.004, +0.034], H +0.008 [-0.012, +0.028]; TAPERlate - TAPER A +0.010, S
+    -0.009, H -0.006.
+  So the closed herds, and their wilds, reach the same window means from founders as far apart as these. That fits the
+  reviewer's reading: each gap is a herd equilibrium minus a wild equilibrium, and the carrier is set by where the
+  founders started. Herd intervals are wide (+-0.08 to +-0.19), so equal equilibria are not shown, only not ruled out.
+
+## Take-off analysis, 2026-11-22 (reading stated before any tool reads the pre-jump years; existing runs, no new simulation)
+**Question** (Chris, 2026-11-22: "what triggers the phase transition?"): herds that wait small and then jump: does
+the herd's reactivity fall before the jump (a feedback loop: a less reactive herd loses fewer goats, grows, and its
+home-born goats outnumber captives), or does its breeding stock rise first, with R following (a demographic tipping
+point)?
+**Data:** exp010 LOAD1, the 7 seeds classed "waited" (5-12 goats, then a jump at 978-3171); the exp005 arms whose
+herds plateaued (20-65 goats) if their records allow it. Only year-row keys present in every run used.
+**Measure** (the analysis session; a committed tool): each seed aligned on its own jump year (jump_tab's criterion,
+first year of the established run). In the centuries before and after it: herd size, herd mean R, home-born breeding
+does if recorded (otherwise herd does of breeding age), the captured share of herd sires, and the loss rate (escaped
+per herd goat). Per variable and seed, its departure year: the first year, going forward from 300 years before the jump,
+from which it stays beyond 2 SD of its own plateau (the 300 years before that).
+**Reading:** R departs first (earlier than both size and does) in 5 or more of 7 seeds: feedback. Does or size depart
+first in 5 or more: demographic. Otherwise mixed, said so. Exploratory: it describes the transition in existing runs
+and decides nothing in the design.
+
+## Take-off analysis clarification, 2026-11-22 (before any real data is read; the analysis session's definitions, accepted)
+- Variables per year row: herd size = herded; herd R = herdTraitMeans.R; breeding does = herded x herdComp[1] /
+  sum(herdComp) (home-born does are not recorded by sex); captured-sire share = herd conceptions by a captured sire
+  (concOrigin column 1) / herd conceptions; loss = escaped / herded.
+- Each is read as a trailing 30-year window (ratios as summed numerator / summed denominator; R weighted by herded).
+- Plateau J-600..J-301 (J = jump_tab's jump year), shortened to start at 500 where needed. A seed with a plateau under
+  200 years (LOAD1 seed 2, 178) stays in, flagged.
+- Departure: beyond 2 SD of the plateau, in the direction the variable moves across the jump (J..J+300 mean minus
+  plateau mean), at every smoothed point from the departure year to J+300; the search starts at J-300. No year: no
+  departure. Plateau SD 0: the first point that differs and stays different, flagged.
+- "First": strictly earlier than both size and does; a tie counts for neither.
+- exp005: runs that jump and whose 100-year herd stayed in 20-99 for 300 or more years before J, reported apart. The
+  5-of-7 reading is on LOAD1's 7 only.
+- Stated beside the result: J is defined on herd size, so size must rise before J; a "size first" partly reflects the
+  alignment. Each seed's signed lead (R departure minus the earlier of size and does, in years) is printed, so the
+  margin shows, not only the vote. An R departure at the search start (J-300) is flagged as possibly earlier.
+
+## Take-off analysis results (exploratory; decides nothing in the design)
+**Run** 2026-11-22 by the analysis session with tools/takeoff_tab.py (7e44e2a; selftest passes; `selftest bad`
+fails on the planted dip):
+`python tools/takeoff_tab.py results/exp010_fixed-load LOAD1 --waited --out results/exp010_fixed-load/takeoff_LOAD1.json`
+`python tools/takeoff_tab.py results/exp005_b0-pilot RAND,REF,noBuck,noGuard,noMilk,noPen,noProv,noShelter,noTether --plateau20 --out results/exp005_b0-pilot/takeoff_plateau20.json`
+Plots: tools/takeoff_plot.py, results/exp010_fixed-load/takeoff_LOAD1.png and results/exp005_b0-pilot/takeoff_plateau20.png.
+Tables: takeoff_LOAD1.txt and takeoff_plateau20.txt beside them.
+
+**LOAD1, the 7 waiting seeds** (s5, a late crossing, is left out). Departure years relative to J; R's lead is R minus
+the earlier of size and does (negative = R first):
+
+| seed | J | size | R | does | csire | loss | first | R lead |
+|---|---|---|---|---|---|---|---|---|
+| s1 | 2325 | -132 | -90 | -132 | none | +171 | none (size = does) | +42 |
+| s2 | 978 | -159 | -147 | -156 | none | +264 | size | +12 |
+| s3 | 1515 | -114 | -108 | -111 | none | none | size | +6 |
+| s4 | 1176 | -177 | -123 | -177 | none | -75 | none (size = does) | +54 |
+| s6 | 3171 | -102 | -105 | -99 | none | none | R | -3 |
+| s7 | 1614 | -132 | -135 | -132 | none | none | R | -3 |
+| s8 | 3039 | -60 | -75 | -60 | none | +300 | R | -15 |
+
+s2's plateau is 178 years (flagged, kept). **Reading (stated before the data): mixed.** R departs first in 3, size in
+2, does in 0; 2 have no first because size and does tie.
+- The margins are small. In 5 of 7 seeds, R, size and does depart within 15 years of each other, inside the 30-year
+  smoothing window, so their order is not resolved. In s1 and s4, R departs 42 and 54 years after size and does.
+- In no seed does R lead by more than 15 years.
+- Size and does depart together (within 3 years in every seed). Does are herd size times the breeding-doe share, so
+  they follow size closely by construction.
+- The captured-sire share has no departure in any seed. Loss departs after J in 3 seeds, before J in 1 (s4, -75), and
+  not at all in 3.
+- Alignment caveat: J is set by the 100-year trailing mean of herd size, so raw size must rise before J.
+
+**exp005** (reported apart; counts only, no 7-seed verdict). The four runs the reviewer named as plateaued at 20-65
+goats (RAND s1 and s3, noProv s1 and s2) never establish, so none can be aligned on a jump. 12 runs pass the 20-99 rule:
+R first in 7, does in 1, no first in 4. R's lead is -201 (noGuard s2), -96 (noProv s4), -63 (noProv s3) and -27 to
++57 in the rest. 9 of the 12 jump before year 1100, so their plateaus are 43-253 years and fall partly in the founding
+years (flagged in the table). These herds grow through 20-99 rather than wait at it; the plot shows them rising across
+the plateau window. The R-first count is not comparable to LOAD1's.
+
+## Take-off analysis clarification 2, 2026-11-22 (before the matched-scale reading reads real data; the reviewer's a5a0b06)
+Exploratory, printed beside the stated 2-SD reading, which it does not replace:
+- Noise ratio per variable and seed: plateau SD / abs(post - plateau mean), post = the J..J+300 mean.
+- Matched-scale departure: the first smoothed point from J-300 from which the variable has covered at least 1/4 of its
+  own change ((v - plateau mean) x sign >= 1/4 x abs(post - plateau mean)) and stays there through J+300. "First" and
+  R's lead read on it as before.
+- Caveat in the entry: as home-born goats replace captives, R falls with growth by composition alone, so a tie or an R
+  lag is what the demographic reading predicts; only R well ahead points to feedback.
+This is the last addition to this test. The records do not separate the two triggers; any further answer comes from
+an intervention experiment, which goes to Chris.
+
+## Take-off analysis, matched-scale results (exploratory; clarification 2; beside the stated reading, which stays mixed)
+**Run** 2026-11-22 with tools/takeoff_tab.py (8ae956e; selftest passes; `selftest bad` fails, including the planted
+matched-scale case): the same command as the results entry. The stated 2-SD lines of takeoff_LOAD1.txt are unchanged.
+LOAD1, the 7 waiting seeds:
+
+| seed | noise ratio size / R / does / csire / loss | departure at 1/4: size / R / does / csire / loss | first | R lead |
+|---|---|---|---|---|
+| s1 | 0.01 / 0.07 / 0.01 / 0.83 / 0.47 | -39 / -60 / -39 / +276 / -63 | R | -21 |
+| s2 | 0.00 / 0.04 / 0.00 / 7.54 / 0.52 | -39 / -108 / -39 / +273 / -189 | R | -69 |
+| s3 | 0.00 / 0.07 / 0.00 / 4.13 / 0.78 | -33 / -78 / -33 / +192 / -48 | R | -45 |
+| s4 | 0.01 / 0.04 / 0.01 / 1.14 / 0.32 | -39 / -99 / -39 / +186 / -183 | R | -60 |
+| s6 | 0.01 / 0.05 / 0.01 / 0.99 / 0.58 | -45 / -84 / -42 / +252 / -78 | R | -39 |
+| s7 | 0.01 / 0.03 / 0.01 / 2.38 / 0.66 | -33 / -108 / -33 / none / -51 | R | -75 |
+| s8 | 0.02 / 0.07 / 0.01 / 0.72 / 0.54 | -33 / -69 / -33 / +261 / -66 | R | -36 |
+
+**Matched scale: R first in 7 of 7, leading by 21 to 75 years.** Read with these limits:
+- **Scale (the analysis session's, noted after reading; the measure is not changed).** Herd size rises roughly
+  exponentially, from 5-12 goats on the plateau to a window herd of 245.8 (load_tab), so a quarter of its change on a
+  linear scale is reached late in the rise (J-45 to J-33). Does follow size. R falls without that curvature (plot). On this scale R's quarter point comes before size's
+  even if growth were the trigger, so R first here does not by itself point to feedback. The fraction was fixed before
+  reading; the scale of size (linear or log) was not discussed.
+- **Composition (clarification 2):** a tie or an R lag is what the demographic reading predicts. R ahead by 21-75 years
+  on a linear size scale does not clear that, given the point above.
+- **Noise:** R's noise ratio (0.03-0.07) is larger than size's and does' (0.00-0.02), so the 2-SD rule dated R later
+  than its own change does. That is the reviewer's a5a0b06 point 1, now in the tool's numbers.
+- **Loss** reaches 1/4 of its fall before R in s1, s2 and s4 (-63, -189, -183) and after R in the other four; its
+  noise ratio is 0.32-0.78, so its timing is weak. The captured-sire share's noise ratio is 0.72-7.54; its quarter points are after J.
+The stated reading (2-SD rule) remains mixed. The records do not separate the two triggers (clarification 2).
+
+## exp014 — Run-off by a time schedule matched to REF's curve, with no R, fear or herd size: does recapture alone, where R still acts, tame the herd?
+**Pre-registered:** 2026-11-22. Chris: make the run-off rate fixed "and recapture is as it is now ... no R on the run-off
+side, only R on the recapture side"; matched to REF "by time". Mongo animalDomestication.exp014_runoff-schedule (mint);
+results/exp014_runoff-schedule; job list tools/exp014.jsonl; code c72d86f (spookFixed f8848f0, spookSchedule c72d86f).
+Identity: with both off, 800 years of REF seed 1 reproduce exp005 REF_seed1, 0 of 266 records differ, 65 shared keys,
+at f8848f0 and again at 8c10761.
+**Why:** in REF, R acts twice: in the spook chance (herderAlarm × R × fear × load, animals.js:365) and in recapture
+(the approach test, stalkDetect × R × fear per step, world.js approach()). The load, which rises with herd size, acts
+only on the spook. This takes R, fear and load out of the spook and keeps recapture as it is.
+**The schedule:** a daily spook chance, the same for every herd goat, by years since herding, piecewise constant per
+century: spookSchedule = "0:0.00600,100:0.00758,200:0.00939,300:0.00975,400:0.00855,500:0.00718,600:0.00529,700:0.00406,800:0.00363". The values are REF's run-off rate per herd goat-year (tools/runoff_rate.py, exp005
+and exp006 REF, 8 seeds) per century of herding (1.440, 1.820, 2.254, 2.341, 2.052, 1.722, 1.269, 0.975, then 0.871 over
+1201-4000), divided by 240, the run-offs per goat-year per unit of daily chance from the calibration probes
+(tools/exp014_cal.jsonl: 4.5-4.8 at 0.02, 7.9-8.7 at 0.04, 10.9-13.1 at 0.08; near-linear at the low end). The probes'
+herds collapsed to 1-2 goats, which was seen.
+**Calibration check before the main runs:** SCHED seeds 1-2 for 1600 years in --scratch; only their run-off rates
+(runoff_rate.py's ranOff) are read, per century 401-1200 and over 1201-1600. Pass: within 15% of REF's rate in every
+one of those periods. On a failure, the divisor is rescaled and the check repeated, recorded here as an amendment
+before any main run starts.
+**Arms** (seeds 1-8, 4000 years, herding at 400, REF's arguments otherwise):
+- SCHED: spookSchedule as above.
+- SCHEDT: SCHED with captureTaper 1, selfDoes 10 (closed).
+- REFT: REF with captureTaper 1, selfDoes 10 (closed, R in both stages): SCHEDT's contrast, paired by seed.
+REF (exp005 + exp006) is SCHED's contrast, paired by seed.
+**Measure** (the analysis session; window 3201-4000; standing measures): establishment (jump_tab), herd, R gap, herd
+and wild change of R against the 301-400 founders, breadth, closure (captive-sire share, depth), loss rates (ranOff,
+refetched, escaped per herd goat-year), and the achieved run-off curve per century against REF's.
+**Predictions** (mine):
+1. SCHED and SCHEDT establish in 6 or more of 8 seeds.
+2. SCHEDT's R gap is -0.30 or below, but smaller in size than REFT's (paired by seed, interval excluding 0): recapture
+   alone filters, and R on the run-off side adds to it.
+3. SCHED's herd R falls from its founders by 0.20 or more.
+**Decision rule:**
+- SCHEDT R gap -0.30 or below: recapture alone carries a filter strong enough for divergence on R; neither R on the
+  run-off side nor herd-size scaling is needed for it.
+- SCHEDT R gap above -0.30 while REFT's is -0.30 or below: the filter needs R on the run-off side (run-offs concentrated
+  on reactive goats).
+- Fewer than 2 established seeds in SCHEDT: the schedule's rates, spread over all goats, do not let a closed herd form;
+  goes to Chris.
+- In each branch, SCHEDT's R gap as a share of REFT's (paired) is reported as the recapture stage's share of the
+  filter, descriptively.
+
+## exp014 amendment, 2026-11-22 (before any main run; the calibration check running, nothing of it read; the reviewer's 3c9ab09)
+- **The check reads only run-off rates:** `python tools/runoff_rate.py --check "401-500:1.440,501-600:1.820,601-700:2.254,
+  701-800:2.341,801-900:2.052,901-1000:1.722,1001-1100:1.269,1101-1200:0.975,1201-1600:0.871" <the two SCHEDcal files>`
+  prints only mean ranOff per period, its target and pass or fail. The SCHEDcal runs are the first 1600 years of the
+  main SCHED seeds 1 and 2, so nothing else of them is read. Each rescaling attempt is recorded here. The earlier
+  constant-rate probes (tools/exp014_cal.jsonl) printed herd size and losses, but at different settings (spookFixed
+  0.02-0.08, herds collapsed to 1-2 goats), not the main runs' arguments.
+- **Guard:** World.spookAt throws on a schedule value of 0 or below, which would otherwise silently restore REF's
+  R-based spook.
+- **Branch 1, reworded:** SCHEDT R gap -0.30 or below, with SCHEDT closed (captive-sire share under 0.05 in 6 or more of 8
+  seeds): recapture alone carries a filter strong enough for divergence on R; no per-herd load is needed for it, and
+  the run-off time course is REF's.
+- **Branch 2, reworded:** SCHEDT closed with R gap above -0.30, while REFT's is -0.30 or below: the filter needs the
+  run-off side to read the goat (R x fear) and its herd's load. Four things differ between SCHEDT and REFT: R in the
+  spook, fear in the spook, the per-herd load, and the run-off level (the schedule follows REF's curve, not REFT's).
+  REFT's and SCHEDT's achieved run-off rates per century are reported side by side; where they differ by more than 15%
+  in the window, the reading is said to carry a rate difference too.
+- **Outcomes with no branch before:**
+  - REFT R gap above -0.30: closing REF removes the reactive captives the filter acts on; no contrast is read, and
+    SCHEDT is reported alone.
+  - SCHEDT established but not closed: no branch fires; reported with herd change against founders.
+  - SCHED (open) is read beside the rule, by herd change against founders, since in an open herd the wild follows.
+
+## Take-off analysis on REF, 2026-11-22 (Chris: "let's run that same analysis on REF"; before REF's trajectories are read)
+REF's 8 seeds (exp005 1-4, exp006 5-8) aligned on their jump years with tools/takeoff_tab.py and takeoff_plot.py, as
+for LOAD1. REF herds grew without a waiting plateau (exp010's Q1: "grew" in 8 of 8; jumps near year 700), so the
+stated 2-SD departure test needs a plateau of 200 years or more before J-300 that most REF seeds lack. The test is run
+only on seeds that have one; the others are listed. The aligned plot is descriptive and claims no order. Same
+definitions and caveats as for LOAD1 (812c5e1, 871974d); nothing new is added to the test.
+
+## Take-off analysis on REF, results (descriptive)
+**Run** 2026-11-22 with tools/takeoff_tab.py (cd68c7c; --minplateau 200 only lists and skips; LOAD1's output is
+unchanged by it; selftest passes, `selftest bad` fails):
+`python tools/takeoff_tab.py "results/exp005_b0-pilot;results/exp006_two-corner" REF --minplateau 200 --out results/exp006_two-corner/takeoff_REF.json`
+Plot: `python tools/takeoff_plot.py results/exp006_two-corner/takeoff_REF.json results/exp006_two-corner/takeoff_REF.png`.
+Table: results/exp006_two-corner/takeoff_REF.txt.
+**Departure test: run on no seed.** None has 200 years of plateau before J-300, counting from year 500: s1 (J 957) 157
+years, s2 (J 849) 49, and s3-s8 (J 588-783) none. All 8 are plotted.
+**What the plot shows** (shapes read by eye; no order is claimed). Figures are the plotted smoothed values at J-300 / J
+/ J+300, mean over runs (n), printed by tools/takeoff_plot.py (the reviewer's 9a18d2e; results/exp006_two-corner/
+takeoff_REF_plot.txt). Two seeds have no herd yet at J-300.
+- Each herd starts from nothing when herding begins and grows steadily to the jump, with no flat waiting stretch: size
+  14.4 (8) / 134.0 (8) / 279.1 (8). s1 is the exception; the plot shows it holding at a few tens of goats for about 200
+  years first.
+- Herd R falls the whole way: 0.802 (6) / 0.437 (8) / 0.104 (8). It falls together with growth from the start, not at a
+  separate moment. Composition caveat (as for LOAD1): as home-born goats replace captives, R falls with growth on
+  composition alone, so falling together with growth does not separate feedback from demography.
+- Breeding does climb with herd size throughout: 5.3 (8) / 48.0 (8) / 103.3 (8).
+- Captured-sire share of conceptions: 0.234 (6) / 0.368 (8) / 0.065 (8).
+- Loss rate: 0.243 (6) / 0.459 (8) / 0.114 (8). It rises as the herd grows (REF's spook load grows with herd size) and
+  falls after the jump. In LOAD1, at a fixed load, the plot shows loss lower after J than before.
+
+## exp014 amendment 2, 2026-11-22 (before any main run; the calibration check, attempt 1)
+Attempt 1 (schedule of the pre-registration, divisor 240), SCHEDcal seeds 1-2, `runoff_rate.py --check`, ranOff only:
+every period high, ratios 1.22, 1.18, 1.19, 1.18, 1.24, 1.21, 1.24, 1.29 (401-500 .. 1101-1200) and 1.35 (1201-1600):
+FAIL. Rescaled per period, each value divided by its own period's ratio:
+spookSchedule = "0:0.00492,100:0.00642,200:0.00789,300:0.00826,400:0.00690,500:0.00593,600:0.00427,700:0.00315,800:0.00269". tools/exp014.jsonl rewritten with it. Attempt 2: SCHEDcal2 seeds 1-2, 1600 years, the same check.
+The main runs carry this schedule and commit 3dfc9bb or later (the spookAt guard, which cannot fire on it).
+
+## exp014 calibration check passed, 2026-11-22 (before any main run)
+Attempt 2 (amendment 2's per-period schedule), SCHEDcal2 seeds 1-2, 1600 years, commit 1a67ab6, `runoff_rate.py --check`,
+ranOff only: ratios to REF's rate 1.00, 1.07, 1.07, 1.01, 1.05, 1.08, 1.07, 1.04 (401-500 .. 1101-1200) and 0.99
+(1201-1600): PASS. Nothing else of these runs was read. The 24 main runs (tools/exp014.jsonl) queued now.
+
+## exp014 clarification, 2026-11-22 (before any main result; sched_tab 52ef90a's reading choices, accepted)
+- "Differ by more than 15% in the window": abs(SCHEDT/REFT - 1) > 0.15 on the 3201-4000 run-off rate (each arm's mean
+  over seeds). The eight centuries are listed with a count of those beyond 15%, not part of the flag.
+- Branch 1 does not involve REFT, so it can fire beside the "REFT above -0.30: no contrast read" note.
+- Prediction 2's "smaller in size": the paired signed SCHEDT - REFT R gap with its interval above 0, read only when
+  REFT's arm gap is negative.
+- Closed: captive-sire share under 0.05 in 6 or more of all 8 seeds; a seed with no herd conceptions in the window
+  counts as not closed.
+- Recapture share: mean SCHEDT R gap / mean REFT R gap over seeds established in both, per-seed ratios listed.
+- Breadth is descriptive; the rule does not read it.
+
+## exp014 results (raw)
+24 of 24 runs complete (complete: true, last row year 3998), every exit 0 (cpuslot-logs/, batch 1795377055079603700),
+every run on a clean tree, no error in any log. Arms, 8 seeds each: SCHED, SCHEDT, REFT; SCHED and SCHEDT carry amendment
+2's schedule, SCHEDT and REFT captureTaper 1 and selfDoes 10. Hosts: 18 on the desktop and 6 on mint. **Commits:** the
+runs carry 1a81bb5 (8), 60a121d (1) and 599fca2 (15), not the registered c72d86f: amendment 2 moved the main runs to
+3dfc9bb or later, and src is unchanged from 3dfc9bb to 599fca2 (git diff --stat empty), so one sim. The spookAt guard
+added at 3dfc9bb cannot fire on this schedule (every value > 0). JSON in results/exp014_runoff-schedule/; the registered
+Mongo collection is animalDomestication.exp014_runoff-schedule on mint. Nothing of the runs has been read beyond these
+checks. Scoring: the analysis session, with tools/sched_tab.py as accepted (f237316, the reviewer's 599fca2).
+
+## exp014 results (scored)
+**Scored** 2026-11-22 by the analysis session, as registered (536bc53), amended (3dfc9bb, 1a67ab6), calibrated (1a81bb5)
+and clarified (60a121d):
+`python tools/sched_tab.py results/exp014_runoff-schedule "results/exp005_b0-pilot;results/exp006_two-corner" --perseed`
+(the tool as accepted, f237316; scored again with dfc030c, a display-only change after the reviewer's 5b57cf5: the window
+ratio to 3 decimals and a count of centuries with SCHEDT above REFT, the table otherwise identical; selftest passes all
+48 checks, `selftest bad` fails 5). Window 3201-4000, founders
+301-400. The parameter guard passed on all 24 runs (the tool stops otherwise): SCHEDT = SCHED but captureTaper 1 and
+selfDoes 10; REFT = SCHEDT but no schedule; SCHED = REF but the schedule, with the keys added since exp005/006 each at
+its identity value (runOffLoss 1, spookFixed 0, captureTaper 0, selfDoes 0, and the rest listed in scored.txt). Every
+window run-off rate equals runoff_rate.rates. REF's nine registered run-off rates are reproduced from the base runs.
+Tables in results/exp014_runoff-schedule/: scored.txt, selftest.txt, selftest_bad.txt.
+
+**Arms** (established seeds for R and changes; closure over all 8 seeds):
+
+| arm | est | herd | R gap (SE) | herd change R | wild change R | closed seeds | csire | depth | lost per goat-yr | run-offs per goat-yr |
+|---|---|---|---|---|---|---|---|---|---|---|
+| SCHED | 8 (median 1140) | 266.0 | -0.060 (0.006) | -0.212 | -0.151 | 0 of 8 | 0.382 | 3.27 | 0.166 | 0.867 |
+| REF | 8 (717) | 287.8 | -0.636 (0.006) | -0.714 | -0.078 | 1 of 8 | 0.064 | 14.69 | 0.082 | 0.859 |
+| SCHEDT | 8 (1152) | 309.6 | -0.270 (0.060) | -0.412 | -0.142 | 8 of 8 | 0.002 | 22.40 | 0.122 | 0.846 |
+| REFT | 8 (699) | 289.6 | -0.657 (0.006) | -0.724 | -0.067 | 8 of 8 | 0.002 | 22.57 | 0.057 | 0.737 |
+
+**Predictions:**
+1. SCHED and SCHEDT establish in 6 or more of 8: **holds** (8 and 8).
+2. SCHEDT R gap -0.30 or below and smaller in size than REFT's: **fails**. SCHEDT's gap is -0.270, above -0.30; the paired
+   SCHEDT - REFT difference is +0.387 [+0.253, +0.520], n 8, above 0.
+3. SCHED's herd R falls from its founders by 0.20 or more: **holds** (-0.212, near the boundary).
+
+**Decision rule: branch 2 fires.** SCHEDT is closed (csire under 0.05 in 8 of 8 seeds) with R gap -0.270, above -0.30,
+while REFT, also closed in 8 of 8, has -0.657. The registered sentence is "the filter needs the run-off side to read the
+goat (R x fear) and its herd's load". That is a threshold call on an arm mean 0.03 above the line (SE 0.060), with 4
+of 8 SCHEDT seeds past -0.30 (s1 -0.494, s2 -0.451, s5 -0.363, s8 -0.332), so "needs" holds only with the threshold
+attached. What the data carry cleanly is the contrast, paired SCHEDT - REFT, n 8: R gap +0.387 [+0.253, +0.520], herd
+change of R +0.312 [+0.214, +0.410], wild change -0.075 [-0.172, +0.022]. The shortfall is mostly in the herd's own
+change, not in the wild following it. Read so: without R, fear and load in the spook, a closed herd's R gap is less
+than half of REFT's; the run-off side carries most of the filter on R; and the schedule-only arm still moves its herd
+and reaches -0.30 in 4 of 8 seeds. Four things differ between SCHEDT and REFT: R in the spook, fear in the spook, the
+per-herd load, and the run-off level. Closure is not a fifth (below).
+
+**Run-off rates in the window are within 15%:** SCHEDT / REFT = 1.147 (window rates 0.846 and 0.737), so the reading is
+not said to carry a rate difference. As context, not part of the flag: 4 of the window's 8 centuries and 19 of all 36
+differ by more than 15%. **SCHEDT runs off more than REFT in 36 of 36 centuries**, and the paired difference in the
+window is +0.108 [+0.008, +0.209]. Each run-off is a recapture attempt, and the approach test reads R and fear, so
+SCHEDT's goats met more recapture tests than REFT's. That favours SCHEDT's filter, so it would narrow the R-gap
+difference rather than produce it. The direction comes from the code path, not from a measurement. SCHEDT's achieved
+curve follows REF's (window 0.846 against REF's 0.859; the schedule was matched to REF), while REFT's runs below REF's
+in every century (0.737 against 0.859 in the window).
+
+**SCHEDT's R gap as a share of REFT's** (descriptive): 0.41 (n 8). Per seed: s1 0.74, s2 0.68, s3 0.11, s4 0.14, s5 0.55,
+s6 0.13, s7 0.41, s8 0.51. This is not the recapture stage's share of the filter. A closed herd with no loss on run-off
+also opens an R gap: exp011 TAPER (captureTaper 1, selfDoes 10, runOffLoss 0, the same seeds) has -0.117 (SE 0.031;
+results/exp011_herder-culture/scored.txt). So part of each arm's gap is not run-off selection, and no apportioning
+between the stages is made here. SCHEDT's spread across seeds is wide (SE 0.060 against REFT's 0.006). Per seed, R gap
+/ herd change / wild change: s1 -0.494 / -0.571 / -0.077, s2 -0.451 / -0.531 / -0.080, s3 -0.071 / -0.310 / -0.240,
+s4 -0.089 / -0.187 / -0.098, s5 -0.363 / -0.432 / -0.069, s6 -0.084 / -0.467 / -0.383, s7 -0.276 / -0.424 / -0.148,
+s8 -0.332 / -0.373 / -0.041. Seven of 8 herds move by 0.30 or more against their founders; s4 is the exception. In s3
+and s6 the gap is small because the wild moved with the herd, and in s4 because the herd moved little. Escaped herd
+goats join the wild, and SCHEDT loses more of them for good (below), but s4 has the highest loss rate (0.171) and a
+small wild change, so the cause of the spread is untested.
+
+**Closure is not what differs:** SCHEDT and REFT have the same captive-sire share (0.002 each, paired -0.000 [-0.002,
++0.002]) and depth (22.40 and 22.57, paired -0.175 [-0.692, +0.342]). SCHEDT loses more goats for good (lost 0.122
+against 0.057 per herd goat-year, paired +0.065 [+0.046, +0.084]).
+
+**SCHED (open), read beside the rule:** herd change of R against founders -0.212 and wild change -0.151, so the R gap
+is -0.060. Paired SCHED - REF: R gap +0.575 [+0.558, +0.593], herd change +0.502 [+0.472, +0.533], wild change -0.073
+[-0.097, -0.048], n 8. SCHED is open (csire 0.382, depth 3.27), and the wild follows the herd. Breadth 0.
+
+Breadth is descriptive only: SCHED 0, REF 6, SCHEDT 3 (R B T; 5 of 8 seeds with 3 or more), REFT 8. The gaps by
+trait, the per-century run-off curve and the per-seed rows are in scored.txt.
 
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 

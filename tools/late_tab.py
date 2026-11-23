@@ -387,6 +387,20 @@ def main():
     print("\nThe burn-in's share: year-400 arm wild change - late arm wild change (unpaired), A S H W:")
     iv = lambda c: "-" if c is None else f"{c[0]:+.3f} [{c[1]:+.3f}, {c[2]:+.3f}]"
     for arm in T["burn"]: print(f"  {arm}: " + ", ".join(f"{t} {iv(T['burn'][arm][t])}" for t in WILD4))
+    # exploratory (the reviewer's 5df38b3; added after exp013 was scored, read by no prediction or rule): absolute window
+    # means over split's rows, herd = founders + herd change, wild = founders + wild change, established seeds; late arm
+    # against its year-400 arm, unpaired 95% interval (SE hypot, t at min(n) - 1 df), with the founders beside
+    print("\nEXPLORATORY (added after scoring; no prediction or rule reads it): absolute genotype means in the window, established"
+          " seeds, late arm - year-400 arm, unpaired [95% interval]; herd | wild | founders (h-99..h), with each arm's mean")
+    for arm, base in ARMS:
+        if arm in S and base in S and S[arm]["read"] and S[base]["read"]:
+            for lab, get in (("herd", lambda r, t: r["F"][t] + r["hc"][t]), ("wild", lambda r, t: r["F"][t] + r["wc"][t]), ("founders", lambda r, t: r["F"][t])):
+                cells = []
+                for t in WILD4:
+                    a, b = [get(r, t) for r in S[arm]["E"]], [get(r, t) for r in S[base]["E"]]
+                    c = ci_unpaired(a, b)
+                    cells.append(f"{t} {ms(a)[0]:.3f} v {ms(b)[0]:.3f}: {iv(c)}")
+                print(f"  {arm} - {base}, {lab}: " + "; ".join(cells))
     # how many histories P1 rests on: WTlate's seeds; the late arms add none where their pre-2900 span means equal WTlate's
     if WT in R:
         wts = {r["seed"]: r["p1"] for r in R[WT] if r["p1"]}

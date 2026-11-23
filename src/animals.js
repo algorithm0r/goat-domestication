@@ -362,7 +362,9 @@ var Goat = class Goat {
     const here = this.y * W + this.x, need = 1 - this.E / this.reserveCap();
     const wolfAlarm = world.wolfField[here] > 0 && rand() < R * this.fearOfWolves;
     const spookSteps = P.daySteps + (P.spookAtDusk ? P.duskSteps : 0);
-    const spooked = (phase === 'day' || P.spookAtDusk) && rand() < (P.herderAlarm / spookSteps) * R * this.fearOfHumans * world.herdLoad(this.herd);
+    const sf = P.spookSchedule ? world.spookAt() : P.spookFixed;   // exp014: no R, fear or load on the run-off side
+    const spooked = (phase === 'day' || P.spookAtDusk) && rand() < (sf > 0 ? sf / spookSteps
+      : (P.herderAlarm / spookSteps) * R * this.fearOfHumans * world.herdLoad(this.herd));
     this.alarmed = wolfAlarm || spooked;
     if (P.alarmLearn > 0) { if (wolfAlarm) this.learnFear('fearOfWolves', P.alarmLearn); if (spooked) this.learnFear('fearOfHumans', P.alarmLearn); }
     if (spooked && P.economy) world.camps[this.herd].sd.keep += P.meatYield * this.size;

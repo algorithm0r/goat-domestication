@@ -177,6 +177,20 @@ var World = class World {
     }
   }
 
+  // exp014: the daily spook chance from PARAMETERS.spookSchedule ('T:V,...', T = years since herdingAt), piecewise constant.
+  spookAt() {
+    const s = PARAMETERS.spookSchedule;
+    if (this._spookSrc !== s) {
+      this._spookSrc = s;
+      this._spookTab = String(s).split(',').map(p => p.split(':').map(Number)).sort((a, b) => a[0] - b[0]);
+      if (this._spookTab.some(p => p.length !== 2 || p.some(v => !isFinite(v)) || p[1] <= 0)) throw new Error(`spookSchedule malformed (values must be > 0, else REF's R-based spook returns silently): ${s}`);
+    }
+    const t = this.year - PARAMETERS.herdingAt, tab = this._spookTab;
+    let v = tab[0][1];
+    for (const [t0, v0] of tab) if (t0 <= t) v = v0; else break;
+    return v;
+  }
+
   // Spooking and straying rise with the number of goats a herder must watch (labour limits herd size).
   herdLoad(camp) {
     const n = PARAMETERS.economy ? this.camps[camp].keepN : this.herdN[camp];

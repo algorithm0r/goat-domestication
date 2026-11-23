@@ -273,6 +273,10 @@ var PARAMETERS = {
   nuisanceCost: 0,        // threshold cull: the keep value is charged this × the goat's observed run-offs per year watched × its
                           // expected years ahead (the herder's chasing labour, meat units per run-off; judged only from what he saw)
   herderAlarm: 0.05,      // daily chance × R × fearOfHumans × herder load that the herder spooks a herd goat (spread over the day sub-ticks)
+  spookFixed: 0,          // > 0: the daily spook chance is this, the same for every herd goat: no R, no fearOfHumans, no load (exp014,
+                          // Chris 2026-11-22: R acts only in recapture). 0 = herderAlarm's rule above
+  spookSchedule: '',      // 'T:V,T:V,...': as spookFixed, but the daily chance follows years since herdingAt, piecewise constant
+                          // (V from the last T <= years since herding; exp014, Chris: REF's run-off curve by time). '' = off
   refetchRunOffs: 2,      // run-offs (a goat spooked beyond keepRadius): 0 drifts back on its own; 1 gone after at once (approach
                           // test); 2 loose: moves as a wild goat, rejoins if it comes back near, keepers chase one a sub-tick
   chaseDelay: 2,          // run-offs (mode 2): sub-ticks loose before a keeper goes after it
