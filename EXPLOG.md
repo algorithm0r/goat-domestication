@@ -7394,6 +7394,16 @@ The readings stand: P1-P4 hold, P4 at SPR05 only, and the rule gives branch 1 at
    - Captive-sire share falls with alarmSpread: 0.333, 0.277, 0.214, 0.171, 0.123 (REF 0.064). It is reported, not
      interpreted.
 
+## exp017 results (raw), note 2026-11-24: the dirty-run check
+SPR01 seeds 6 and 7 were re-run at full length (4000 years) on a clean tree. The runs are d4ee84b with dirty false,
+started 05:52Z on 11-24, one on the desktop and one on mint. Job list tools/exp017_dirtyid.jsonl; output in
+results/_scratch/exp049_probe/SPR01id_seed6.json and results/_scratch/exp050_probe/SPR01id_seed7.json. Both exited 0
+(cpuslot-logs/, batch 1795499519139204100). Each was compared with its exp017 run using tools/cmp_years.py:
+- 0 of 1333 year records differ in each, over 76 shared keys, with no key in only one run.
+- hist, histHerd and samples are identical in both.
+The two runs match their clean re-runs over the whole run, so they are no longer provisional. All 40 exp017 runs stand
+as scored, and nothing is rescored.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
