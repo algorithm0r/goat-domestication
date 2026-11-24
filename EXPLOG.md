@@ -7867,6 +7867,33 @@ Which plot Chris meant is still being asked.
   founders' R in 401-500 (every arm 0.827-0.846, against 0.791, before any J), and the level it recovers toward
   (f15e544, reading 5).
 
+## exp017 gene flow: the wild's R, note 2 2026-11-24 (the reviewer's 947dec7; wording, no number changes)
+All three pieces are settled: gene flow (598a467), the window entry (99dfa13) and the timeline (947dec7).
+- **SPR01's four small rises** (0.018-0.035; s1, s4, s5, s7) lie inside LOAD05's plateau range (0.018-0.041), so
+  "recovers little" means no more than the fixed load's noise. LOAD05 s4's +0.018 is over one bin only (its low is in
+  1401-1500).
+- **By 3201-4000, SPR01's wild sits at the fixed load's level:** 0.637-0.679 against LOAD05's 0.644-0.677 (established
+  seeds, wildr.txt).
+- **f15e544 reading 5's heading** becomes "Hunting raises the wild's R before herding; whether it sets the level of
+  recovery is not checked".
+- "Which plot Chris meant is still being asked" is out of date in both corrections (note above, eb14d37).
+
+**For Chris, the settled line** (replaces the earlier ones):
+- In REF, the wild's R falls with each herd's establishment and recovers part of the way within two or three
+  centuries, while the herd's keeps falling.
+- At the fixed load without spreading, it falls to a plateau and stays.
+- With spreading at 0.1, the dip is deeper. In half the seeds the recovery is no more than the fixed load's noise, and
+  by 3201-4000 it sits at the fixed load's level.
+- At 0.2, the dip and recovery are like REF's, a little later.
+- Hunting from year 300 was still raising the wild's R when herding began. Whether it sets the level of recovery is
+  not checked, and neither is what drives the recovery.
+- These are the series Chris saw: the wild-only line in the takeoff_rdist plots.
+
+## exp017 gene flow: the wild's R, note 3 2026-11-24 (the reviewer; wording, no number changes)
+In note 2's line for Chris, "In half the seeds the recovery is no more than the fixed load's noise" reads "In half the
+seeds the recovery within three centuries is no more than the fixed load's noise". Some of those seeds rise later: s1
+goes from 0.567 in 1501-1600 to 0.654 in 3201-4000 (wildr_timeline.txt, per-seed line).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

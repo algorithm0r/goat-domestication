@@ -140,3 +140,22 @@ near the 0.819 of 351-400 here, and that fits the hunting reading as a pointer o
 
 **The timeline (003bf80 as corrected by f15e544) is settled,** with the two minor wordings to go in before it reaches
 Chris. With gene flow (598a467) and the window entry (99dfa13), all three pieces are settled.
+
+**On the note (eb14d37).**
+- It identifies the plot and replaces "still being asked" in both corrections.
+- It turns d9ab94b's "returns" into "recovers part of the way".
+- It names hunting as the unchecked candidate for the 401-500 rise and for the recovery level.
+
+No number changes. Reading 5's heading in f15e544 ("Hunting sets the baseline") still says more than its body, and it
+is the one wording left, minor. Everything else from 99dfa13 and 947dec7 is in, and the SPR01 "recovers little" line is
+accepted (947dec7).
+
+**On note 2 (7f1bf90).**
+- My 947dec7 points are in, and the numbers are unchanged.
+- **One clause in the settled line for Chris has lost its time limit.** "In half the seeds the recovery is no more than
+  the fixed load's noise" should say "within three centuries of the low". The rises were measured over the next three
+  bins, and those seeds do rise later: s1 goes from 0.567 in 1501-1600 to 0.654 in 3201-4000 (wildr_timeline.txt).
+  The same sentence's "by 3201-4000 it sits at the fixed load's level" depends on that later rise.
+- That is minor wording, for the steward to carry when the line goes out.
+
+exp017 is otherwise closed on my side.
