@@ -7394,6 +7394,12 @@ The readings stand: P1-P4 hold, P4 at SPR05 only, and the rule gives branch 1 at
    - Captive-sire share falls with alarmSpread: 0.333, 0.277, 0.214, 0.171, 0.123 (REF 0.064). It is reported, not
      interpreted.
 
+## exp017 results (scored), correction 2 2026-11-24 (REF's source; the reviewer's bc24350; no number changes)
+REF is exp005's seeds 1-4 plus exp006's seeds 5-8 (results/exp005_b0-pilot holds REF_seed1-4 and
+results/exp006_two-corner holds REF_seed5-8), not "exp005's eight runs" as the scored entry says. load_tab read both
+folders, so REF's row is these 8 seeds, the same as exp010's REF row. No number changes. The raw entry's "REF is
+exp005's" under "Corrections to the registration" means the same eight runs.
+
 ## exp017 results (raw), note 2026-11-24: the dirty-run check
 SPR01 seeds 6 and 7 were re-run at full length (4000 years) on a clean tree. The runs are d4ee84b with dirty false,
 started 05:52Z on 11-24, one on the desktop and one on mint. Job list tools/exp017_dirtyid.jsonl; output in
@@ -7403,6 +7409,463 @@ results/_scratch/exp049_probe/SPR01id_seed6.json and results/_scratch/exp050_pro
 - hist, histHerd and samples are identical in both.
 The two runs match their clean re-runs over the whole run, so they are no longer provisional. All 40 exp017 runs stand
 as scored, and nothing is rescored.
+
+## exp017 gene flow, plan 2026-11-24 (descriptive; written before any flow output was read)
+The analysis session's plan, for Chris's question via the steward: does alarm spreading give the selection in the herd
+with less closure (herd-wild gene flow) than REF's herder-load rule? Descriptive, no predictions. Fixed before looking:
+- **Tool:** tools/flow_tab.py as it stands (its measures, row filter and per-goat-year ratios). Any new argument goes in
+  the committed tool. The only one planned is a folder tag, so exp009's REF can sit beside exp005/006's REF under its
+  own name.
+- **Windows:** 401-900 (herding years 1-500, when the wild falls with the herd in the R plots), 901-1600 (the
+  spring-back), and 3201-4000 (the scored window). Each is one flow_tab call.
+- **Arms:** LOAD05 (exp010), SPR01, SPR02, SPR03, SPR05, SPR10 (exp017), and REF. REF is the scored REF: exp005's
+  seeds 1-4 and exp006's seeds 5-8, the folders exp017 was scored with.
+- **Pairs:** --pairs SPR01-LOAD05, SPR02-LOAD05, SPR03-LOAD05, SPR05-LOAD05, SPR10-LOAD05 (same seed, same history
+  to year 400), plus --perseed.
+- **REF's missing columns.** The exp005/006 REF runs predate wildConc, capIn and capBred, so hsw, hout, bredF and bredM
+  print "-" for them. exp009's REF runs (seeds 1-8) carry those keys.
+  - They are used only if they are the same REF. Parameters must be equal apart from id, cInitLo, cInitHi (exp009's
+    shifted neutral marker C, which has its own random stream) and logHistDepth (output only).
+  - Year records must be equal over the shared keys, with C's fields left out, from the first record to the point
+    where they first differ.
+  - The check goes in a committed tool and must fail on a deliberately wrong input first.
+  - If it passes, exp009's REF is printed as its own row (REF9), and its other columns should equal REF's. If it does
+    not, those columns stay "-" for REF and the reason is given.
+- **Waiting herds:** where a level's herd is under 60 goats in a window (SPR05 and SPR10 early, SPR10 throughout), its
+  rates are per herd goat over a small herd. The herd column is printed beside them, and they are read that way.
+- **Output:** results/exp017_alarm-spread/flow_<window>.txt, plus a descriptive entry. It goes to the reviewer
+  first, and to Chris only after the reviewer settles it.
+
+## exp017 gene flow (descriptive), 2026-11-24
+Plan f240595; tools b328a1f and b0b300a. Descriptive, no predictions. Commands, through cpuslot, with W = 401-900,
+901-1600 and 3201-4000 (results/exp017_alarm-spread/flow_W.txt):
+`python tools/flow_tab.py W "results/exp017_alarm-spread;results/exp010_fixed-load;results/exp005_b0-pilot;results/exp006_two-corner;results/exp009_mutation-pull=9" LOAD05,SPR01,SPR02,SPR03,SPR05,SPR10,REF,REF9 --pairs SPR01-LOAD05,SPR02-LOAD05,SPR03-LOAD05,SPR05-LOAD05,SPR10-LOAD05,REF9-REF --perseed`
+The table below is `python tools/flow_digest.py "<the three files>" LOAD05,SPR01,SPR02,SPR03,SPR05,SPR10,REF,REF9
+herd,capt,csire,cdam,depth,esc,feral,hsw,bredM` (flow_digest.txt). It reprints flow_tab's seed means without their SEs,
+and checks each cell against its source.
+
+**REF9 is REF.** `python tools/ref_match.py "results/exp005_b0-pilot;results/exp006_two-corner" results/exp009_mutation-pull REF`
+(ref_match_REF.txt):
+- Parameters are equal apart from id, logHistDepth and cInitLo/cInitHi; buckPrefValue and doePrefValue are only in
+  exp009's runs, at 0.
+- In each of the 8 seeds, 0 of 1333 year records differ over the shared keys, with the marker C left out.
+- Its wrong inputs fail (ref_match_REF_bad.txt): a changed minLoad stops; one changed herded shows 1 differing record;
+  keeping C shows 1333.
+- The REF9 - REF pair is 0 on every column both have. (That pair was added to the plan's list as this check.)
+So REF's hsw and bredM are read from REF9.
+
+**Measures** (flow_tab; per herd goat per recorded year unless a share; seed means over all 8 seeds, established or
+not):
+- **Into the herd:** capt = goats captured; csire = herd conceptions by a sire captured himself; cdam = by a dam
+  captured herself; depth = generations since the wild of the herd genome.
+- **Out of the herd:** esc = herd goats lost to the wild; feral = the wild genome's share from herd-born goats (a stock,
+  not a flow); hsw = wild does' conceptions by a herd sire.
+- **Captive fate:** bredM = first breedings by captured bucks per captured buck.
+
+| measure | years | LOAD05 | SPR01 | SPR02 | SPR03 | SPR05 | SPR10 | REF | REF9 |
+|---|---|---|---|---|---|---|---|---|---|
+| herd | 401-900 | 207.7 | 145.6 | 113.2 | 51.8 | 13.7 | 7.0 | 119.2 | 119.2 |
+| herd | 901-1600 | 264.0 | 264.4 | 258.6 | 223.9 | 80.4 | 8.8 | 275.9 | 275.9 |
+| herd | 3201-4000 | 261.9 | 266.8 | 263.9 | 261.4 | 236.9 | 11.8 | 287.8 | 287.8 |
+| capt | 401-900 | 0.049 | 0.103 | 0.126 | 0.211 | 0.394 | 0.575 | 0.118 | 0.118 |
+| capt | 901-1600 | 0.044 | 0.056 | 0.046 | 0.055 | 0.179 | 0.488 | 0.029 | 0.029 |
+| capt | 3201-4000 | 0.042 | 0.045 | 0.038 | 0.036 | 0.062 | 0.432 | 0.026 | 0.026 |
+| csire | 401-900 | 0.306 | 0.405 | 0.368 | 0.344 | 0.314 | 0.305 | 0.294 | 0.294 |
+| csire | 901-1600 | 0.350 | 0.324 | 0.220 | 0.215 | 0.292 | 0.325 | 0.091 | 0.091 |
+| csire | 3201-4000 | 0.333 | 0.277 | 0.214 | 0.171 | 0.159 | 0.348 | 0.064 | 0.064 |
+| cdam | 401-900 | 0.138 | 0.216 | 0.249 | 0.352 | 0.564 | 0.725 | 0.217 | 0.217 |
+| cdam | 901-1600 | 0.128 | 0.136 | 0.096 | 0.109 | 0.322 | 0.678 | 0.046 | 0.046 |
+| cdam | 3201-4000 | 0.122 | 0.113 | 0.083 | 0.071 | 0.114 | 0.660 | 0.032 | 0.032 |
+| depth | 401-900 | 3.30 | 2.39 | 2.49 | 1.75 | 0.88 | 0.49 | 3.30 | 3.30 |
+| depth | 901-1600 | 3.66 | 4.30 | 6.71 | 7.06 | 2.91 | 0.61 | 12.86 | 12.86 |
+| depth | 3201-4000 | 3.95 | 5.23 | 7.37 | 8.98 | 10.47 | 0.72 | 14.69 | 14.69 |
+| esc | 401-900 | 0.152 | 0.318 | 0.355 | 0.366 | 0.407 | 0.417 | 0.340 | 0.340 |
+| esc | 901-1600 | 0.127 | 0.197 | 0.158 | 0.181 | 0.354 | 0.459 | 0.101 | 0.101 |
+| esc | 3201-4000 | 0.122 | 0.145 | 0.126 | 0.121 | 0.155 | 0.499 | 0.082 | 0.082 |
+| feral | 401-900 | 0.684 | 0.557 | 0.509 | 0.355 | 0.257 | 0.181 | 0.451 | 0.451 |
+| feral | 901-1600 | 0.845 | 0.764 | 0.628 | 0.541 | 0.516 | 0.392 | 0.240 | 0.240 |
+| feral | 3201-4000 | 0.844 | 0.737 | 0.612 | 0.512 | 0.420 | 0.485 | 0.128 | 0.128 |
+| hsw | 401-900 | 0.002 | 0.003 | 0.003 | 0.003 | 0.002 | 0.001 | - | 0.004 |
+| hsw | 901-1600 | 0.003 | 0.003 | 0.003 | 0.003 | 0.004 | 0.001 | - | 0.002 |
+| hsw | 3201-4000 | 0.003 | 0.002 | 0.003 | 0.002 | 0.003 | 0.002 | - | 0.003 |
+| bredM | 401-900 | 0.108 | 0.118 | 0.147 | 0.168 | 0.193 | 0.162 | - | 0.131 |
+| bredM | 901-1600 | 0.116 | 0.103 | 0.096 | 0.106 | 0.212 | 0.192 | - | 0.063 |
+| bredM | 3201-4000 | 0.121 | 0.101 | 0.100 | 0.089 | 0.116 | 0.222 | - | 0.060 |
+
+**Readings** (descriptive):
+1. **Beside REF, alarm spreading leaves the herd more open both ways after the first window.** In 3201-4000, with
+   herds near REF's size (236.9-266.8 against 287.8), SPR01-SPR05 against REF:
+   - captures 0.036-0.062 against 0.026;
+   - captive-sire share 0.159-0.277 against 0.064;
+   - herd lineage depth 5.23-10.47 generations against 14.69;
+   - herd goats lost to the wild 0.121-0.155 against 0.082.
+   901-1600 shows the same. In 401-900, SPR01 and SPR02 sit near REF on captures and losses (herds 145.6 and
+   113.2 against 119.2), with a higher captive-sire share (0.405 and 0.368 against 0.294).
+2. **The wild's herd-derived share falls back in REF only.**
+   - In REF, feral falls over the three windows: 0.451, 0.240, 0.128.
+   - At every spreading level it rises from the first window to the second and stays high: SPR01 0.557, 0.764, 0.737;
+     SPR03 0.355, 0.541, 0.512; SPR05 0.257, 0.516, 0.420. LOAD05 does the same (0.684, 0.845, 0.844).
+   - This matches the shape Chris described (the wild moves with the herd, then springs back, in REF), here on
+     ancestry. Whether it drives the wild's R spring-back is not checked.
+3. **The herd-to-wild route is lost herd goats, not herd bucks.** Herd sires father 0.001-0.004 of wild does'
+   conceptions in every arm and window, REF9 included. So the measured outflow is herd goats lost to the wild (esc).
+4. **Beside LOAD05, spreading closes the herd partly.** Paired over the same seeds in 3201-4000 (flow_3201-4000.txt,
+   SPRxx - LOAD05):
+   - captive-sire share falls by 0.055 to 0.174 as alarmSpread rises (SPR01 to SPR05);
+   - feral by 0.108 to 0.424;
+   - depth rises by 1.28 to 6.52;
+   - losses to the wild change by +0.024 (SE 0.007) at SPR01, by -0.001 and +0.004 at SPR03 and SPR02, and by +0.033
+     (SE 0.048) at SPR05.
+   The high flow beside REF goes with the fixed load: among the arms with established herds, LOAD05 is the most open
+   on csire and feral. Spreading moves
+   each measure toward REF, but stops well short of it.
+5. **Timing.**
+   - REF closes between the first and second windows: csire 0.294 to 0.091, depth 3.30 to 12.86, feral 0.451 to 0.240.
+   - At SPR02 and SPR03, csire falls less (0.368, 0.220, 0.214 and 0.344, 0.215, 0.171), and feral rises over the same
+     step.
+6. **Small herds.** Where a herd is under 60 goats, its rates are per goat of a small herd that captures keep turning
+   over, and are not comparable with an established herd's:
+   - 401-900: SPR03 51.8, SPR05 13.7, SPR10 7.0;
+   - SPR10 throughout (8.8 and 11.8 later), with captures 0.432-0.575 per herd goat-year.
+   SPR05's means include the never-established seed 6, so its 3201-4000 csire here (0.159, all seeds) differs from the
+   scored 0.123 (established seeds).
+7. **Captured bucks breed more often with spreading.** First breedings per captured buck in 3201-4000 are 0.089-0.116
+   at SPR01-SPR05, against REF9's 0.060.
+Not read here: the wild's trait trajectories, and what makes REF's wild spring back.
+
+## exp017 gene flow (descriptive), correction 2026-11-24 (the reviewer's bc24350)
+The tables above stand. This replaces readings 1-7. The flow files are unchanged.
+
+**Established seeds.** flow_tab's arm means are over all 8 seeds. SPR05's seed 6 never established (herd 23.0 in
+3201-4000), and it carries SPR05's all-seed means. New tool, tools/flow_est.py (1a3877f): per arm, the mean and
+min-max of flow_tab's per-seed values over the seeds established by the window's start. Established means jump_tab's
+J at or before the start, taken from scored.txt. Commands:
+`python tools/flow_est.py results/exp017_alarm-spread/flow_W.txt results/exp017_alarm-spread/scored.txt LOAD05,SPR01,SPR02,SPR03,SPR05,REF9 herd,capt,csire,cdam,depth,esc,feral,hout,bredF,bredM --alias REF9=REF`
+for W = 3201-4000 and 901-1600 (flow_est_W.txt). Checks:
+- each arm's all-seed mean equals flow_tab's printed mean, to its precision;
+- at 3201-4000, the seeds with a J equal the scored est column;
+- --bad jcol (the span column read as J) stops.
+Its means are of the per-seed values flow_tab prints to three places, so they can differ from flow_tab's arm means in
+the last place (REF cdam 0.033 here, 0.032 in flow_tab).
+- In 3201-4000, every seed of LOAD05, SPR01-SPR03 and REF is established, as are 7 of SPR05's 8 (all but seed 6).
+- In 901-1600, all seeds of LOAD05, SPR01 and SPR02 are established at 901, but only 3 of SPR03's (seeds 3, 5, 6), none
+  of SPR05's (J 1080-2724), and 7 of REF's (seed 1's J is 957).
+- No seed of any arm is established at 401 (every J is 501 or later), so 401-900 is the forming phase everywhere.
+
+**Readings** (descriptive; 3201-4000 unless named; ranges are per-seed min-max over established seeds):
+1. **SPR05, the only level with REF-like selection (R gap -0.591 against REF's -0.636), against REF:**
+   - The herd takes in and loses goats at about REF's rates. The ranges overlap:
+     - captures 0.023-0.034 against 0.024-0.028;
+     - losses to the wild 0.085-0.138 against 0.070-0.101;
+     - lineage depth 10.36-14.34 against 12.52-15.84 generations.
+   - It stays more open on how often captured goats breed. Every established seed is above REF's highest:
+     - captive-sire share 0.092-0.138 against 0.048-0.078;
+     - captive-dam share 0.045-0.060 against 0.025-0.042;
+     - first breedings per captured doe 0.462-0.511 against 0.316-0.420.
+     Per captured buck, 0.077-0.106 against 0.044-0.078 overlaps at one end.
+   - The wild's herd-born share is 0.341-0.435 against 0.102-0.175.
+   So at SPR05, the extra gene flow beside REF is in how often captives breed, not in how many goats move.
+2. **SPR01-SPR03 against REF.** These are more open than REF on every flow measure except hout:
+   - captures 0.045, 0.038, 0.036 against 0.026;
+   - losses 0.145, 0.126, 0.121 against 0.082;
+   - captive-sire share 0.277, 0.214, 0.171 against 0.064;
+   - captive-dam share 0.113, 0.083, 0.071 against 0.032;
+   - depth 5.23, 7.37, 8.98 against 14.69.
+   hout is 0.001 in every established arm.
+3. **Against LOAD05** (paired over the same seeds, SPRxx - LOAD05, at SPR01-SPR03; flow_3201-4000.txt).
+   - These move toward REF as alarmSpread rises: the captive-sire share (-0.055, -0.119, -0.162), the captive-dam share
+     (-0.009, -0.039, -0.051), feral (-0.108, -0.232, -0.332), depth (+1.28, +3.42, +5.03), first breedings per
+     captured doe (-0.064, -0.086, -0.117) and per captured buck (-0.020, -0.021, -0.033).
+   - Losses do not move toward REF: SPR01 +0.024 (SE 0.007) is away from REF, and SPR02 +0.004 and SPR03 -0.001 are no
+     change. Captures at SPR01 are +0.003 (SE 0.002).
+   - SPR05's pairs include seed 6 and are not read. On every one of these measures, its established seeds' range lies
+     beyond LOAD05's range, on REF's side.
+   So the high sire and dam shares, the high captive breeding rates (LOAD05 bredM 0.121, bredF 0.635, the highest of
+   the established arms), the shallow depth and the high feral go with the fixed load, and spreading lowers each
+   toward REF. The losses to the wild do not go with the fixed load: LOAD05 loses 0.122 a herd goat-year, and
+   spreading at SPR01-SPR03 leaves that unchanged or raises it.
+4. **feral is a stock, not closure.**
+   - The herd's losses differ much less between arms than feral does (LOAD05 0.122 against REF 0.082; feral 0.844
+     against 0.128), so feral does not measure the herd's outflow.
+   - What lowers it in REF is not checked.
+   - Every arm's wild carries herd ancestry: anyh is 0.972-0.988 in every arm in 3201-4000.
+   - REF's feral falls over the three windows (0.451, 0.240, 0.128), and the spreading levels' does not. That is a
+     series in ancestry, not set beside the wild's R here.
+5. **The herd-to-wild route.** Wild conceptions by herd sires per herd goat-year (hout) are 0.001 in every established
+   arm, against losses to the wild of 0.082-0.145 (SPR05's established seeds 0.109). In the small herds of 401-900,
+   hout is at most 0.017, against losses of about 0.4. The measured outflow is herd goats lost to the wild, not herd
+   bucks mating wild does.
+6. **Timing,** read at SPR02, whose herd in 401-900 (113.2) is near REF's (119.2):
+   - SPR02's captive-sire share falls 0.368, 0.220, 0.214 over the three windows;
+   - REF's falls 0.294, 0.091, 0.064 (0.088 over REF's 7 seeds established at 901).
+   So REF's captive sires drop out of the herd's breeding by the second window, and SPR02's mostly do not. SPR03's
+   401-900 herd (51.8) is small, and SPR05 is not established in 901-1600, so neither is read for timing.
+7. **Small herds.** Where a herd is under 60 goats, its rates are per goat of a small herd that captures keep turning
+   over:
+   - 401-900: SPR03 51.8, SPR05 13.7, SPR10 7.0;
+   - SPR10 throughout;
+   - SPR05's seed 6 in 3201-4000.
+   They are not compared with an established herd's.
+Not read here: the wild's trait trajectories, and what makes REF's wild herd-born share fall.
+
+## exp017 results (raw), note 2026-11-24: REF's source (the reviewer's bc24350)
+The raw entry's "REF is exp005's (results/exp005_b0-pilot)" is wrong. REF's eight runs are exp005's seeds 1-4
+(results/exp005_b0-pilot/REF_seed1-4) plus exp006's seeds 5-8 (results/exp006_two-corner/REF_seed5-8), as the scoring
+command reads them. These are the same eight runs the scoring used, so no number changes. "Not exp007's" stands.
+
+## exp017 gene flow: the wild's R by window (exploratory, 2026-11-24)
+**Exploratory.** This was added after the gene-flow entry was read, at the steward's request, to test Chris's "in REF
+wild moves with the herd at first but then springs back". Tool tools/wildr_tab.py (6ccb419), through cpuslot:
+`python tools/wildr_tab.py "results/exp017_alarm-spread;results/exp010_fixed-load;results/exp005_b0-pilot;results/exp006_two-corner" results/exp017_alarm-spread/scored.txt LOAD05,SPR01,SPR02,SPR03,SPR05,SPR10,REF 401-900,901-1600,3201-4000 --perseed`
+(results/exp017_alarm-spread/wildr.txt).
+- **What it computes.** Per run and window, wild R and herd R are genotype means of R from tools/split_tab.py's split
+  (histogram rows with herd and wild goats; the founders' value F plus the wild or herd change). feral is as
+  flow_tab's. Established = J at or before the window's start, from scored.txt, as flow_est.
+- **Checks:**
+  - split's identity on every run;
+  - at 3201-4000, each run's herd and wild change of R equals scored.txt's per-seed values to three places;
+  - at 3201-4000, the seeds with a J equal the scored est column;
+  - --bad allgoats and --bad jcol each stop (wildr_bad.txt).
+- **Founders.** The founders' R (301-400) is 0.791 in every arm: the same seeds share their history to year 400.
+
+| arm | window | established | wild R est | herd R est | feral est | wild R all | herd R all | feral all |
+|---|---|---|---|---|---|---|---|---|
+| LOAD05 | 401-900 | 0 of 8 | - | - | - | 0.710 | 0.668 | 0.684 |
+| LOAD05 | 901-1600 | 8 of 8 | 0.651 (0.636-0.665) | 0.569 (0.525-0.613) | 0.845 (0.829-0.868) | 0.651 | 0.569 | 0.845 |
+| LOAD05 | 3201-4000 | 8 of 8 | 0.661 (0.644-0.677) | 0.557 (0.509-0.587) | 0.844 (0.826-0.863) | 0.661 | 0.557 | 0.844 |
+| SPR01 | 401-900 | 0 of 8 | - | - | - | 0.692 | 0.616 | 0.557 |
+| SPR01 | 901-1600 | 8 of 8 | 0.610 (0.552-0.663) | 0.385 (0.358-0.422) | 0.764 (0.756-0.784) | 0.610 | 0.385 | 0.764 |
+| SPR01 | 3201-4000 | 8 of 8 | 0.658 (0.637-0.679) | 0.344 (0.311-0.373) | 0.737 (0.718-0.754) | 0.658 | 0.344 | 0.737 |
+| SPR02 | 401-900 | 0 of 8 | - | - | - | 0.724 | 0.570 | 0.509 |
+| SPR02 | 901-1600 | 8 of 8 | 0.675 (0.650-0.703) | 0.240 (0.213-0.275) | 0.628 (0.595-0.684) | 0.675 | 0.240 | 0.628 |
+| SPR02 | 3201-4000 | 8 of 8 | 0.681 (0.645-0.697) | 0.220 (0.202-0.230) | 0.612 (0.595-0.664) | 0.681 | 0.220 | 0.612 |
+| SPR03 | 401-900 | 0 of 8 | - | - | - | 0.801 | 0.687 | 0.355 |
+| SPR03 | 901-1600 | 3 of 8 | 0.699 (0.679-0.712) | 0.163 (0.158-0.167) | 0.522 (0.500-0.546) | 0.700 | 0.252 | 0.541 |
+| SPR03 | 3201-4000 | 8 of 8 | 0.691 (0.681-0.700) | 0.167 (0.159-0.177) | 0.512 (0.469-0.541) | 0.691 | 0.167 | 0.512 |
+| SPR05 | 401-900 | 0 of 8 | - | - | - | 0.843 | 0.800 | 0.257 |
+| SPR05 | 901-1600 | 0 of 8 | - | - | - | 0.784 | 0.578 | 0.516 |
+| SPR05 | 3201-4000 | 7 of 8 | 0.703 (0.690-0.719) | 0.112 (0.103-0.116) | 0.400 (0.341-0.435) | 0.717 | 0.193 | 0.420 |
+| SPR10 | 401-900 | 0 of 8 | - | - | - | 0.855 | 0.827 | 0.181 |
+| SPR10 | 901-1600 | 0 of 8 | - | - | - | 0.848 | 0.819 | 0.392 |
+| SPR10 | 3201-4000 | 0 of 8 | - | - | - | 0.833 | 0.794 | 0.485 |
+| REF | 401-900 | 0 of 8 | - | - | - | 0.743 | 0.529 | 0.451 |
+| REF | 901-1600 | 7 of 8 | 0.722 (0.705-0.738) | 0.090 (0.068-0.111) | 0.221 (0.144-0.298) | 0.720 | 0.097 | 0.240 |
+| REF | 3201-4000 | 8 of 8 | 0.712 (0.696-0.725) | 0.077 (0.067-0.101) | 0.128 (0.102-0.175) | 0.712 | 0.077 | 0.128 |
+
+**Readings** (exploratory):
+1. **At these windows, REF's wild does not spring back in R.**
+   - REF's wild R is 0.743, 0.720 and 0.712 over the three windows (all seeds), each below the founders' 0.791.
+   - Its fall slows, but it does not reverse.
+   - A move and return inside 401-900 would not show in a 500-year mean, so this does not rule one out there.
+2. **The return between the second and third windows is at SPR01.** Its wild R is 0.692, 0.610, 0.658 (all seeds
+   established after 900). LOAD05 rises a little (0.651 to 0.661), and SPR02 less (0.675 to 0.681). SPR03 and REF do
+   not rise.
+3. **The wild ends near REF's at the levels with the strongest herd selection.** In 3201-4000, on established seeds,
+   the wild's R is 0.703 at SPR05 and 0.691 at SPR03, against REF's 0.712. LOAD05 and SPR01 have the lowest wild R
+   (0.661, 0.658).
+4. **Wild R does not follow feral.** SPR05's wild R (0.703) is near REF's (0.712) with feral 0.400 against 0.128. So
+   the wild's herd-born share is not what sets how far the wild's R falls.
+5. **Small herds.** In 401-900, SPR03, SPR05 and SPR10 have small herds (51.8, 13.7, 7.0 in flow_401-900.txt), and
+   their wild R is above the founders' (0.801, 0.843, 0.855). In those three arms the wild has not followed the herd
+   down in that window.
+Not read: R within 401-900 at a finer grain (a timeline, not window means), and any cause of the wild's fall or return.
+
+## exp017 gene flow (descriptive), correction 2 2026-11-24 (the reviewer's 5ff5134)
+This replaces reading 1 of the correction above (343280c) and the last sentences of its reading 6. It compared ranges,
+so "about REF's rates" rested on one seed.
+
+Seed counts come from `python tools/flow_est.py results/exp017_alarm-spread/flow_3201-4000.txt results/exp017_alarm-spread/scored.txt LOAD05,SPR01,SPR02,SPR03,SPR05,REF9 herd,capt,csire,cdam,depth,esc,feral,hout,bredF,bredM --alias REF9=REF --against REF9`
+(f26a7af; flow_est_3201-4000.txt regenerated, with its means and ranges unchanged). They agree with the reviewer's
+hand count from flow_tab's per-seed rows.
+
+1. **SPR05 against REF, on its 7 established seeds (3201-4000).** The herd is more open than REF on the mean of every
+   measure except hout (0.001 in both).
+   - **Captures, losses and depth** lie between REF and the fixed load (SPR05's established mean; REF's range; LOAD05's
+     mean):
+     - captures 0.031, against 0.024-0.028 and 0.042;
+     - losses to the wild 0.109, against 0.070-0.101 and 0.122;
+     - depth 11.80, against 12.52-15.84 and 3.95.
+
+     Seed by seed against REF's range: captures, 6 above and 1 below (s7); losses, 5 above and 2 inside (s4, s7);
+     depth, 6 below and 1 inside (s7). Seed 7 (J 1080) is the one REF-like seed on these.
+   - **Captive breeding and the wild's herd-born share.** Every established seed is beyond REF's range:
+     - captive-sire share 0.092-0.138 against 0.048-0.078;
+     - captive-dam share 0.045-0.060 against 0.025-0.042;
+     - first breedings per captured doe 0.462-0.511 against 0.316-0.420;
+     - feral 0.341-0.435 against 0.102-0.175.
+
+     Per captured buck, 6 seeds are above and 1 inside (s8).
+
+   For Chris: "At SPR05 the herd is more open than REF on every measure. On captures, losses and depth it lies between
+   REF and the fixed load; on how often captives breed, and on the wild's herd-born share, every established seed is
+   beyond REF's range (for breedings per captured buck, all but seed 8)."
+6. **Timing** (replaces "So REF's captive sires drop out ... mostly do not"). SPR02's captive-sire share falls from
+   0.368 to 0.220 and then holds at 0.214, while REF's keeps falling (0.294, 0.091, 0.064).
+
+## exp017 gene flow: the wild's R in 100-year bins (exploratory, 2026-11-24)
+**Exploratory.** This was added at the steward's request, because Chris's "springs back" came from the over-time plots,
+which 500-year means cannot test. Its question: does REF's wild R fall and return within the first centuries of
+herding?
+Command, through cpuslot (tools/wildr_tab.py at 8dcebc8; results/exp017_alarm-spread/wildr_timeline.txt):
+`python tools/wildr_tab.py "results/exp017_alarm-spread;results/exp010_fixed-load;results/exp005_b0-pilot;results/exp006_two-corner" results/exp017_alarm-spread/scored.txt LOAD05,SPR01,SPR02,SPR03,SPR05,REF --timeline --perseed`
+- **Bins:** 401-500 ... 1501-1600, then 3201-4000. Histogram rows fall every 15 years, so a bin holds 6 or 7.
+- **Checks:** split's identity on every run, and the 3201-4000 checks against scored.txt, as before. --bad allgoats and
+  --bad jcol stop (wildr_timeline_bad.txt). The window mode's output is byte-identical to wildr.txt.
+- **Founders' R** (301-400): 0.791 (0.770-0.802 over seeds) in every arm.
+- **wildr_timeline.txt** has each arm's per-bin min-max over seeds, and each seed's wild R by bin with its lowest bin
+  over 401-1600.
+
+All-seed means, wild R / herd R (established at the bin's start)
+| years | LOAD05 | SPR01 | SPR02 | SPR03 | SPR05 | REF |
+|---|---|---|---|---|---|---|
+| 401-500 | 0.827 / 0.801 (0) | 0.829 / 0.788 (0) | 0.840 / 0.788 (0) | 0.846 / 0.812 (0) | 0.846 / 0.815 (0) | 0.836 / 0.784 (0) |
+| 501-600 | 0.736 / 0.700 (2) | 0.765 / 0.714 (0) | 0.779 / 0.666 (0) | 0.838 / 0.786 (0) | 0.851 / 0.812 (0) | 0.796 / 0.698 (0) |
+| 601-700 | 0.681 / 0.641 (7) | 0.676 / 0.621 (3) | 0.709 / 0.564 (1) | 0.809 / 0.709 (0) | 0.851 / 0.820 (0) | 0.731 / 0.544 (1) |
+| 701-800 | 0.655 / 0.608 (8) | 0.606 / 0.509 (6) | 0.655 / 0.466 (4) | 0.770 / 0.618 (1) | 0.842 / 0.790 (0) | 0.670 / 0.372 (2) |
+| 801-900 | 0.647 / 0.586 (8) | 0.585 / 0.447 (7) | 0.635 / 0.370 (5) | 0.745 / 0.521 (2) | 0.829 / 0.767 (0) | 0.682 / 0.254 (6) |
+| 901-1000 | 0.645 / 0.569 (8) | 0.586 / 0.419 (8) | 0.636 / 0.320 (8) | 0.730 / 0.405 (3) | 0.818 / 0.724 (0) | 0.703 / 0.173 (7) |
+| 1001-1100 | 0.650 / 0.571 (8) | 0.590 / 0.394 (8) | 0.647 / 0.264 (8) | 0.699 / 0.307 (5) | 0.807 / 0.687 (0) | 0.721 / 0.120 (8) |
+| 1101-1200 | 0.652 / 0.565 (8) | 0.608 / 0.382 (8) | 0.667 / 0.238 (8) | 0.704 / 0.248 (7) | 0.785 / 0.608 (1) | 0.731 / 0.087 (8) |
+| 1201-1300 | 0.654 / 0.561 (8) | 0.615 / 0.380 (8) | 0.690 / 0.222 (8) | 0.710 / 0.220 (7) | 0.777 / 0.550 (2) | 0.732 / 0.074 (8) |
+| 1301-1400 | 0.652 / 0.579 (8) | 0.622 / 0.374 (8) | 0.694 / 0.207 (8) | 0.694 / 0.221 (7) | 0.774 / 0.535 (2) | 0.720 / 0.074 (8) |
+| 1401-1500 | 0.649 / 0.568 (8) | 0.621 / 0.383 (8) | 0.695 / 0.217 (8) | 0.683 / 0.190 (7) | 0.771 / 0.500 (3) | 0.712 / 0.075 (8) |
+| 1501-1600 | 0.654 / 0.569 (8) | 0.630 / 0.365 (8) | 0.692 / 0.215 (8) | 0.682 / 0.176 (8) | 0.757 / 0.437 (3) | 0.716 / 0.079 (8) |
+| 3201-4000 | 0.661 / 0.557 (8) | 0.658 / 0.344 (8) | 0.681 / 0.220 (8) | 0.691 / 0.167 (8) | 0.717 / 0.193 (7) | 0.712 / 0.077 (8) |
+
+**Readings** (exploratory):
+1. **REF's wild R falls and springs back within the first centuries of herding.** This revises reading 1 of the window
+   section above (a2eb2d6): the 500-year means averaged the dip away.
+   - **All-seed mean:** 0.836 in 401-500, down to 0.670 in 701-800, back to 0.732 in 1201-1300, then 0.712-0.720 to
+     1600 and 0.712 in 3201-4000.
+   - **Seed by seed** (per-seed lines in wildr_timeline.txt), every REF seed's lowest bin is the one holding its J or
+     the next:
+     - s1: J 957, low 0.647 in 901-1000;
+     - s2: J 849, low 0.650 in 901-1000;
+     - s3: J 705, low 0.581 in 701-800;
+     - s4: J 717, low 0.646 in 701-800;
+     - s5: J 783, low 0.621 in 801-900;
+     - s6: J 588, low 0.640 in 601-700;
+     - s7: J 705, low 0.569 in 701-800;
+     - s8: J 663, low 0.691 in 701-800.
+
+     In each seed the later bins are higher than the low.
+   - Over the same years REF's herd R falls without returning: 0.784, then 0.074 by 1201-1300.
+2. **The fixed load (LOAD05): no spring-back.** Its wild R falls to 0.655 by 701-800, then stays at 0.645-0.654 through
+   1600 (0.661 in 3201-4000).
+3. **SPR01: deeper, and a slow, partial return.**
+   - The mean falls to 0.585 (801-900) and returns to 0.630 by 1501-1600 and 0.658 in 3201-4000.
+   - Per-seed lows are 0.511-0.588, against REF's 0.569-0.691.
+   - SPR01's s7 stays at 0.521-0.572 from 601-700 through 1501-1600.
+4. **SPR02: a dip and return like REF's, from a lower floor.** The mean falls to 0.635 (801-900) and returns to 0.695
+   (1401-1500). Per-seed lows are 0.515-0.614.
+5. **SPR03 and SPR05:** the herds form late, and the wild's R falls slowly through 1600 (SPR03 0.846 to 0.682, SPR05
+   0.846 to 0.757). Their bin means mix seeds before and after establishment (the counts in brackets), so they are not
+   read for a return.
+6. **First century.** In 401-500, every arm's wild R (0.827-0.846) is above the founders' 0.791. Why is not checked.
+
+For Chris: in REF, the wild's R moves down with the herd's as each herd establishes, and returns within the next few
+centuries while the herd's keeps falling. At the fixed load without spreading it does not return. With spreading at 0.1
+it falls further and returns slowly and only partly by 1600; at 0.2 it dips and returns, as in REF, from a lower
+floor. What drives the return is not checked.
+
+## exp017 gene flow: the wild's R by window, correction 2026-11-24 (the reviewer's 54f3c87)
+This replaces readings 1-5 of "the wild's R by window" (a2eb2d6); its table stands. The tools changed in 670a57e: the
+check of scored.txt's J column against its est column now runs whenever scored.txt is read, before any output. All
+outputs are byte-identical, and wildr_bad.txt and wildr_timeline_bad.txt were regenerated: --bad jcol now stops before
+printing.
+1. **REF at window means, and what that does not test.**
+   - REF's all-seed wild R is 0.743, 0.720 and 0.712 over the three windows, each below the founders' 0.791.
+   - Per seed (wildr.txt, per run), part of REF does rise:
+     - seeds 3, 6 and 7 rise from 401-900 to 901-1600 (0.692 to 0.705, 0.727 to 0.736, 0.708 to 0.724), three of the
+       four lowest in 401-900;
+     - seeds 2 and 5 rise from 901-1600 to 3201-4000 (0.709 to 0.713, 0.710 to 0.725).
+   - 1601-3200 is not sampled.
+   - This R is the wild-only genotype mean, the R gap's own measure. The year records' traitMeans is a mean over all
+     goats, herd and wild (src/datamanager.js:144). Which series and plot Chris described is not identified; the
+     reviewer has asked the steward to ask him.
+   - At 100-year bins over 401-1600, the same wild R falls and returns in REF, in every seed: see "the wild's R in
+     100-year bins" (003bf80), which is still with the reviewer.
+2. **SPR01** (all seeds established by 901): wild R is 0.692, 0.610, 0.658. The rise from the second window to the
+   third is a difference of two window means with 1601-3200 unread, not a trajectory. Over 901-1600 the 100-year bins
+   rise from 0.586 to 0.630 (003bf80).
+3. **Across arms, wild R against the wild's herd-born share** (replaces readings 3 and 4). In 3201-4000, on established
+   seeds:
+
+   | | LOAD05 | SPR01 | SPR02 | SPR03 | SPR05 | REF |
+   |---|---|---|---|---|---|---|
+   | feral | 0.844 | 0.737 | 0.612 | 0.512 | 0.400 | 0.128 |
+   | wild R | 0.661 | 0.658 | 0.681 | 0.691 | 0.703 | 0.712 |
+   | herd R | 0.557 | 0.344 | 0.220 | 0.167 | 0.112 | 0.077 |
+
+   - Across arms, the wild's R is higher where its herd-born share is lower at every step except LOAD05 to SPR01.
+   - Between SPR05 and REF, the share is 0.400 against 0.128, while wild R differs by 0.009. So the relation is not
+     proportional.
+   - The R that herd-born goats carry into the wild is that of the herd they left. The herd's R differs between arms
+     (0.557 to 0.077), and that is not read.
+4. **The first window** (replaces reading 5). In 401-900, against the founders' R (0.791):
+   - at SPR05 and SPR10, neither the herd (0.800, 0.827) nor the wild (0.843, 0.855) is below it;
+   - at SPR03 the wild is above it (0.801) and the herd below it (0.687).
+   SPR10's wild stays above the founders' throughout (0.855, 0.848, 0.833). Why the wild rises above the founders is
+   not checked.
+
+For Chris (replacing the window section's message): the wild R that the R gap is measured on does not return at window
+means, and three of eight REF seeds rise from the first window to the second. At 100-year bins it falls and returns in
+every REF seed (003bf80, pending review). Which plot he meant is being asked.
+
+## exp017 gene flow: the wild's R in 100-year bins, correction 2026-11-24 (the reviewer's 497d6ea)
+This replaces readings 1-6 and the line for Chris in "the wild's R in 100-year bins" (003bf80); its table stands.
+The tool now prints, per arm, the pre-herding all-goat R by bin, and per seed, the bin holding J, how many bins after
+it the low comes, and the highest of the next three bins after the low (7a34b65). The tool stops if a herd goat falls
+in a pre-herding bin; --bad prebin stops (wildr_timeline_bad.txt). The window mode's output is byte-identical.
+Command as before; wildr_timeline.txt is regenerated, with its earlier table rows unchanged.
+1. **REF against LOAD05, per seed** (wildr_timeline.txt, per-seed lines; replaces "in each seed the later bins are
+   higher than the low", which is true of any minimum):
+   - **REF:** each seed's low comes in J's bin or the next (0 or 1 bins after it, 8 of 8). The highest of the next
+     three bins is 0.054-0.159 above the low.
+   - **LOAD05:** the low comes 3-9 bins after J's bin. The next three bins rise 0.018-0.041 above it.
+   - Within a seed, changes under about 0.04 are plateau noise (LOAD05 s1 runs 0.634-0.675 over 901-1600), so REF's
+     drift from 0.732 to 0.712 after 1300 is not read.
+2. **The return is partial.**
+   - REF's mean returns to 0.732 (1201-1300), against 0.836 in 401-500.
+   - In every REF seed, 3201-4000 is below 401-500 (for example s3 0.789 to 0.696, s7 0.844 to 0.711).
+   - What differs between arms is how soon after J the recovery comes, and how large it is.
+3. **The fixed load:** LOAD05 falls to a plateau and stays (lows 0.614-0.650, scattered over 801-1500).
+4. **Spreading, per seed** (the bin means mix seeds before and after J until 901, so they are not read):
+   - **SPR01:** the low comes 1-3 bins after J's bin, at 0.511-0.588, against REF's 0.569-0.691. The next three bins
+     rise 0.018-0.104. In 4 of 8 seeds (s1, s4, s5, s7) the rise is 0.035 or less.
+   - **SPR02:** the low comes 0-3 bins after J's bin, at 0.515-0.614. The next three bins rise 0.089-0.159, as in REF.
+   - SPR03 and SPR05 are not read for a return: several seeds' J is late or outside 401-1600, or no bin follows the low.
+5. **Hunting sets the baseline, and is the unchecked candidate.** Humans hunt from year 300 (humansAt 300, herdingAt
+   400 in every arm). Before herding, every goat's R is:
+   - 0.696 in 101-200 and 0.678 in 201-300, with no humans;
+   - 0.762 in 301-350 and 0.819 in 351-400, under hunting.
+
+   So the founders' window (0.791) is the wild's first hunted century, with R still rising. Every arm's 401-500 wild R
+   (0.827-0.846) comes before any seed's J. The level the wild recovers toward may be set by hunting, and that is not
+   checked.
+
+   No run on this code has humans and no herding: exp013's WTlate has no humans, and REFlate hunts for 100 years
+   before herding at 3000. The old ladder's WT2 (humans hunting from 300, never herding; pre-protocol code, EXPLOG
+   "WT2" rows) held whole-population R near 0.82-0.83. That is a pointer from older code, not a reading here.
+
+For Chris (replacing 003bf80's): in REF the wild's R falls with each herd's establishment and recovers part of the way
+within two or three centuries, while the herd's keeps falling. At the fixed load without spreading it falls to a
+plateau and stays. With spreading at 0.1 the dip is deeper, and in half the seeds it recovers little within three
+centuries. At 0.2 the dip and recovery are like REF's, a little later. Hunting from year 300 was still raising the
+wild's R when herding began, so the level it recovers toward may be hunting's. What drives the recovery is not checked.
+Which plot Chris meant is still being asked.
+
+## exp017 gene flow: the wild's R, note 2026-11-24 (the plot; the reviewer's 99dfa13)
+- **The plot is identified.** Every REF plot with a wild line that Chris has seen (rtime_LOAD1_REF.png,
+  takeoff_rdist_REF.png) comes from tools/takeoff_rdist.py. Its wild line is the wild-only mean, hist - histHerd at
+  bucket midpoints (lines 9, 27-31): split's wild measure, the series wildr_tab reads. The steward found this and the
+  reviewer checked it in the code. This replaces "which plot Chris meant is still being asked" in both corrections
+  above.
+- **The window correction (d9ab94b).** "Falls and returns in every REF seed", in reading 1 and in the line for Chris,
+  should read "falls and recovers part of the way in every REF seed" (as reading 2 of the timeline correction, f15e544).
+- **Hunting.** Stalk hunting from year 300 is the unchecked candidate for two things: the wild's rise above the
+  founders' R in 401-500 (every arm 0.827-0.846, against 0.791, before any J), and the level it recovers toward
+  (f15e544, reading 5).
 
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 

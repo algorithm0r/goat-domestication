@@ -2,6 +2,8 @@
 # 2026-11-20, for the steward's question after exp007: why do LOADLO's and CTLRAND's herds track the wild while REF's and
 # CTLDEEP's do not?).
 #   python tools/flow_tab.py Y0-Y1 "DIR[;DIR...]" [ARM,ARM...] [--perseed] [--bad shift]
+#   (a folder given as DIR=TAG names its arms ARM+TAG, so one arm from two folders can sit side by side, e.g.
+#   "results/exp009_mutation-pull=9" gives REF9; tools/ref_match.py shows whether two such folders hold the same runs)
 # Over the year rows in Y0-Y1 (1-based), per run; ratios are sums over rows (every 3rd year in thinned runs), so they are
 # per herd goat per recorded year:
 #   into the herd   capt  = captured / herded             wild goats taken into the herd
@@ -86,11 +88,13 @@ def main():
     y0, y1 = (int(v) for v in a[0].split("-")); arms = a[2].split(",") if len(a) > 2 else None
     R = {}
     for folder in a[1].split(";"):
+        folder, _, tag = folder.partition("=")   # DIR=TAG: arms in DIR are named ARM+TAG (2026-11-24, exp009's REF as REF9)
         for f in glob.glob(os.path.join(folder, "*.json")):
             m = re.match(r"(.+)_seed(\d+)\.json$", os.path.basename(f))
-            if m and (not arms or m.group(1) in arms):
-                if int(m.group(2)) in R.setdefault(m.group(1), {}): sys.exit(f"duplicate {f}")
-                R[m.group(1)][int(m.group(2))] = f
+            arm = m.group(1) + tag if m else None
+            if m and (not arms or arm in arms):
+                if int(m.group(2)) in R.setdefault(arm, {}): sys.exit(f"duplicate {f}")
+                R[arm][int(m.group(2))] = f
     print(f"years {y0}-{y1}; per herd goat per recorded year unless a share; seed means (SE). Exploratory.")
     print("| arm | seeds | " + " | ".join(KEYS) + " |\n|" + "---|" * (len(KEYS) + 2))
     lines, ALL = [], {}
