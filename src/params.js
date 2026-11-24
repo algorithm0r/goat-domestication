@@ -281,6 +281,9 @@ var PARAMETERS = {
                           // test); 2 loose: moves as a wild goat, rejoins if it comes back near, keepers chase one a sub-tick
   chaseDelay: 2,          // run-offs (mode 2): sub-ticks loose before a keeper goes after it
   spookAtDusk: 0,         // 1: the herder can also spook goats on the walk home at dusk (same daily chance, spread over day + dusk sub-ticks)
+  alarmSpread: 0,         // > 0: a goat the herder spooks spreads the alarm: each goat of its herd walking with the herder in the 3×3
+                          // cells around it bolts too with chance alarmSpread × its R × its fearOfHumans, and passes it on (a cascade,
+                          // each goat once a sub-tick), so the alarm spreads further in a denser herd (Chris 2026-11-23). 0 = off
   keepRadius: 2,          // a herd goat further than this from its herder at day's end has strayed
   penning: 1,             // the herd walks home at dusk and is penned at camp overnight
   penProtection: 0.8,     // penned at camp: a wolf's kill chance on a herd goat is cut by this

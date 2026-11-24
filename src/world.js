@@ -77,6 +77,7 @@ var World = class World {
     this._pullExp = undefined; this._pull = null;   // wolfPull table
     this.estrusCount = new Uint16Array(N);
     this.wolfField = new Uint8Array(N);
+    this._sub = 0;                                               // sub-tick counter (alarmSpread: a goat bolts once a sub-tick)
     this.humanField = new Uint8Array(N);   // hunters present this sub-tick (goats flee them)
     this.food = new Float32Array(N);       // human plant food standing on a site (kcal); goats don't eat it
     this.foodCap = new Float32Array(N);    // a site's capacity in an average year (0 = not a site)
@@ -189,6 +190,34 @@ var World = class World {
     let v = tab[0][1];
     for (const [t0, v0] of tab) if (t0 <= t) v = v0; else break;
     return v;
+  }
+
+  // Alarm spreading (alarmSpread > 0; Chris 2026-11-23): goat g0 of a herd has just bolted from cell (x0, y0). Each goat of
+  // the same herd walking with the herder in the 3×3 cells around a bolter catches the alarm with chance alarmSpread × its
+  // R × its fearOfHumans, bolts (Goat.bolt: away from the herder, a run-off beyond keepRadius), and passes it on from where
+  // it stood. Each goat bolts at most once a sub-tick. Cells are read from the spatial index, which holds where the goats
+  // stood at the start of this sub-tick. The more goats in each 3×3, the further the alarm spreads: a denser herd.
+  spreadAlarm(g0, x0, y0) {
+    const P = PARAMETERS, W = this.W, H = this.H, goats = this.goats, order = this.order, start = this.cellStart;
+    const h = this.herders[g0.herd], sub = this._sub, q = this._alarmQ || (this._alarmQ = []);
+    q.length = 0; q.push(x0, y0);
+    for (let k = 0; k < q.length; k += 2) {
+      const cx = q[k], cy = q[k + 1];
+      for (let y = Math.max(0, cy - 1); y <= Math.min(H - 1, cy + 1); y++)
+        for (let x = Math.max(0, cx - 1); x <= Math.min(W - 1, cx + 1); x++) {
+          const c = y * W + x;
+          for (let o = start[c]; o < start[c + 1]; o++) {
+            const n = goats[order[o]];
+            if (n.dead || n.herd !== g0.herd || n._bolt === sub || !n.walksWithHerder(this)) continue;
+            if (rand() >= P.alarmSpread * n.tr[T_R] * n.fearOfHumans) continue;
+            n._bolt = sub; n.alarmed = true; this.ys.alarmCaught++;
+            if (P.alarmLearn > 0) n.learnFear('fearOfHumans', P.alarmLearn);
+            const nx = n.x, ny = n.y;
+            n.bolt(this, h);
+            q.push(nx, ny);
+          }
+        }
+    }
   }
 
   // Spooking and straying rise with the number of goats a herder must watch (labour limits herd size).
@@ -438,6 +467,7 @@ var World = class World {
       for (let y = Math.max(0, h.y - R); y <= Math.min(this.H - 1, h.y + R); y++)
         for (let x = Math.max(0, h.x - R); x <= Math.min(W - 1, h.x + R); x++) { const i = y * W + x; if (this.humanField[i] < 255) this.humanField[i]++; }
     }
+    this._sub++;                                                 // alarmSpread: each goat bolts at most once a sub-tick
     for (const g of this.goats) { if (g.dead) continue; g.step(this, 'day'); g.graze(this); }
     this.keepersRefetch();
     this.buildIndex(false);
@@ -1746,6 +1776,7 @@ var World = class World {
       w.x = bx; w.y = by;
     }
     this.buildWolfField(true);                                   // hunting wolves, where they are now
+    this._sub++;
     for (const g of goats) { if (!g.dead) g.step(this, phase); }
     this.buildIndex(false);
     for (const w of this.wolves) if (hunting(w)) this.wolfAttack(w, phase);
@@ -1904,7 +1935,7 @@ var World = class World {
       concOrigin: [[0, 0, 0, 0], [0, 0, 0, 0]], wildConc: [0, 0], capIn: [0, 0], capBred: [0, 0], looseDeaths: 0, selfMaintDays: 0, parentAge: [[0, 0, 0], [0, 0, 0]],
       firstSireAge: [[0, 0], [0, 0]],
       cohortBirth: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))), cohortBreed: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))),
-      selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
+      selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, spooked: 0, alarmCaught: 0, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
       dried: 0, driedLost: 0, fodderLost: 0, gatherScored: 0, meatHunted: 0, huntScored: 0, shots: 0, shotKills: 0, altKills: 0, unmetQ: [0, 0, 0, 0], slaughterQ: [0, 0, 0, 0], herdQ: [0, 0, 0, 0], labourQ: [0, 0, 0, 0],
       roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0,
       herdBirths: 0, wildSired: 0, herdSires: this.camps.map(() => new Set()), herdConceptions: 0, chosenSired: 0,

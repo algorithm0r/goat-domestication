@@ -7165,6 +7165,235 @@ Three wording fixes. They replace the passages named below. The tables and verdi
 3. **Prediction 3** (replaces "within the first century after herding"): both medians are the 4th of 8 J within 24 years
    of the floor (LOAD05 525, LOAD06 510). The J at 0.5 and 0.6 overlap throughout (501-669 and 501-639).
 
+## exp017 — Alarm spreading as the spook's herd-size factor: with the herder load fixed at 0.5, a herder spook cascades through the herd (alarmSpread 0.1-1). Does it give a persisting herd with R gap <= -0.30 and breadth >= 3, as the herder-load rule does?
+**Pre-registered:** 2026-11-23. Chris: "the idea is that alarm spreading is a different mechanism for the spook rule.
+let's register this and test it. the alarm should spread faster in denser herds."
+Mongo animalDomestication.exp017_alarm-spread (mint); results/exp017_alarm-spread; job list tools/exp017.jsonl (40 runs,
+cpuslot --anywhere); code HEAD at queueing (named in the raw entry).
+**Why:** in every arm so far, a strong R gap (-0.30 or below) together with divergence on other traits (breadth 3 or
+more) has come only with the herder-load spook rule, where the spook chance grows with herd size (herderAlarm × R ×
+fear × herd / (herdPerHerder × herders)): REF -0.636, breadth 6 (exp007). A fixed load gives at most -0.25 with breadth
+0-1 over 0.25-1 (exp010, exp015). The herd-size factor there is a herder's labour limit. Alarm spreading puts a herd-size
+factor in the goats instead: a goat that bolts sets off its neighbours, so in a denser herd one spook moves more goats.
+Here the herder's own spook keeps a fixed load (0.5, exp010's LOAD05: established at once in 8 of 8, R gap -0.104,
+breadth 1), so any herd-size effect comes from the spreading.
+**The mechanism** (src, c364a5f; default alarmSpread 0 = off): when the herder spooks a goat, it bolts as before. Each
+goat of the same herd walking with the herder (not loose, not tethered or kept at camp, not a kid following its
+mother) in the 3×3 cells around a bolter catches the alarm with chance alarmSpread × its R × its fearOfHumans, bolts
+the same way (away from the herder; a run-off beyond keepRadius, fetched back or lost as before), and passes the alarm
+on from where it stood: a cascade within the sub-tick, each goat bolting at most once a sub-tick. Positions come from
+the spatial index (where goats stood at the sub-tick's start). The herd ranges within herdRange 8 of the herder, so a
+bigger herd is a denser one. New output counters per year: spooked (the herder's spooks) and alarmCaught (goats that
+caught a spread alarm).
+**Identity:** alarmSpread 0 at 4df0e92 against exp010's LOAD05_seed1 (tools/spread_id.jsonl;
+results/_scratch/exp045_probe/LOAD05id_seed1.json), tools/cmp_years.py: 0 of 266 records differ (68 shared keys; the new
+counters only in the new run); hist and histHerd identical over the 800 years.
+**Calibration probe, seen before registering** (tools/spread_probe.jsonl, seed 1, 1200 years, load 0.5; read with
+tools/spread_probe.py, 401-1200; results/_scratch/exp046-048_probe). Bolts per spook (1 = no spread) by herd size:
+- 0.1: 1.03 (herd 1-9), 1.25 (10-29), 1.46 (30-99), 2.03 (100-199), 2.09 (200+).
+- 0.3: 1.12, 1.50, 2.22, 3.30, 3.11.
+- 1: 1.60 (1-9), 2.07 (10-29); the herd stayed under 30 through year 1200.
+The tool also printed bolts and run-offs per herd goat-year by herd size, which I saw: at 0.3 with herd 200+, 0.663 bolts
+per goat-year against 0.831 for alarmSpread 0. These are seed 1's first 800 years of herding; seed 1's main runs at 0.1,
+0.3 and 1 repeat those years exactly. The levels below were chosen from the probe to run from a cascade of about 2 at
+full herd to one that holds the herd small.
+**Arms** (seeds 1-8, 4000 years, herding at 400; exp010's arguments, herdPerHerder 1e9, minLoad 0.5): SPR01, SPR02,
+SPR03, SPR05, SPR10 (alarmSpread 0.1, 0.2, 0.3, 0.5, 1). Read beside exp010's LOAD05 (alarmSpread 0, same seeds and
+arguments) and REF (exp007, the herder-load rule). Herds open, as in exp010.
+**Measure** (the analysis session; window 3201-4000, founders 301-400; tools/load_tab.py extended for the five levels,
+built and checked before any result): per level, established (herd >= 100 over the window) and by jump_tab's criterion
+with the KM median; Q1 per seed (at once / grew / waited / never, with waited = the 100-year herd mean under 60 for 300+
+consecutive years after year 500, as exp015); herd; R gap; breadth (core traits with abs(gap) >= 0.10); captive-sire
+share; ranOff, refetched, escaped per herd goat-year. The mechanism check: tools/spread_probe.py over 401-4000, per
+level, bolts per spook by herd-size bin.
+**Predictions** (mine):
+1. Mechanism: in every level, bolts per spook in the highest herd-size bin reached with 10 or more rows exceeds the
+   1-9 bin.
+2. SPR01, SPR02 and SPR03 establish (herd >= 100 over the window) in 6 or more of 8; SPR10 in 2 or fewer.
+3. Every level with 2 or more established seeds has an R gap more negative than LOAD05's (-0.104), and among levels
+   with 6 or more established, the R gap does not rise with alarmSpread.
+4. At least one level established in 6 or more of 8 has R gap -0.30 or below and breadth 3 or more.
+**Decision rule:**
+- If a level established in 6 or more of 8 has R gap -0.30 or below and breadth 3 or more: alarm spreading is a second
+  mechanism that gives what the herder-load rule gives, a persisting herd with strong R and divergence, with the
+  herd-size factor in the goats' behaviour rather than the herder's labour. To Chris and the author.
+- Otherwise, if some level has R gap -0.30 or below and breadth 3 or more but in fewer than 6 established seeds: the
+  spreading that gives the filter also holds the herd small; read with Q1 (waiting), as exp015.
+- Otherwise: alarm spreading at 0.1-1 on a load of 0.5 does not give strong R with divergence.
+- If prediction 1 fails at a level, that level's reading is not about density: say so beside it.
+- Descriptive, not a test: R gap and breadth against REF's; the wait by level.
+
+## exp017 amendment, 2026-11-23 (before any result: 0 of 40 runs finished; the reviewer's 60de449)
+1. **Prediction 1 window.** The catch chance is the receiver's alarmSpread × R × fear, so cascades shrink as the filter
+   lowers R; over 401-4000 the 200+ bin would be mostly late, low-R years, and a level whose filter works could fail
+   prediction 1 for that reason. Prediction 1 is read over 401-1200 (as the probe), with each level's 8 seeds pooled by
+   summing their year rows in each herd-size bin; 401-4000 is printed as descriptive. Prediction 1 was seen for seed 1
+   at 0.1, 0.3 and 1 in the probe.
+2. **What the probe showed.** The bolt-rate line disclosed above (seed 1 at 0.3, herd 200+: 0.663 herder-plus-spread
+   bolts per goat-year against 0.831 at alarmSpread 0, with about 3 bolts per spook) means the herder's own spooks per
+   goat fell well below alarmSpread 0's. At a fixed load that can come only from R × fear, so it was a look at the
+   direction of predictions 3 and 4 in seed 1. The scorer prints, descriptively, each level's R gap with and without
+   seed 1.
+3. **Readings for the scorer:**
+   - Prediction 3: arm means of the established seeds (herd >= 100 over the window) against LOAD05 as the scorer
+     recomputes it. "Does not rise" = non-increasing (more negative or equal) between neighbouring levels within the
+     subset with 6 or more established; ties pass; no tolerance.
+   - Prediction 4 and branch 1: arm means over established seeds; R gap -0.30 inclusive, breadth >= 3.
+   - Branch 2 needs 2 or more established seeds at the level. Reworded: "strong R with divergence appears only at
+     levels where the herd does not reliably persist; read with Q1". It is not read as the spreading holding the herd
+     small.
+   - Waited is exp015's uncensored count (amendment d377a7d's definition: span under 60 for 300 years or more, before J
+     if established, else to the run's end), with the 200 and 400 cuts printed.
+   - Guard: each run equals exp010's LOAD05 run of the same seed except alarmSpread (and logHistDepth, output only),
+     as exp015's.
+4. **Scope.** The spread radius is the 3×3 around a bolter, so the density effect saturates once neighbouring cells are
+   full; in the probe, bolts per spook is about flat from herd 100-199 to 200+. It acts as a step with herd size, not a
+   proportional rise like the herder load. Any reading is for radius 1. Branch 1 reads "on a load of 0.5", with the
+   captive-sire share printed beside REF's.
+
+## exp017 results (raw)
+40 of 40 runs complete (complete: true, last row year 3998), every exit 0 (cpuslot-logs/, batch 1795452922106149000), no
+error, exception or warning in any log. Each log carries the db client's packet-size advisory (9-10 MB of BSON, over its
+4 MB suggestion), which does not stop the save. Arms as registered, 8 seeds each: SPR01, SPR02, SPR03, SPR05, SPR10
+(alarmSpread 0.1, 0.2, 0.3, 0.5, 1; herdPerHerder 1e9, minLoad 0.5). Parameters are identical across runs except id, seed
+and alarmSpread. Hosts: 28 on the desktop and 12 on mint. Run times 6187-11193 s.
+**Commits:**
+- ae6ddc4: 7 runs, started 16:55-16:59Z on 11-23.
+- 35e7620: 33 runs, from 19:02Z.
+`git diff ae6ddc4 35e7620 -- src load.mjs tools/runyears.mjs` is empty, so one sim.
+**Dirty runs:** two ae6ddc4 runs started on a dirty tree: SPR01 seed 6 and seed 7, at 16:59:26Z and 16:59:31Z. `git
+describe --dirty` records that a tracked file was modified, not which one. Two commits landed within a minute after:
+60de449 (notes/review, 16:59:47Z) and ed844b5 (this ledger, 17:00:25Z). Which file was modified is not checked.
+**Dirty-run check:** both are being re-run at full length (4000 years) on a clean tree, d4ee84b (job list
+tools/exp017_dirtyid.jsonl, the empty 3dd4cc9 corrected). They will be compared with tools/cmp_years.py, and the result
+added here as a dated note. Until then those two runs are provisional.
+The registered Mongo collection is animalDomestication.exp017_alarm-spread on mint. All 40 logs print the run line that
+follows the save (tools/runyears.mjs:100-101). JSON is in results/exp017_alarm-spread/. Nothing of the runs has been read
+beyond these checks.
+**Corrections to the registration** (the reviewer's 23f0958):
+- REF is exp005's (results/exp005_b0-pilot), not exp007's: exp007 has no REF runs.
+- Amendment point 4's account of the saturation is a guess whose cause is not checked: "the density effect saturates
+  once neighbouring cells are full". The probe shows only that bolts per spook is about flat from herd 100-199 to 200+.
+Scoring: the analysis session, with tools/load_tab.py --exp017 as accepted (9b54daf; the reviewer's 23f0958 and 456f9ff).
+
+## exp017 results (scored)
+`python tools/load_tab.py "results/exp017_alarm-spread;results/exp010_fixed-load;results/exp005_b0-pilot;results/exp006_two-corner" --exp017`
+through cpuslot, tool 9b54daf. Selftest 86 ok; selftest bad fails 13. Guard passed on all 40: each SPR run equals
+exp010's LOAD05 run of the same seed except alarmSpread, with spookFixed 0 and spookSchedule '' at identity. Tables in
+results/exp017_alarm-spread/ (scored.txt, selftest.txt, selftest_bad.txt). REF is exp005's eight runs; its row
+reproduces exp010's (herd 287.8, R gap -0.636, breadth 6, csire 0.064). LOAD05 recomputes at R gap -0.104, as
+registered. All 40 runs are scored as registered; SPR01 seeds 6 and 7 are provisional (raw entry; see the end).
+
+Window 3201-4000; established = herd >= 100 over the window; herd over all 8 seeds; R gap, breadth and csire over the
+established seeds; waited at the registered 300 cut; KM median year established.
+| level | alarmSpread | est | herd | R gap | breadth | csire | waited @300 | KM median |
+|---|---|---|---|---|---|---|---|---|
+| LOAD05 | 0 | 8 | 261.9 | -0.104 | 1 | 0.333 | 0 | 525 |
+| SPR01 | 0.1 | 8 | 266.8 | -0.314 | 1 | 0.277 | 1 | 606 |
+| SPR02 | 0.2 | 8 | 263.9 | -0.462 | 2 | 0.214 | 0 | 696 |
+| SPR03 | 0.3 | 8 | 261.4 | -0.524 | 2 | 0.171 | 5 | 957 |
+| SPR05 | 0.5 | 7 | 236.9 | -0.591 | 3 | 0.123 | 8 | 1551 |
+| SPR10 | 1 | 0 | 11.8 | - | - | - | 8 | - |
+| REF | load grows | 8 | 287.8 | -0.636 | 6 | 0.064 | 0 | 705 |
+
+**Predictions:**
+1. **Holds at every level.** Years 401-1200, each level's 8 seeds pooled. Rows are recorded year rows (every 3rd year),
+   summed over seeds. Bolts per spook in the highest bin with 10+ rows, against the 1-9 bin (its rows and spooks):
+   - SPR01: 200- 2.058 (1294 rows) against 1.031 (181 rows, 781 spooks).
+   - SPR02: 200- 2.787 (982 rows) against 1.083 (77 rows, 396 spooks).
+   - SPR03: 200- 3.132 (569 rows) against 1.122 (301 rows, 1522 spooks).
+   - SPR05: 200- 5.636 (25 rows) against 1.252 (581 rows, 3187 spooks). The 25 rows are from seeds 1 (7) and 7 (18).
+   - SPR10: 10-29 1.944 (610 rows) against 1.512 (1502 rows, 9300 spooks). No bin above 10-29 reached 10 rows.
+   Every level was testable, and all 40 SPR runs carry the alarmCaught counter. A level printed "no alarmCaught counter"
+   would mean missing output, not a herd that never grew; that line appears only for LOAD05 (exp010 predates the
+   counter, c364a5f), which prediction 1 does not read.
+   Descriptive: from 100-199 to 200- over 401-1200, bolts per spook rises at SPR01 (1.966 to 2.058) and SPR05 (4.902 to
+   5.636) and falls at SPR02 (2.898 to 2.787) and SPR03 (3.430 to 3.132); the cause is not checked. Over 401-4000
+   (descriptive) the top bin also exceeds 1-9 at every level.
+2. **Holds.** SPR01, SPR02 and SPR03 established in 8 of 8; SPR10 in 0. (SPR05: 7, not in the prediction.)
+3. **Holds.** Four levels have 2 or more established (SPR01, SPR02, SPR03, SPR05), all more negative than LOAD05's
+   -0.104. All four have 6 or more established, and the R gap falls at each step: -0.314, -0.462, -0.524, -0.591.
+   SPR10 (0 established) is not read.
+4. **Holds, at SPR05 only:** 7 of 8 established, R gap -0.591, breadth 3. SPR03 has R gap -0.524 with breadth 2.
+   SPR05's breadth 3 is R, B and T, and B's gap is -0.105. Had it been 0.005 or more smaller in magnitude, breadth
+   would be 2 and no level would meet the prediction (branch 3: no strong R with divergence).
+
+**Decision rule: branch 1, at SPR05.** As registered and amended: on a load of 0.5, alarm spreading (radius 1) is a
+second mechanism that gives what the herder-load rule gives, a persisting herd with strong R and divergence, with the
+herd-size factor in the goats' behaviour rather than the herder's labour. To Chris and the author. Read with:
+- It rests on one level, and at that level on B's -0.105 (prediction 4).
+- How SPR05's herds got there: all 8 seeds waited at every cut (200, 300 and 400). Seven then established, at J
+  1080-2724 (KM median 1551, against LOAD05's 525 and REF's 705), after spans under 60 of 510-2178 years. Seed 6 was
+  still waiting at year 4000 (span 3498). "Persisting" holds over the 3201-4000 window, after waits of five centuries
+  or more.
+- Prediction 1 holds at SPR05; its 200- bin over 401-1200 is 25 rows from two seeds.
+- Beside REF (descriptive): breadth 3 against 6, and every core trait's gap smaller in magnitude than REF's (R -0.591
+  against -0.636, B -0.105 against -0.295, T +0.245 against +0.447, A -0.060 against -0.148, S +0.040 against +0.174).
+  Captive-sire share 0.123 against REF's 0.064.
+
+**Waiting by level** (descriptive; exp015's uncensored definition, amendment d377a7d). Waited at 200 / 300 / 400:
+LOAD05 0/0/0, SPR01 1/1/0, SPR02 2/0/0, SPR03 6/5/2, SPR05 8/8/8, SPR10 8/8/8, REF 2/0/0. Waiting rises with
+alarmSpread at every cut except SPR01 to SPR02 at 300 (1 to 0). SPR01's one is seed 1, whose span of 309 years is 9 over
+the cut. The KM median rises with alarmSpread: 525, 606, 696, 957, 1551, and under half established at SPR10.
+
+**SPR10:** no seed established; herd 11.8 over the window; all 8 still waiting at year 4000; R gap over all seeds
+-0.039. Run-offs per herd goat-year 1.923, against LOAD05's 0.631.
+
+**Seed 1** (descriptive): the R gap of established seeds with and without seed 1 differs by 0.003 or less at every
+level (for example SPR05 -0.591 with, -0.593 without). Seed 1, seen in the probe, does not carry the R gaps.
+
+**Waited beside not waited** (descriptive, 300 cut): SPR03 waited -0.518 (n 5), did not -0.532 (n 3); SPR01 -0.295 (n 1)
+against -0.317 (n 7). At SPR05 every seed waited; the seven established run from -0.616 to -0.577.
+
+**SPR01 seeds 6 and 7** (provisional, dirty tree): their R gaps (-0.319, -0.314) and J (702, 528) lie within the
+ranges of SPR01's other six seeds (R -0.364 to -0.278, J 507-846). SPR01 is not the branch-1 level. If the clean
+re-runs differ, the steward asks for a rescore without them.
+
+## exp017 results (scored), correction 2026-11-23 (the reviewer's 33c86fd; wording and additions, no number or verdict changes)
+The readings stand: P1-P4 hold, P4 at SPR05 only, and the rule gives branch 1 at SPR05. Four changes to the entry above.
+1. **Prediction 4's margin, and the graded gaps.** This replaces "Had it been 0.005 or more smaller in magnitude".
+   - B's gap prints -0.105, to three places. It clears the 0.10 line by about 0.005 (between 0.0045 and 0.0055).
+   - B's spread over SPR05's 7 established seeds is not printed.
+   - The breadth count is a threshold crossing on a graded trend. Across alarmSpread 0, 0.1, 0.2, 0.3 and 0.5, the gaps
+     in five traits grow at every step (trait table):
+     - R -0.104, -0.314, -0.462, -0.524, -0.591.
+     - T +0.035, +0.090, +0.146, +0.193, +0.245.
+     - B -0.011, -0.017, -0.047, -0.048, -0.105.
+     - L +0.015, +0.028, +0.039, +0.051, +0.080.
+     - A -0.007, -0.011, -0.022, -0.034, -0.060.
+   - Breadth goes 1, 1, 2, 2, 3 because B crosses 0.10 between 0.3 and 0.5.
+   - For Chris and the paper, lead with this: the gaps in R, T, B, L and A grow at every step of alarmSpread; breadth
+     reaches 3 at 0.5, with B at -0.105 against the 0.10 line.
+   - Before the paper calls SPR05 "divergence", it needs B's per-seed gaps at SPR05 from a committed tool, as a
+     descriptive line. Without them the sentence stays at "meets the criterion by about 0.005 on one trait".
+2. **Branch 1 beside REF.** The registered sentence stands as registered. It is met on the criterion (6 or more
+   established, R gap -0.30 or below, breadth 3 or more), not on the herd.
+   - For Chris and the author: on a load of 0.5, spreading reaches the divergence line only at 0.5, after waits of
+     510-2178 years, with half REF's breadth.
+   - Across levels, the filter strengthens as the wait lengthens:
+     - KM median 525, 606, 696, 957, 1551;
+     - waited at 300: 0, 1, 0, 5, 8.
+   - No level gives REF's growth without a wait (REF waited 0 at 300, KM median 705, breadth 6).
+3. **Mechanism bins.** This goes beside "Over 401-4000 the top bin also exceeds 1-9 at every level".
+   - Over 401-4000, the 200- bin falls below 100-199 at SPR02 (2.730 to 2.411), SPR03 (3.191 to 2.815) and SPR05 (4.387
+     to 3.598). It is flat at SPR01 (1.892, 1.893).
+   - Over 401-1200, SPR05 rises through every bin: 1.252, 1.812, 2.590, 4.902, 5.636.
+   - Bolts per spook is not a proportional rise with herd size, and not a step either. The amendment's "step" is not
+     carried into anything for Chris or the paper, which give the bins per level. The cause is not checked.
+4. **Wording.**
+   - Prediction 1 at SPR05 (beside its 25 rows): the direction does not rest on those rows.
+     - The pooled 30-99 bin (285 rows, 2.590) and 100-199 bin (61 rows, 4.902) exceed 1-9's 1.252.
+     - In every SPR05 seed, the 10-29 bin exceeds the 1-9 bin (1.71-1.95 against 1.19-1.45).
+   - Waiting. This replaces "Waiting rises with alarmSpread at every cut except": waiting is non-decreasing in
+     alarmSpread at every cut except SPR01 to SPR02 at 300 (1 to 0).
+   - SPR01 seeds 6 and 7: no conclusion depends on them.
+     - P2 would be 6 of 6.
+     - Their R gaps are less negative than every SPR02 seed's (the least negative is -0.415).
+     - SPR01 is not the branch level.
+     - They stay provisional until the clean re-runs are compared.
+   - Captive-sire share falls with alarmSpread: 0.333, 0.277, 0.214, 0.171, 0.123 (REF 0.064). It is reported, not
+     interpreted.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

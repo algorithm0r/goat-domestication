@@ -77,6 +77,7 @@ var Goat = class Goat {
     // reproduction
     this.gestation = 0;                                         // days pregnant; 0 = not pregnant
     this.loose = false;                                         // a herd goat that ran off and has not yet rejoined
+    this._bolt = 0;                                             // alarmSpread: the sub-tick (world._sub) it last bolted
     this.grazed = 0;                                            // energy grazed today (reset each night in daily)
     this.seen = [0, 0, 0];                                      // what the herder has seen it do: [ran off, came back on its own, butted him]
     this.seenFrom = 0;                                          // day (from the run's start) the herder began watching it
@@ -267,6 +268,7 @@ var Goat = class Goat {
   // One movement sub-tick. phase: 'dawn' | 'day' | 'dusk' | 'night'.
   step(world, phase) {
     const P = PARAMETERS;
+    if (P.alarmSpread > 0 && this._bolt === world._sub) return;  // it caught a spread alarm this sub-tick and has bolted
     if (this.ledBy) { this.alarmed = false; this.stepToward(world, this.ledBy.x, this.ledBy.y, 1); return; }
     if (this.isSheltered() || this.isKeptAtCamp()) {                                          // kept at camp
       this.checkAlarm(world); const c = world.camps[this.herd]; this.stepToward(world, c.x, c.y, 1); return;
@@ -368,23 +370,45 @@ var Goat = class Goat {
     this.alarmed = wolfAlarm || spooked;
     if (P.alarmLearn > 0) { if (wolfAlarm) this.learnFear('fearOfWolves', P.alarmLearn); if (spooked) this.learnFear('fearOfHumans', P.alarmLearn); }
     if (spooked && P.economy) world.camps[this.herd].sd.keep += P.meatYield * this.size;
-    if (spooked) {                                               // bolt away from the herder
-      for (let s = 0; s < P.fleeSteps; s++) {
-        let bx = this.x, by = this.y, bu = -Infinity;
-        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-          const x = this.x + dx, y = this.y + dy;
-          if (x < 0 || y < 0 || x >= W || y >= H || world.river[y * W + x]) continue;
-          const u = Math.max(Math.abs(x - h.x), Math.abs(y - h.y)) + 0.1 * rand();
-          if (u > bu) { bu = u; bx = x; by = y; }
-        }
-        this.x = bx; this.y = by;
-      }
-      if (P.refetchRunOffs === 1) world.refetch(this, h);        // the herder goes after it now
-      else if (P.refetchRunOffs === 2 && Math.max(Math.abs(this.x - h.x), Math.abs(this.y - h.y)) > P.keepRadius) { this.loose = true; this.looseTicks = 0; this.seen[0]++; world.ys.ranOff++; }
+    if (spooked) {
+      world.ys.spooked++;
+      const x0 = this.x, y0 = this.y;
+      this.bolt(world, h);
+      if (P.alarmSpread > 0) { this._bolt = world._sub; world.spreadAlarm(this, x0, y0); }
       return;
     }
     if (phase === 'dawn' || phase === 'dusk') { this.stepToward(world, h.x, h.y, P.herdTravel); return; }   // out or home with him
     if (phase !== 'day' || wolfAlarm) { this.stepToward(world, h.x, h.y, 1); return; }   // to him
+    this.grazeMove(world, h, need);
+  }
+
+  // Could this goat catch a spread alarm (alarmSpread)? It walks with its herder: step() would send it to stepWithHerd, and it is not loose.
+  walksWithHerder(world) {
+    if (this.ledBy || this.isSheltered() || this.isKeptAtCamp()) return false;
+    if (this.mother && !this.mother.dead && this.isKid()) return false;
+    return this.herd >= 0 && !!world.herders[this.herd] && !this.loose;   // a loose run-off is away from the herd
+  }
+
+  // Bolt away from the herder (a spook, or a spread alarm); beyond keepRadius it runs off (refetchRunOffs).
+  bolt(world, h) {
+    const P = PARAMETERS, W = world.W, H = world.H;
+    for (let s = 0; s < P.fleeSteps; s++) {
+      let bx = this.x, by = this.y, bu = -Infinity;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+        const x = this.x + dx, y = this.y + dy;
+        if (x < 0 || y < 0 || x >= W || y >= H || world.river[y * W + x]) continue;
+        const u = Math.max(Math.abs(x - h.x), Math.abs(y - h.y)) + 0.1 * rand();
+        if (u > bu) { bu = u; bx = x; by = y; }
+      }
+      this.x = bx; this.y = by;
+    }
+    if (P.refetchRunOffs === 1) world.refetch(this, h);          // the herder goes after it now
+    else if (P.refetchRunOffs === 2 && Math.max(Math.abs(this.x - h.x), Math.abs(this.y - h.y)) > P.keepRadius) { this.loose = true; this.looseTicks = 0; this.seen[0]++; world.ys.ranOff++; }
+  }
+
+  // By day, a herd goat not alarmed grazes: to the neighbouring cell with the best forage less the pull toward the herder (S).
+  grazeMove(world, h, need) {
+    const P = PARAMETERS, W = world.W, H = world.H;
     const pull = P.herdPull * (0.5 + this.tr[T_S]);
     let bx = this.x, by = this.y, bu = -Infinity;
     for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {

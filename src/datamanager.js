@@ -152,7 +152,7 @@ var DataManager = class DataManager {
       cohortBirth: ys.cohortBirth.map(h => h.map(r => Array.from(r, v => +v.toFixed(3)))),
       cohortBreed: ys.cohortBreed.map(h => h.map(r => Array.from(r, v => +v.toFixed(3)))),  // herd goats dying while loose; camp-days self-maintaining (selfDoes > 0)
       selSire: ys.selN[1] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selSire[k] / ys.selN[1]).toFixed(5)])) : null,
-      selDam: ys.selN[0] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selDam[k] / ys.selN[0]).toFixed(5)])) : null, selN: ys.selN, escaped: ys.escaped, runOffLost: ys.runOffLost, refetched: ys.refetched, ranOff: ys.ranOff, rejoined: ys.rejoined, culledHerd: ys.culledHerd, milk: +ys.milk.toFixed(1),
+      selDam: ys.selN[0] ? Object.fromEntries(TRAITS.map((t, k) => [t, +(ys.selDam[k] / ys.selN[0]).toFixed(5)])) : null, selN: ys.selN, escaped: ys.escaped, runOffLost: ys.runOffLost, refetched: ys.refetched, ranOff: ys.ranOff, rejoined: ys.rejoined, spooked: ys.spooked, alarmCaught: ys.alarmCaught, culledHerd: ys.culledHerd, milk: +ys.milk.toFixed(1),
       wolvesKilled: ys.wolvesKilled, wolvesChased: ys.wolvesChased, fodder: +ys.fodder.toFixed(1), fodderSpring: +ys.fodderSpring.toFixed(1), foraged: +ys.foraged.toFixed(1),
       // Ganj Dareh diagnostics: inbreeding (IBD since herding began), sires per camp-year, wild sires,
       // R of the goats captured this year (capture bias vs retention), generations since capture
