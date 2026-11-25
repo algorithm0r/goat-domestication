@@ -8488,6 +8488,36 @@ results/exp020_ledger-early/checks/identity.txt):
 - **"8.7 MB" in amendment 3** is the length of Python's spaced JSON serialisation of the probe. The probe's file on disk
   is 7,074,340 bytes. Its BSON size, 13.4 MB, is the db client's measure and the one the 16 MB limit applies to.
 
+## exp020 results (raw), note 2026-11-25 (the reviewer's 713ca0f; corrections, no result changes)
+**1. The standing control's stamp.** The raw entry says the HUNT check ran "at c91c20b src". It did not:
+- The packet is stamped v0.1.0-347-gdc480b8-dirty. The run started at 07:03:19Z, 39 s before c91c20b was committed
+  (07:03:58Z).
+- c91c20b changed only EXPLOG.md, tools/cmp_years.py and tools/ledger_check.py. `git diff --stat dc480b8 c91c20b --
+  src` is empty, so the run used the same src either way.
+- It ran with logLedger 0 and histPeriod 15, exp018 HUNT's settings.
+- Its result stands as given: 1333 of 1333 records, 75 shared keys, 0 differ; hist and histHerd 0 of 266 rows.
+- The comparison was read before the batch was launched, by hand and not by script. The HUNT run finished at 07:31:41Z.
+  Its cmp_years output was read at 07:31:50Z, and the submit was issued as a separate command at 07:31:57Z (session
+  transcript).
+
+**2. REF s6 against the probe, directly.** `python tools/cmp_years.py results/exp020_ledger-early/REF_seed6.json
+results/_scratch/exp056_probe/REFledger1000_seed6.json --by-year`:
+- 1000 records compared (years 0-999), 73 shared keys including the ledger, 0 differ.
+- hist and histHerd: 200 rows each (years 4-999), 0 differ.
+- Output in results/exp020_ledger-early/checks/s6_vs_probe.txt. The batch's REF s6 is therefore the probe over
+  0-999, ledger included.
+
+**3. The check files** now carry each command above its output (identity.txt, ledger_check.txt). Each of the three bad
+cases has its own command line and exits 1. results/ is gitignored, so these files are kept on disk, not committed; the
+lines quoted here are the record.
+
+**4. Three ledger checks are not exercised.** caught, exIn and exOut are 0 in every row of all 16 runs, and the year
+rows' alarmCaught and exchanged are 0 too. Their equality checks pass trivially and test nothing in this batch.
+
+**5. LOAD05's shared keys.** The 65-69 shared keys against exp010 vary because exp010's eight LOAD05 files were made
+at six commits (4afb749-dirty for 3 seeds; 65e8cc0, bbd6259, 06c97bc, b64a201 and a659a59-dirty for 1 each). Their
+year rows carry different field sets.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
