@@ -16,7 +16,8 @@ var FEAR_KEYS = ['fearW', 'fearH'];          // learned fear of wolves, of human
 var HIST_KEYS = TRAITS.concat(FEAR_KEYS);
 var median = v => { if (!v.length) return null; const s = v.slice().sort((a, b) => a - b); return s[s.length >> 1]; };
 // year-record diagnostics behind a named PARAMETERS switch (params.js, "diagnostics"); 0 leaves the field out
-var DIAG_FIELDS = { logWolfAtk: 'wolfAtk', logKidLife: 'kidLife', logKilloff: 'killoff', logHerdKilloff: 'herdKilloff', logKidDeathCause: 'kidDeathCause' };
+var DIAG_FIELDS = { logWolfAtk: 'wolfAtk', logKidLife: 'kidLife', logKilloff: 'killoff', logHerdKilloff: 'herdKilloff', logKidDeathCause: 'kidDeathCause',
+  logHerdDeathHalf: 'herdDeathHalf', logSizeByAge: 'sizeByAge', logCohortBirth: 'cohortBirth', logCohortBreed: 'cohortBreed', logFirstKidStats: 'firstKidStats' };   // 2026-11-24 (exp020's packet size)
 var diagOff = s => PARAMETERS[s] === 0 || PARAMETERS[s] === false;
 var histPeriod = () => Math.max(1, Math.round(PARAMETERS.histPeriod || 1));   // years between recorded gene histograms
 var genBin = d => { for (let b = 0; b < GEN_BINS.length; b++) if (d <= GEN_BINS[b][1]) return b; return GEN_BINS.length - 1; };
@@ -79,8 +80,12 @@ var DataManager = class DataManager {
     let ancDepth = 0, wildHS = 0, wildAny = 0;
     const szS = [0, 1].map(() => [0, 1].map(() => new Float64Array(13))), szN = [0, 1].map(() => [0, 1].map(() => new Float64Array(13)));
     const logDepth = !diagOff('logHistDepth');   // histDepth stays in the run as an empty record when switched off
+    // herd ledger stock at year end (logLedger, World.newLedger): per camp, [captured, herd-born] = [goats, summed R,
+    // summed R x fearOfHumans, summed fearOfHumans]
+    const stock = ys.ledger ? w.camps.map(() => [[0, 0, 0, 0], [0, 0, 0, 0]]) : null;
     for (const g of w.goats) {
       if (g.dead) continue;
+      if (stock && g.herd >= 0) { const e = stock[g.herd][g.gsc >= 1 ? 1 : 0], R = g.tr[T_R]; e[0]++; e[1] += R; e[2] += R * g.fearOfHumans; e[3] += g.fearOfHumans; }
       { const hi = g.herd >= 0 ? 1 : 0, a = Math.min(12, Math.floor(g.age / PARAMETERS.yearDays)); szS[hi][g.sex][a] += g.size; szN[hi][g.sex][a]++; }
       genotypicValues(g.genome, G); n++; fW += g.fearOfWolves; fH += g.fearOfHumans;
       const F = ibd(g.genome);
@@ -195,6 +200,11 @@ var DataManager = class DataManager {
         unmetQ: ys.unmetQ.map(v => +v.toFixed(1)), slaughterQ: [...ys.slaughterQ], herdQ: [...ys.herdQ], labourQ: [...ys.labourQ],
       } } : {}),
     };
+    if (ys.ledger) {                                                // the herd ledger (logLedger; World.newLedger names every field)
+      const r4 = a => a.map(e => e.map(v => +v.toFixed(4))), map = o => Object.fromEntries(Object.entries(o).map(([k, v]) => [k, r4(v)]));
+      rec.ledger = ys.ledger.map((L, c) => ({ flow: map(L.flow), ev: map(L.ev), stock: r4(stock[c]),
+        day: { days: L.day.days, herd: L.day.herd, load: +L.day.load.toFixed(4), herders: L.day.herders, walk: r4(L.day.walk), kept: r4(L.day.kept), other: L.day.other.slice() } }));
+    }
     for (const sw in DIAG_FIELDS) if (diagOff(sw)) delete rec[DIAG_FIELDS[sw]];   // switched-off diagnostics left out
     if ((w.year + 1) % Math.max(1, Math.round(PARAMETERS.recordEvery || 1)) === 0) this.years.push(rec);   // recordEvery (2026-11-19)
     w.resetYearStats();

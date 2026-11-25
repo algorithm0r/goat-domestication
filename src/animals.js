@@ -283,7 +283,7 @@ var Goat = class Goat {
       const h = world.herders[this.herd];
       // a loose run-off rejoins once it is back within keepRadius of the herd's leader; until then it
       // moves as a wild goat (its gregariousness may bring it back to the flock)
-      if (this.loose && Math.max(Math.abs(this.x - h.x), Math.abs(this.y - h.y)) <= P.keepRadius) { this.loose = false; this.seen[1]++; world.ys.rejoined++; }
+      if (this.loose && Math.max(Math.abs(this.x - h.x), Math.abs(this.y - h.y)) <= P.keepRadius) { this.loose = false; this.seen[1]++; world.ys.rejoined++; world.ledgerEv(this.herd, 'rejoined', this); }
       if (!this.loose) { this.stepWithHerd(world, h, phase); return; }
       this.looseTicks++;
     }
@@ -368,6 +368,7 @@ var Goat = class Goat {
     const spooked = (phase === 'day' || P.spookAtDusk) && rand() < (sf > 0 ? sf / spookSteps
       : (P.herderAlarm / spookSteps) * R * this.fearOfHumans * world.herdLoad(this.herd));
     this.alarmed = wolfAlarm || spooked;
+    if (spooked) world.ledgerEv(this.herd, 'spooked', this);          // herd ledger (logLedger; output only), before any lesson
     if (P.alarmLearn > 0) { if (wolfAlarm) this.learnFear('fearOfWolves', P.alarmLearn); if (spooked) this.learnFear('fearOfHumans', P.alarmLearn); }
     if (spooked && P.economy) world.camps[this.herd].sd.keep += P.meatYield * this.size;
     if (spooked) {
@@ -403,7 +404,7 @@ var Goat = class Goat {
       this.x = bx; this.y = by;
     }
     if (P.refetchRunOffs === 1) world.refetch(this, h);          // the herder goes after it now
-    else if (P.refetchRunOffs === 2 && Math.max(Math.abs(this.x - h.x), Math.abs(this.y - h.y)) > P.keepRadius) { this.loose = true; this.looseTicks = 0; this.seen[0]++; world.ys.ranOff++; }
+    else if (P.refetchRunOffs === 2 && Math.max(Math.abs(this.x - h.x), Math.abs(this.y - h.y)) > P.keepRadius) { this.loose = true; this.looseTicks = 0; this.seen[0]++; world.ys.ranOff++; world.ledgerEv(this.herd, 'ranOff', this); }
   }
 
   // By day, a herd goat not alarmed grazes: to the neighbouring cell with the best forage less the pull toward the herder (S).

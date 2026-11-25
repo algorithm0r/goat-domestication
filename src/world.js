@@ -21,6 +21,9 @@
 var STORE_FIELD = { fresh: 'meat', dried: 'meat', pfood: 'pfood', slop: 'slop', fodder: 'fodder' };
 var STORE_DAYS = { fresh: 'freshDays', dried: 'dryDays', pfood: 'plantDays', slop: 'slopDays', fodder: 'fodderDays' };
 var IMMIGRANT_POOL = null;   // [{g: alleles, fw, fh}], set by load.mjs when immigrationRate > 0
+// the herd ledger's channels (logLedger, World.newLedger): flows into and out of a camp's herd, and the herder's spook events
+var LEDGER_FLOWS = ['cap', 'born', 'bornW', 'exIn', 'lostRun', 'lostNight', 'culled', 'died', 'exOut'];
+var LEDGER_EVENTS = ['spooked', 'caught', 'ranOff', 'rejoined', 'refetched'];
 
 var World = class World {
   constructor() {
@@ -210,7 +213,7 @@ var World = class World {
             const n = goats[order[o]];
             if (n.dead || n.herd !== g0.herd || n._bolt === sub || !n.walksWithHerder(this)) continue;
             if (rand() >= P.alarmSpread * n.tr[T_R] * n.fearOfHumans) continue;
-            n._bolt = sub; n.alarmed = true; this.ys.alarmCaught++;
+            n._bolt = sub; n.alarmed = true; this.ys.alarmCaught++; this.ledgerEv(n.herd, 'caught', n);
             if (P.alarmLearn > 0) n.learnFear('fearOfHumans', P.alarmLearn);
             const nx = n.x, ny = n.y;
             n.bolt(this, h);
@@ -471,7 +474,7 @@ var World = class World {
     for (const g of this.goats) { if (g.dead) continue; g.step(this, 'day'); g.graze(this); }
     this.keepersRefetch();
     this.buildIndex(false);
-    if (s === PARAMETERS.daySteps >> 1) this.sampleDensity();    // goats per cell at midday (output only: no draws)
+    if (s === PARAMETERS.daySteps >> 1) { this.sampleDensity(); if (this.ys.ledger) this.sampleLedger(); }   // midday samples (output only: no draws)
     this.humansHunt();
   }
 
@@ -496,6 +499,53 @@ var World = class World {
       e[3] += c === 0 ? w9 : a9 - w9; e[4] += a9;
     }
     for (let i = 0; i < this.N; i++) { const w = wc[i]; if (w > 0) D.cells[0]++; if (cnt[i] > w) D.cells[1]++; }
+  }
+
+  // The herd ledger (logLedger, 2026-11-24, exp020; Chris: "the period when the R moves and the herd grows ... gather
+  // data that you think might help us solve this mystery"). Output only: no draws. Per camp and year, by origin o (0: the
+  // goat was captured itself, gsc 0; 1: herd-born, gsc >= 1); R is the goat's R (genotypic: no expression link acts on R).
+  //   flow[k][o] = [goats, summed R]: into the herd by capture (cap), birth to a herd sire (born) or a wild sire (bornW),
+  //     gift (exIn); out by loss when a run-off is gone after (lostRun), loss as a night stray (lostNight), slaughter
+  //     (culled), any other death (died), gift (exOut). DataManager adds the stock at year end, so last year's stock +
+  //     ins - outs = this year's, exactly in goats and in summed R (tools/ledger_check.py).
+  //   ev[k][o] = [events, summed R, summed R x fearOfHumans at the event]: spooked by the herder, caught a spread alarm
+  //     (caught), ran off beyond keepRadius (ranOff), came back on its own (rejoined), fetched back (refetched).
+  //   day: at midday on each day a camp has a herder and a herd: days; summed herd count, herdLoad and herders (keepN with
+  //     the economy, else herdN); walk[o] = [goat-days, R, R x fear, herderAlarm x R x fear x load] for the goats walking
+  //     with the herder (the last is the spook rule's daily chance; spookFixed and spookSchedule do not enter it);
+  //     kept[o] = [goat-days, R, R x fear] kept at camp (sheltered kids, tethered, guarded); other[o] = goat-days of the
+  //     rest (kids at foot, loose run-offs, captives being led).
+  newLedger() {
+    const rows = n => [0, 1].map(() => new Array(n).fill(0)), flow = {}, ev = {};
+    for (const k of LEDGER_FLOWS) flow[k] = rows(2);
+    for (const k of LEDGER_EVENTS) ev[k] = rows(3);
+    return { flow, ev, day: { days: 0, herd: 0, load: 0, herders: 0, walk: rows(4), kept: rows(3), other: [0, 0] } };
+  }
+
+  ledgerFlow(camp, k, g) {
+    const L = this.ys.ledger; if (!L || camp < 0) return;
+    const e = L[camp].flow[k][g.gsc >= 1 ? 1 : 0]; e[0]++; e[1] += g.tr[T_R];
+  }
+
+  ledgerEv(camp, k, g) {
+    const L = this.ys.ledger; if (!L || camp < 0) return;
+    const e = L[camp].ev[k][g.gsc >= 1 ? 1 : 0], R = g.tr[T_R]; e[0]++; e[1] += R; e[2] += R * g.fearOfHumans;
+  }
+
+  sampleLedger() {
+    const P = PARAMETERS, L = this.ys.ledger, on = this._ledgerOn || (this._ledgerOn = []), load = this._ledgerLoad || (this._ledgerLoad = []);
+    for (const c of this.camps) {
+      const i = c.id; on[i] = !!this.herders[i] && this.herdCount[i] > 0; if (!on[i]) continue;
+      load[i] = this.herdLoad(i);
+      const d = L[i].day; d.days++; d.herd += this.herdCount[i]; d.load += load[i]; d.herders += P.economy ? c.keepN : this.herdN[i];
+    }
+    for (const g of this.goats) {
+      if (g.dead || g.herd < 0 || !on[g.herd]) continue;
+      const d = L[g.herd].day, o = g.gsc >= 1 ? 1 : 0, R = g.tr[T_R], rf = R * g.fearOfHumans;
+      if (g.walksWithHerder(this)) { const e = d.walk[o]; e[0]++; e[1] += R; e[2] += rf; e[3] += P.herderAlarm * rf * load[g.herd]; }
+      else if (!g.ledBy && (g.isSheltered() || g.isKeptAtCamp())) { const e = d.kept[o]; e[0]++; e[1] += R; e[2] += rf; }
+      else d.other[o]++;
+    }
   }
 
   duskSub(s) {
@@ -834,8 +884,8 @@ var World = class World {
   refetch(g, h) {
     const P = PARAMETERS, d = Math.max(Math.abs(g.x - h.x), Math.abs(g.y - h.y));
     if (d <= P.keepRadius) return;
-    if (P.runOffLoss && (d > P.searchRange || !this.approach(g, d))) { g.herd = -1; this.ys.escaped++; this.ys.runOffLost++; return; }
-    g.x = h.x; g.y = h.y; this.ys.refetched++;
+    if (P.runOffLoss && (d > P.searchRange || !this.approach(g, d))) { this.ledgerFlow(g.herd, 'lostRun', g); g.herd = -1; this.ys.escaped++; this.ys.runOffLost++; return; }
+    g.x = h.x; g.y = h.y; this.ys.refetched++; this.ledgerEv(g.herd, 'refetched', g);
   }
 
   // Each keeper makes at most one attempt per sub-tick on the nearest loose run-off of his herd within
@@ -859,8 +909,8 @@ var World = class World {
         if (!best || bd > P.searchRange) continue;
         best.loose = false;
         if (bd <= P.keepRadius) continue;
-        if (!P.runOffLoss || this.approach(best, bd)) { best.x = k.x; best.y = k.y; this.ys.refetched++; }
-        else { best.herd = -1; this.ys.escaped++; this.ys.runOffLost++; }
+        if (!P.runOffLoss || this.approach(best, bd)) { best.x = k.x; best.y = k.y; this.ys.refetched++; this.ledgerEv(best.herd, 'refetched', best); }
+        else { this.ledgerFlow(best.herd, 'lostRun', best); best.herd = -1; this.ys.escaped++; this.ys.runOffLost++; }
       }
     }
   }
@@ -883,7 +933,7 @@ var World = class World {
   // A captive joins the camp's herd and is led home by the hunter (walking with him).
   capture(g, h) {
     const c = h.camp;
-    g.herd = c.id; g.capturedYear = this.year; g.gsc = 0; g.pgs = 0; g.wv = null; g.ledBy = h; this.ys.captured++;
+    g.herd = c.id; g.capturedYear = this.year; g.gsc = 0; g.pgs = 0; g.wv = null; g.ledBy = h; this.ys.captured++; this.ledgerFlow(c.id, 'cap', g);
     g._kidsAtYearStart = g.kids;                                 // the camp record counts only kids born in the herd
     g.seen = [0, 0, 0]; g.seenFrom = this.year * PARAMETERS.yearDays + this.day;   // the herder starts watching it
     this.ys.capturedR += g.tr[T_R];
@@ -931,7 +981,7 @@ var World = class World {
           // the herder goes back for it: beyond searchRange it is lost; otherwise he closes in over the
           // distance, and it is lost if it bolts (the approach test), else brought in
           const from = P.penning ? c : h, d = Math.max(Math.abs(g.x - from.x), Math.abs(g.y - from.y));
-          if (P.runOffLoss && (d > P.searchRange || !this.approach(g, d))) { g.herd = -1; g.loose = false; ys.escaped++; continue; }
+          if (P.runOffLoss && (d > P.searchRange || !this.approach(g, d))) { this.ledgerFlow(g.herd, 'lostNight', g); g.herd = -1; g.loose = false; ys.escaped++; continue; }
           g.x = from.x; g.y = from.y;                              // brought back to the pen / the herder
         }
       }
@@ -1593,7 +1643,8 @@ var World = class World {
       }
     }
     for (const [g, d] of moves) {
-      g.herd = d.id; g.x = d.x; g.y = d.y; g.seen = [0, 0, 0]; g.seenFrom = now; this.ys.exchanged++;
+      this.ledgerFlow(g.herd, 'exOut', g); g.herd = d.id; this.ledgerFlow(d.id, 'exIn', g);
+      g.x = d.x; g.y = d.y; g.seen = [0, 0, 0]; g.seenFrom = now; this.ys.exchanged++;
     }
   }
 
@@ -1645,6 +1696,7 @@ var World = class World {
       this.ys.herdSires[mother.herd].add(kid.fatherId);
       if (kid.fatherWild) this.ys.wildSired++;
       this.ys.herdBirths++;
+      this.ledgerFlow(kid.herd, kid.fatherWild ? 'bornW' : 'born', kid);
     } else if (mother.wv || mother.fetusFatherWv) {
       // 2026-11-11, bookkeeping only (nothing in the model reads a wild goat's wv, and capture resets it): a wild-born kid
       // of escaped herd stock keeps its parents' herd generations, one generation no further, since it was born wild; a
@@ -1671,6 +1723,7 @@ var World = class World {
     const ay = Math.min(15, Math.floor(g.age / PARAMETERS.yearDays));
     ys.killoff[cause][g.sex][ay]++;
     if (g.herd >= 0) { ys.herdKilloff[g.sex][ay]++; ys.herdDeaths[cause]++; }   // the herd's own mortality: age profile, and by cause
+    if (g.herd >= 0) this.ledgerFlow(g.herd, cause === CAUSE.culled ? 'culled' : 'died', g);
     if (g.herd >= 0)                                                              // herd deaths by [slaughtered, starved, other][sex][half-year of age]
       ys.herdDeathHalf[cause === CAUSE.culled ? 0 : cause === CAUSE.starvation ? 1 : 2][g.sex][Math.min(29, Math.floor(2 * g.age / PARAMETERS.yearDays))]++;
     if (g.herd >= 0 && cause === CAUSE.starvation) {                              // herd starvation by class, season and month (counter only)
@@ -1964,7 +2017,8 @@ var World = class World {
       roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0,
       herdBirths: 0, wildSired: 0, herdSires: this.camps.map(() => new Set()), herdConceptions: 0, chosenSired: 0,
       killoff: CAUSE_NAMES.map(() => [new Array(16).fill(0), new Array(16).fill(0)]),
-      herdKilloff: [new Array(16).fill(0), new Array(16).fill(0)], herdDeaths: new Array(CAUSE_NAMES.length).fill(0), wolfAtk: {} };
+      herdKilloff: [new Array(16).fill(0), new Array(16).fill(0)], herdDeaths: new Array(CAUSE_NAMES.length).fill(0), wolfAtk: {},
+      ledger: PARAMETERS.logLedger ? this.camps.map(() => this.newLedger()) : null };
   }
 
   census() {

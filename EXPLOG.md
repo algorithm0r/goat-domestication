@@ -8197,6 +8197,297 @@ small state, with-herder own is 4.098-6.639. Whether the one-cell herd is intend
 such a rule on herd goats rises with the herd's head count, as herdLoad already does (the reviewer's reading,
 unchecked), and only the wild side is new.
 
+## exp020 — The herd ledger over the early years: which channels move the herd's R while REF's herd grows, and how they differ under a fixed load of 0.5?
+**Pre-registered:** 2026-11-24. Chris, on the steward's "we know which ingredients the effect needs, not how they produce
+it": "yes i want to look at the period when the R moves and the herd grows specifically. let's get detailed looks at
+those periods. luckly they are early in REF. sample more often and gather data that you think might help us solve this
+mystery." Mongo animalDomestication.exp020_ledger-early (mint); results/exp020_ledger-early; job list tools/exp020.jsonl
+(16 runs, cpuslot --anywhere); code HEAD at queueing (named in the raw entry).
+**Why:** a fixed load of the same strength gives an open, shallow herd with a small R gap. REF's load grows with the herd
+(herdLoad = max(minLoad 0.25, herd / (herdPerHerder 20 × herders))), and it gives a closed, deep herd with a large gap.
+exp010 LOAD05 has captive-sire share 0.333, lineage depth 3.95 and R gap -0.104; REF has 0.064, 14.69 and -0.636.
+REF also loses fewer goats (0.082 per herd goat-year against LOAD1's 0.154) at about LOAD1's run-off rate.
+exp014 showed that the spook must read the goat, but changed four things at once. Nothing recorded says which goats
+leave the herd, by which route, with what R, or what load the herders actually run at. So nothing says how the
+herd-size factor becomes closure and the R gap. REF's herds grow and its R moves early (KM median establishment 705; all
+8 established by 1200, exp010), so a 1600-year run covers the whole period with every year recorded.
+**The ledger** (src, this commit; logLedger=1, default 0; output only, no random draws; World.newLedger names every
+field). Per camp and year, split by origin (captured itself, gsc 0; herd-born, gsc >= 1):
+- **Flows** (goats and their summed R): in by capture, by birth to a herd sire or to a wild sire, by gift; out by loss on a
+  run-off's refetch, loss as a night stray, slaughter, any other death, gift. With the year-end stock the ledger closes
+  exactly: last year's stock + ins - outs = this year's, in goats and in summed R.
+- **Spook events** (count, summed R, summed R × fearOfHumans at the event): spooked by the herder, caught a spread alarm,
+  ran off, came back on its own, fetched back.
+- **A midday sample each managed day:** herd count, herdLoad as the rule computes it, herders, and three groups by
+  origin: goats walking with the herder (with their R, R × fear and the rule's daily spook chance herderAlarm × R × fear
+  × load), goats kept at camp (sheltered, tethered, guarded), and the rest.
+tools/ledger_check.py checks the closure and checks the ledger against the year row's own counters (captured,
+herdBirths, escaped, runOffLost, spooked, alarmCaught, ranOff, rejoined, refetched, herded, exchanged). With --bad
+(the 'died' channel dropped) it must fail. On a 470-year REF seed 1 run at this code: PASS, 0 of 2814
+camp-origin-year pairs off, largest summed-R gap 0.0002 (rounding); --bad FAILs.
+**Identity:** the same 470-year run against exp018's REF_seed1 (tools/cmp_years.py --by-year, a mode added in this
+commit to pair records by year): 156 records compared (years 2-467), 77 shared keys, 0 differ. The same run against
+exp005's REF_seed2 differs in all 156, so the comparison can fail. In the batch, each run is compared with the same
+seed's record over years 2-1598: exp018 REF for REF, exp010 LOAD05 for LOAD05. ledger_check must PASS on all 16. A run that
+differs is reported, and this batch's run is the one read. Standing control: the 700-year HUNT seed 1 probe at this
+code against exp018's HUNT_seed1 is in the raw entry. If it reproduces (0 differ), exp018's HUNT is cited and no HUNT
+arm is run.
+**Arms** (seeds 1-8, 1600 years, so k = 1 and every year row is kept; logLedger=1; histPeriod=1, so the gene
+histograms come every year against every 15th in the 4000-year runs):
+- REF: exp018's REF arguments.
+- LOAD05: exp010's LOAD05 arguments (REF's with herdPerHerder 1e9 and minLoad 0.5).
+**Phases** (per seed, from J = jump_tab's establishment year, herd >= 100, from 400): A = 401 to J; B = J+1 to J+100
+(the take-off century); C = J+101 to 1600. If a seed has no J by 1500, A runs to 1600 and the seed is named.
+**Measures** (the analysis session; a committed tool, checked on the 470-year probe file, which a 1600-year run's first 470
+rows reproduce, before any result; the herd pooled over the three camps unless named):
+1. **Timeline**, annual, per seed:
+   - herd N, mean R of the stock by origin, and the captured share of the stock;
+   - realized load (summed load / days) and herders per day;
+   - per walking goat-day by origin: the rule's daily spook chance and R × fear;
+   - the shares of goat-days walking, kept at camp and other, by origin;
+   - the wild's mean R.
+2. **R accounting.** Each year's change in herd mean R splits exactly by channel. With last year's mean R̄ and this
+   year's stock N, a channel k of n_k goats with summed R S_k contributes ±(S_k − n_k R̄)/N, + for ins and − for outs.
+   The contributions sum to the year's change. Summed over each phase, per channel: capture, birth (herd sire), birth
+   (wild sire), lost (run-off and night stray, also shown apart), slaughtered, other deaths. Years whose previous stock is
+   under 5 goats are not split; the change across them is shown as "restart". The channels plus restart must sum to the
+   phase's change in herd R̄, and the tool checks this.
+3. **The spook filter**, per phase and origin:
+   - spooks per walking goat-day;
+   - mean R of spooked goats minus mean R of walking goats;
+   - the share of run-offs lost (lost on refetch / ran off);
+   - mean R of goats lost, fetched back and come back on their own.
+4. **Captives**, per phase:
+   - loss rate per goat-year by origin (lost / mean stock);
+   - the captured share of goat-days kept at camp (tethered);
+   - captures per year;
+   - captive-sire share (flow_tab's definition).
+**Predictions** (mine, written before any ledger output of the batch is read):
+1. REF's realized load over phase B is above 2 in 6 or more of 8 seeds. Every fixed load of 2 or more lost every herd
+   in exp010.
+2. In REF over phases A and B together, losses (run-off plus night stray) are the channel with the most negative
+   contribution to herd R̄, in 6 or more of 8 seeds.
+3. In REF over phase B, captured goats are lost at a higher rate per goat-year than herd-born goats in every seed. The
+   ratio of the two rates is higher than LOAD05's (over LOAD05's own phase B) in 6 or more of 8 seed pairs.
+**Decision rule:** descriptive; no model change follows from this batch alone. To Chris:
+- which channel carries REF's herd R change in each phase, and how LOAD05's differ;
+- whether the load and the captives' attrition behave as predicted.
+If prediction 2 fails, the channel that does carry the change is named.
+
+## exp020 amendment, 2026-11-24 (before any run queued; the reviewer's prereg review, ac321c5)
+All seven points are taken. Where a passage below says "replaces", the entry's passage is replaced; the rest stands.
+1. **Origin split (point 1).** Measure 2 prints every channel's contribution three ways: by captured goats, by herd-born
+   goats, and by both together. A captive enters above R̄ and is often lost soon after, so a loss channel can be the most
+   negative through captive turnover alone. That is not a filter acting on the herd's own lineage. Prediction 2 is
+   therefore registered twice (below). Two competing explanations are named in advance; both are unchecked:
+   - **Herd-sire births.** buckManagement 1, sireRule 'oldest', keepSires 2: the two oldest bucks sire. They are the
+     bucks that survived the filter longest, so their kids may enter below R̄. That is selection through which bucks
+     breed, not a spook channel.
+   - **Slaughter.** REF's cull has no flightiness term (flightCost 0, nuisanceCost 0), so any R effect of slaughter
+     comes through age, sex, size or kidding record.
+2. **Phases (point 2; replaces the Phases paragraph).** J is jump_tab's year: the first at which the trailing 100-year
+   herd mean is 100 or more and holds for 400 years. So the climb lies before J. Four phases per seed:
+   - A = 401..J-100, the small herd;
+   - T = J-99..J, the climb;
+   - B = J+1..J+100;
+   - C = J+101..1600.
+
+   J comes from this batch's annual rows, so it may differ by a year or two from the earlier 3-year-row Js. jump_tab
+   follows a run to its last row minus the 400-year hold, so a seed with no J by 1200 is named, and its A runs to 1600.
+   LOAD05's J is left-censored: it sits at the tool's floor of 501 in s4 and s6, and at 531 or earlier in six seeds
+   (exp010). Its T therefore marks the latest its herd can have climbed, not when it did. Where J − 99 < 401, T starts
+   at 401 and A is empty.
+3. **Prediction 1 (point 3; replaces it).** With economy 0 a camp has one herder whenever it has a herd (herdN = 1). So
+   REF's load is max(0.25, camp herd / 20), and "load above 2" only means a camp herd above 40. It is kept as a
+   descriptive check, labelled as following from herdN = 1, not as a prediction. The new prediction 1 is on what lets
+   REF's herd stand that load: the walking goats themselves. "Every fixed load of 2 or more lost every herd" is
+   withdrawn. exp010's LOAD2 and LOAD3 established in 0 of 8 seeds each.
+4. **Prediction 3 (point 4; replaces its denominator and pairing).**
+   - **Exposure:** midday goat-days by origin (walk + kept + other) / yearDays. The year-end-stock rate is printed beside it.
+   - **Criterion:** fixed, not paired by seed number.
+   - **Floor:** a seed is read in phase B only if it holds 20 or more captured goat-years there and a herd-born loss rate
+     above 0. Otherwise it is named and counted as not read. "Every seed" means every seed that is read.
+   - **Scoring:** prediction 3 is scored only if 6 or more seeds of each arm are read; otherwise "not read".
+   - **Timing:** LOAD05's phase B falls earlier than REF's (exp010 J 501-669 against 588-957), against a wild that is itself
+     still changing.
+   - **Tethered captives:** they cannot run off (tetherNew; R × fear ≥ captureFear). Captive attrition is read beside
+     measure 4's kept share, so a low captive loss rate is not read as captives being tame.
+5. **The midday block's checks (point 5).** tools/ledger_check.py (this commit) adds:
+   - walking goat-days = density.c[1].n, exactly, as a fail condition;
+   - bornW = wildSiredShare × herdBirths, within the row's rounding, as a fail condition;
+   - kept and other against density.c[2] and c[3], printed only: the ledger skips camps with no herder.
+
+   On the 470-year probe all pass. Kept differs in 4 rows (total -4) and other in 11 (total -13). The analysis tool
+   prints two further comparisons each year:
+   - the stock's mean R beside histHerd's binned mean R;
+   - spooks per walking goat-day beside walk[3] / walk[0], which can differ because one is a midday snapshot and the other
+     counts the whole day.
+
+   A probe that reaches a J: REF seed 6, 1000 annual years at this code (logLedger=1, histPeriod=1; exp010 J 588). The
+   analysis tool is checked on it and on its own planted-J selftest before any result. It is queued now; its result and
+   ledger_check go in the raw entry.
+6. **Standing control (point 6; replaces the Identity entry's HUNT sentences).** The rule as amended (EXPLOG, exp018
+   amendment point 5) asks for one 4000-year HUNT seed 1 run at the batch's code, reproducing exp018's HUNT_seed1 on
+   every year row with hist identical. It is running now (--scratch, HUNT4000check_seed1), checked with
+   tools/cmp_years.py --by-year. That tool now also compares hist and histHerd rows paired by histYears; on the 700-year
+   probe it gives 0 of 46 differing against HUNT_seed1 and 46 of 46 on hist against HUNT_seed2. The batch is queued only
+   once the check passes. Otherwise HUNT seeds 1-8 join the batch. Against HUNT: available, not read.
+7. **Minor (point 7).**
+   - **Identity:** each batch run is checked on hist and histHerd as well as on year rows, over the shared years.
+   - **Wording:** the rule's "daily spook chance" is its daily rate (expected spooks per walking goat-day); it can exceed 1
+     at REF's loads.
+   - **Disclosure:** before these predictions were written I saw ledger_check's output on the probe (REF s1 to year 469:
+     totals of 312 captures, 381 escapes, 1695 spooks, 1321 herd goat-rows) and the kept and other differences above.
+     No per-channel R contribution and no R × fear by origin were computed or seen.
+   - **Pooled restart:** the restart rule (previous pooled stock under 5) is pooled, so one camp's herd dying out and being
+     refounded is split as ordinary flows, which is still exact.
+
+**Predictions** (replacing the entry's three):
+1. Over phase B, REF's walking goats have mean R × fear (walk[2] / walk[0], both origins) below one third of the median
+   of LOAD05's eight phase-B values, in 6 or more of 8 REF seeds. That is, the herd has become calm faster than its load
+   rose.
+2. (a) In REF over A, T and B pooled, losses (run-off plus night stray, both origins) are the most negative channel in
+   herd R̄'s change, in 6 or more of 8 seeds. (b) The same on herd-born goats alone: herd-born losses are the most
+   negative of the herd-born channels, in 6 or more of 8 seeds. Each is also printed per phase (A, T, B), descriptive.
+   If (a) holds and (b) fails, the reading for Chris says the losses' effect is captive turnover.
+3. In REF over phase B, captured goats are lost at a higher rate per goat-year of exposure than herd-born goats in every
+   seed that is read. The ratio of the two rates is above the median of LOAD05's read seeds in 6 or more of 8 REF seeds.
+
+## exp020 amendment 2, 2026-11-24 (before any run queued; the reviewer's 26e87a4, 8d68c97)
+Points C and D are taken, and the minor points too. The rest of the amendment stands.
+- **C: P2(b) on the herd-born stock's own mean** (replaces how (b) is computed). (b) as written measured herd-born
+  channels against the pooled R̄, captives included. Where captives sit above the herd-born goats in R, losing one of the
+  highest-R herd-born goats could then count as positive, so (b) could fail on exactly what it is meant to detect.
+  - The herd-born stock closes on its own, so (b) splits the change in the herd-born mean R over its own channels, using
+    its own N and its own last-year mean.
+  - Its channels are births to a herd sire, births to a wild sire, and herd-born goats lost, slaughtered and dead of
+    other causes.
+  - The split must close per year and per phase, and the tool checks this. The restart rule applies to the herd-born
+    stock's own previous count (under 5).
+  - (b) reads: herd-born losses are the most negative of these channels over A, T and B pooled, in 6 or more of 8 REF
+    seeds, also printed per phase. (a) is unchanged, on the pooled mean.
+- **D: prediction 1 anchored on the other arm's median** (replaces the amendment's prediction 1). Since the rule's rate
+  is herderAlarm × R × fear × load, "calmer than the load rose" is exactly the per-goat rate being lower, so the
+  arbitrary third is dropped. Over phase B, against the median of LOAD05's eight phase-B values:
+  - (a) REF's walking goats' mean R × fear (walk[2] / walk[0], both origins) is below it, in 6 or more of 8 REF seeds.
+    This is the claim that the herd calmed.
+  - (b) REF's rule rate per walking goat-day (walk[3] / walk[0], both origins) is above it, in 6 or more of 8 REF seeds.
+    This is the claim that the calming did not fully offset the load.
+  - Both are my expectation. The ground for (b) is that REF ran off more per herd goat-year than LOAD05 in exp010's
+    window (0.859 against 0.631), a late window and per herd goat rather than per walking goat, so (b) can fail.
+  - Walking R × fear is truncated: a herd goat with R × fear ≥ captureFear 0.35 is tethered and not walking, and fear
+    habituates each night toward fearMin. So walking goats' R (walk[1] / walk[0]) and the kept share are printed beside
+    it, by origin, and (a) is read with them.
+- **Minor:** tools/ledger_check.py --bad now takes died, walk or bornW. On the 470-year probe each FAILs, and the clean
+  run PASSes:
+  - walk: one goat-day added gives 1 row differing;
+  - bornW: one birth moved from born to bornW gives 1 row differing.
+  For HUNT, the histHerd comparison cannot fail (no herd), so only hist counts in the 4000-year check.
+  **Disclosure, added:** ledger_tab's probe output exists (results/_scratch/exp020_ledger_probe/ledger_tab_probe.txt and
+  ledger_tab_testJ430.txt). It holds per-channel contributions for REF s1 over 401-470. The analysis session and the
+  reviewer have seen it, and so have I, in the analysis session's message: phase A capture +0.0952, born -0.0221, lost
+  -0.1429, died -0.0317, restart +0.0683. Predictions 1 and 3 were not computed on it, apart from --testJ's labelled
+  non-reading.
+
+## exp020 amendment 3, 2026-11-24 (before any run queued): packet size; and the J probe
+**The problem.** The J probe (REF seed 6, 1000 annual years, logLedger=1, histPeriod=1, --scratch, saved as
+scratch exp056/REFledger1000_seed6, results/_scratch/exp056_probe/) is 13.4 MB of BSON. A 1600-year run would be about
+21 MB, over Mongo's 16 MB limit, and db.js refuses a packet that size: the JSON copy is kept, but the run is not stored
+in Mongo. Of the probe's 8.7 MB of JSON:
+- the ledger is 2.29 MB;
+- the annual gene histograms are 1.65 MB;
+- five inline diagnostics the batch does not read are 1.76 MB: herdDeathHalf 0.56, sizeByAge 0.35, cohortBirth 0.30,
+  cohortBreed 0.28, firstKidStats 0.27.
+
+**The change** (replaces the Arms paragraph's settings; the arms are unchanged):
+- **Switches.** Those five fields get diagnostic switches (src/params.js logHerdDeathHalf, logSizeByAge,
+  logCohortBirth, logCohortBreed, logFirstKidStats; default 1; DIAG_FIELDS in datamanager.js, as the other switches).
+  This batch sets all five to 0. Output only: a field is deleted from the saved row and nothing else changes. A 3-year
+  run with the five at 0 lacks all five fields and keeps the rest.
+- **Histograms.** histPeriod=1 is dropped, so the histograms come every 5 years, runyears' default at k = 1. The
+  analysis tool's comparison of stock mean R with histHerd's binned mean is then made every 5 years.
+- **Size.** The probe trimmed this way (src/db.js bsonSize) is 7.39 MB. Adding the extra 600 years at the rate of the
+  probe's years 600-999 gives an estimated 11.7 MB for a 1600-year run.
+- **No measure depends on what is removed.** The tools that read those fields (cohort_tab, genecost_tab, ogm_tab,
+  sexsize_tab, wildcal_tab) are not exp020's.
+
+**The J probe's checks** (amendment 1 point 5; before the batch):
+- ledger_check PASS: 1000 annual rows, 5994 camp-origin-year pairs, 0 off, largest summed-R gap 0.0002; walk = density
+  0 rows differing; bornW 0 rows differing.
+- cmp_years --by-year against exp018's REF_seed6: 333 records over years 2-998, 77 shared keys, 0 differ. hist and
+  histHerd each 0 of 66 rows differing (years 14-989).
+- The analysis tool is checked on this file before any result, with --refJ against exp018's REF runs. Its output goes
+  in the raw entry.
+
+## exp020 results (raw)
+16 of 16 runs are complete (complete: true, 1600 annual rows each, labels 0-1599). Every run exited 0 (cpuslot-logs/,
+batch 1795591917811932600). No log has an error, exception or warning; each carries the db client's packet-size
+advisory (over its 4 MB suggestion), which does not stop the save.
+- Arms as registered, 8 seeds each: REF and LOAD05. Parameters are identical across the 16 except id, seed, and
+  herdPerHerder and minLoad (LOAD05: 1e9 and 0.5; REF: 20 and 0.25). All 16 have logLedger 1 and the five switches of
+  amendment 3 at 0.
+- Hosts: 13 on the desktop, 3 on mint (LOAD05 s4-6). Run times 2878-4247 s.
+- The mint logs of LOAD05 s5 and s6 also say "NOT copied" for the sibling files (LOAD05_seed4, and seed4 and seed5),
+  which earlier mint runs had already copied back to the desktop. Each run's own file was copied back, and each passes
+  the identity check below.
+
+**Commit.** All 16 are stamped v0.1.0-367-g7cf6888, dirty false. `git diff --stat 700f5d4 7cf6888` over src,
+tools/runyears.mjs and tools/load.mjs is empty: the commits between them touched notes/review and
+tools/ledger_tab.py only.
+
+**Packet size** (amendment 3; the reviewer asked for real sizes):
+- Each packet is 12.1-12.2 MB of BSON (the db client's own measure in each log): LOAD05 s1 12.1, the other 15 12.2.
+  This is against amendment 3's estimate of 11.7 MB.
+- db.js refused none: no packet carries storeError. The JSON copies are 7,705,743-7,860,714 bytes on disk.
+
+**Identity** (registered; tools/cmp_years.py --by-year, which also pairs hist and histHerd by histYears; output in
+results/exp020_ledger-early/checks/identity.txt):
+- REF s1-8 against exp018's REF: 533 records each (years 2-1598, 1600 vs 1333), 72 shared keys, 0 differ.
+- LOAD05 s1-8 against exp010's LOAD05: 533 records each (years 2-1598), 65-69 shared keys, 0 differ.
+- hist and histHerd: 106 rows each (years 14-1589), 12 traits, 0 differ, in all 16.
+- The ledger is output only, and these runs are the earlier batches' runs over 1-1600.
+
+**Ledger closure** (tools/ledger_check.py; output in results/exp020_ledger-early/checks/ledger_check.txt):
+- PASS on all 16. Each run has 9594 camp-origin-year pairs, 0 with goats differing, 0 with summed R off by more than
+  1e-3. The largest summed-R gap is 0.0002 in 12 runs and 0.0003 in 4.
+- Every counter matched its year-row field in every row: cap, born + bornW, lostRun, lostRun + lostNight, spooked,
+  caught, ranOff, rejoined, refetched, stock, exIn, exOut, walk goat-days = density.c[1].n, and bornW against
+  wildSiredShare.
+- Printed only, not failed (the ledger skips camps with no herder): kept goat-days fall below density.c[2].n in 1-21
+  rows per run, by 1-24 goat-days in total. Other goat-days fall below density.c[3].n in 3-66 rows, by 3-89 in total.
+  The ledger is never above density.
+- The bad cases, on REF s1: --bad died, --bad walk and --bad bornW each FAIL.
+
+**The standing control** (cited, not rerun; the reviewer's d8b477e):
+- The 4000-year HUNT check ran at c91c20b src: results/_scratch/exp055_probe/HUNT4000check_seed1.json against exp018's
+  HUNT_seed1.
+- Its result: 1333 of 1333 records compared, 0 differ; hist 0 of 266 rows differ (histHerd cannot fail for HUNT, which
+  has no herd).
+- The src diff from c91c20b to 700f5d4 is only the five diagnostic switches (src/params.js, DIAG_FIELDS in
+  src/datamanager.js). They default to 1, so no draw and no field of a HUNT run changes. 700f5d4 to 7cf6888 is empty
+  over src (above).
+
+**The scorer on the J probe** (amendment 3; the reviewer accepted it in d8b477e):
+- Command, at tools/ledger_tab.py 7e1d753: `python tools/ledger_tab.py results/_scratch/exp056_probe REFledger1000
+  --as REFledger1000=REF --perseed --timeline 10 --refJ "results/exp018_density-hunt=REF"`.
+- Rerun at 7cf6888, its output is identical to analysis's results/_scratch/exp056_probe/ledger_tab_s6.txt (diff
+  empty).
+- It prints "checks passed on 1 runs" and J 587, against exp018's 588, which it reports and does not fix. Its phases
+  are A 401-487, T 488-587, B 588-687, C 688-1000.
+
+**Disclosures for the scored entry, beside the predictions:**
+- **REF s6 was seen before results.** It is one of the 8 REF seeds, run with the J probe's seed, code and arguments.
+  The switches are output only, and the identity check above shows the run unchanged, so it reproduces the probe over
+  1-1000. Its J (587) and its A, T and B (to 687) all lie inside the probe, so its values for P1a, P1b, P2a, P2b and P3
+  were fixed beforehand.
+- What was seen (analysis's probe report):
+  - Pooled change in mean R: A −0.1942, T −0.2219, B −0.2257, C −0.0858.
+  - Lost is the most negative channel in A, T and B, both pooled and on the herd-born stock alone.
+  - In B: load 4.111, walking R×fear 0.035, and captured vs herd-born loss 0.560 vs 0.236 per exposure goat-year.
+- P2a and P2b are therefore also scored `--without 6`, and the scored entry says whether they read the same.
+- **"8.7 MB" in amendment 3** is the length of Python's spaced JSON serialisation of the probe. The probe's file on disk
+  is 7,074,340 bytes. Its BSON size, 13.4 MB, is the db client's measure and the one the 16 MB limit applies to.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

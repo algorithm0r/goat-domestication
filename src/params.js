@@ -423,6 +423,15 @@ var PARAMETERS = {
   logHerdKilloff: 1,      // years[].herdKilloff: herd deaths by sex and age (1%)
   logKidDeathCause: 1,    // years[].kidDeathCause: unweaned deaths by cause and litter size (2%)
   logHistDepth: 1,        // histDepth: gene histograms by lineage depth, every 10 years (7%)
+  logHerdDeathHalf: 1,    // years[].herdDeathHalf (2026-11-24 switch; 6% of an annual ledger run's JSON)
+  logSizeByAge: 1,        // years[].sizeByAge (4%)
+  logCohortBirth: 1,      // years[].cohortBirth (3%)
+  logCohortBreed: 1,      // years[].cohortBreed (3%)
+  logFirstKidStats: 1,    // years[].firstKidStats (3%)
+  logLedger: 0,           // years[].ledger (2026-11-24, exp020; Chris: "the period when the R moves and the herd grows"): per
+                          // camp, every goat entering and leaving the herd (count and summed R, captured / herd-born), the
+                          // herder's spook events, and a midday sample of load, keepers and who walks with the herder.
+                          // Off by default (it is large); output only: no draws, the run is the same either way
 
   // --- database (the standard vendored client, src/db.js) ---
   db: {
