@@ -8518,6 +8518,148 @@ rows' alarmCaught and exchanged are 0 too. Their equality checks pass trivially 
 at six commits (4afb749-dirty for 3 seeds; 65e8cc0, bbd6259, 06c97bc, b64a201 and a659a59-dirty for 1 each). Their
 year rows carry different field sets.
 
+## exp020 results (scored)
+Scored by the analysis session, 2026-11-25, as amendments 1-3 registered (c91c20b, ffa8a83, 700f5d4), with the reading
+choices the steward accepted. Every number below is printed by a committed tool. Values are the mean over seeds
+(min to max), or per seed, as the tool prints them. Where a sentence compares two printed values, the comparison is mine;
+no derived number is computed.
+
+**Command** (tools/ledger_tab.py at 7e1d753, unchanged since; HEAD 15a3b30; through cpuslot):
+`python tools/ledger_tab.py results/exp020_ledger-early REF,LOAD05 --perseed --timeline 10 --refJ
+"results/exp018_density-hunt=REF;results/exp010_fixed-load=LOAD05" --without 6`.
+The output is in results/exp020_ledger-early/analysis/ledger_tab.txt.
+
+**Checks:**
+- The tool's own checks pass on all 16 runs. In every row the stock equals herded, and the stock's mean R equals
+  herdTraitMeans R. The load follows the rule. Every split year closes to 0.001, and every phase to 0.005.
+- tools/ledger_check.py, rerun here on each run: PASS on 16 (analysis/ledger_check_mine.txt).
+- The selftest passes, and each bad case stops it:
+  - selftest --bad died: the channels sum to +0.07273 while mean R changes +0.10000;
+  - selftest --bad phase: B starts at J.
+- The bad cases on the data each stop the tool:
+  - --bad load stops at REF s1, year 401, camp 0, where the summed load 27.83 falls below minLoad × days 83.50;
+  - --bad died stops at year 404.
+- Stock mean R − histHerd's binned mean R averages −0.0002 to +0.0002 per run. The widest gap is −0.0213 in REF (s2) and
+  +0.0216 in LOAD05 (s7).
+- Herder spooks per walking goat-day against the rule's rate, whole run:
+  - REF: s1 0.00436 / 0.00433, s2 0.00446 / 0.00444, s3 0.00430 / 0.00429, s4 0.00303 / 0.00303, s5 0.00449 / 0.00448,
+    s6 0.00357 / 0.00356, s7 0.00486 / 0.00485, s8 0.00322 / 0.00320.
+  - LOAD05: s1 0.00229 / 0.00229, s2 0.00205 / 0.00205, s3 0.00205 / 0.00203, s4 0.00216 / 0.00215,
+    s5 0.00213 / 0.00213, s6 0.00222 / 0.00221, s7 0.00199 / 0.00199, s8 0.00220 / 0.00220.
+- J, from this batch's annual rows:
+  - REF: s1 956, s2 849, s3 706, s4 716, s5 781, s6 587, s7 706, s8 662. Against exp018 (this batch / exp018), 7 seeds
+    differ: s1 956 / 957, s3 706 / 705, s4 716 / 717, s5 781 / 783, s6 587 / 588, s7 706 / 705, s8 662 / 663.
+  - LOAD05: s1 667, s2 531, s3 509, s4 501, s5 527, s6 501, s7 566, s8 525. Against exp010, 4 seeds differ:
+    s1 667 / 669, s3 509 / 507, s5 527 / 528, s7 566 / 567.
+  - The gaps come from exp018's and exp010's 3-year rows, against this batch's annual rows (amendment 1 point 2). Each
+    is reported, not fixed, as registered.
+- Every REF and LOAD05 seed has a J and a full phase B. No seed is named or unread.
+
+**Disclosures:**
+- **REF s6 was seen before results** (the J probe, amendment 3). This batch reproduces the probe's values exactly:
+  - J 587;
+  - load over B 4.111;
+  - walking R × fear over B 0.035 in the probe (0.03537 here);
+  - captured vs herd-born loss 0.560 vs 0.236 per exposure goat-year.
+- Without s6, P2a and P2b each hold in 7 of 7 seeds. The tool prints that neither verdict depends on s6.
+- P1a, P1b and P3 hold in every REF seed, so none of them depends on s6. Their LOAD05 medians do not involve REF s6.
+- **"8.7 MB" in amendment 3** is the length of Python's spaced JSON serialisation of the probe, as the raw entry says. It
+  is not the probe's file on disk, which is 7,074,340 bytes (checked here), and not its BSON size, which is 13.4 MB in
+  the db client's measure, the one the 16 MB limit applies to.
+
+**Predictions** (all are read on 8 of 8 REF seeds; LOAD05 medians are over its 8 seeds):
+- **P1a holds, 8 of 8.**
+  - Measure: REF's walking goats' mean R × fear over B (walk[2]/walk[0]).
+  - REF per seed: s1 0.03756, s2 0.04039, s3 0.04373, s4 0.02776, s5 0.05746, s6 0.03537, s7 0.04986, s8 0.02938.
+  - Each is below LOAD05's phase-B median of 0.09893 (LOAD05 seeds 0.08663 to 0.10245).
+  - Read beside it, as registered:
+    - REF's walking R over B is 0.285-0.433 for captured goats and 0.196-0.383 for herd-born goats. LOAD05's is
+      0.623-0.703 and 0.601-0.708.
+    - The kept shares are small in both arms: REF 0.015-0.025 captured and 0.040-0.050 herd-born; LOAD05 0.023-0.026
+      and 0.037-0.041.
+    - So the low walking R × fear comes with low R in the walking goats, not with high-R goats being taken out of the
+      walking group by tethering.
+- **P1b holds, 8 of 8.**
+  - Measure: the rule's rate per walking goat-day over B (walk[3]/walk[0]).
+  - REF per seed: s1 0.00831, s2 0.00895, s3 0.00910, s4 0.00650, s5 0.00883, s6 0.00718, s7 0.00971, s8 0.00653.
+  - Each is above LOAD05's median of 0.00247 (LOAD05 seeds 0.00217 to 0.00256).
+  - The herd calmed, but not enough to offset its load.
+- **Load (descriptive; it follows from herdN = 1):** REF's load over B is above 2 in 8 of 8 seeds:
+  s1 4.429, s2 4.410, s3 4.169, s4 4.720, s5 2.999, s6 4.111, s7 3.838, s8 4.464.
+- **P2a holds, 8 of 8.**
+  - Measure: over A+T+B, the most negative channel in the change of the pooled mean R.
+  - In every seed it is loss (run-off plus night stray, both origins), from s7 −1.8515 to s1 −4.1772.
+  - Loss is also the most negative channel in each phase, A, T and B, in every seed.
+- **P2b holds, 8 of 8.**
+  - Measure: the same, on the herd-born stock's own mean and N.
+  - In every seed herd-born loss is the most negative channel, from s7 −1.2541 to s1 −3.1926.
+  - It is also the most negative in each phase in every seed.
+  - Since (a) and (b) both hold, the losses' effect is not captive turnover alone.
+- **P3 holds.**
+  - REF over B, loss per exposure goat-year, captured vs herd-born, per seed:
+    s1 0.577 vs 0.289, s2 0.649 vs 0.316, s3 0.659 vs 0.337, s4 0.569 vs 0.197, s5 0.655 vs 0.373, s6 0.560 vs 0.236,
+    s7 0.696 vs 0.380, s8 0.546 vs 0.200.
+  - Captured goats are lost faster in every read seed.
+  - The ratio is 1.756-2.890, above LOAD05's read median of 1.342 (LOAD05 1.179-1.468), in 8 of 8.
+  - All 16 seeds are read: REF's captured exposure is 1947.69-2996.53 goat-years over B, and LOAD05's 2102.30-2273.29.
+  - The year-end-stock rates printed beside it rank the same way in every seed.
+
+**What carries the change in herd mean R** (the decision rule's first question; descriptive):
+
+REF's pooled mean R falls in every phase: A −0.1884, T −0.2144, B −0.2034, C −0.1167. Over A, T and B, two channels
+dominate:
+- Capture raises it: +0.8899, +1.0090, +0.9090.
+- Loss lowers it more: −0.9288, −1.0768, −1.1673.
+- Most of the pooled loss is captured goats: −0.6658, −0.8520, −0.8131, against herd-born −0.2631, −0.2249, −0.3541.
+
+Captives enter above the mean and many leave by loss. That turnover is a large part of the pooled channel. On the
+herd-born stock alone:
+- Its mean R falls −0.1945, −0.2102 and −0.1999 over A, T and B.
+- Its own losses carry −0.8270, −0.7259 and −0.5786: the herd-born goats lost leave above the herd-born mean.
+- The spook step does not show that selection in A and T. For herd-born goats, R spooked minus R walking is A −0.0004,
+  T +0.0010, B +0.0167, C +0.0488. What makes the herd-born losses high-R in A and T is not separated by these measures.
+- Births to a herd sire raise it: +0.4308, +0.3738, +0.2778. So kids enter above the herd-born mean.
+- In the pooled split, herd-sire births are negative (−0.2164, −0.2339, −0.0246): the pooled mean includes the high-R
+  captives, and the kids enter below it.
+- Amendment 1 named herd-sire kids entering below R̄ as an alternative explanation. Read on the pooled mean, the kids
+  do enter below it. Read on the herd-born mean, they enter above it, so on the herd's own lineage, births work against
+  the fall.
+- Slaughter is small and positive on the herd-born mean (+0.0651, +0.0669, +0.0306).
+- Other deaths are near zero (−0.0464, −0.0483, +0.0039).
+
+The filter on each goat, per phase (REF, captured / herd-born):
+- R of spooked goats minus R of walking goats rises: A −0.0022 / −0.0004, T +0.0140 / +0.0010, B +0.0462 / +0.0167,
+  C +0.2125 / +0.0488.
+- On the seed means, R of lost goats is above R of walking goats in every phase and origin; over B, for example,
+  0.432 vs 0.340 captured. This is not checked per seed.
+- The captured / herd-born loss-rate ratio rises A 1.263, T 1.593, B 2.199, C 8.192.
+
+LOAD05, fixed load 0.5:
+- Phase A is nearly empty: a mean herd of 3.25 over 40.88 years. Its J is left-censored, so its T marks the latest
+  climb.
+- Its pooled mean R falls less: T −0.0906, B −0.0816, C −0.0737.
+- Loss is still the largest negative mean channel over T and B (−0.1753, −0.1717). This is the mean over seeds; no
+  per-seed verdict was registered for LOAD05.
+- Capture adds little: +0.0904 and +0.0342.
+- Spooked minus walking R is +0.0068 to +0.0087 in T and B, by origin, against REF's B +0.0462 / +0.0167.
+- Its captured / herd-born ratio is A 1.111, T 1.343, B 1.332, C 1.525.
+
+**Captives and closure (descriptive):**
+- REF's captured share of the stock falls A 0.269, T 0.217, B 0.115, C 0.030, and captive-sire share falls from B 0.273
+  to C 0.090.
+- In LOAD05, captured share is 0.090 over B and 0.089 over C; captive-sire share rises from 0.289 to 0.350.
+- Captures per year in REF: A 7.65, T 16.86, B 21.34, C 8.13. LOAD05: A 3.76, T 6.72, B 11.16, C 11.77.
+
+**For Chris** (decision rule):
+- Loss on run-off and night straying carries REF's fall in herd R. It does so in the pooled herd, and in the herd's own
+  lineage, where herd-sire births push the other way. In A and T the herd-born goats lost are high-R, but the spook step
+  does not show why.
+- The walking herd is calmer than LOAD05's, with R × fear below LOAD05's median in every seed. But REF's load is the
+  camp herd / 20, which is 2.999-4.720 over B against LOAD05's fixed 0.5. So each walking goat's daily spook rate stays
+  above LOAD05's.
+- Over B, REF's captured / herd-born loss ratio is 1.756-2.890, against LOAD05's read median of 1.342.
+- No model change follows (descriptive batch).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
