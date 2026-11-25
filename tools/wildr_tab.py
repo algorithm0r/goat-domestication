@@ -20,9 +20,20 @@
 # each seed's bin holding J, how many bins after it the low comes, and the highest of the next three bins after the low
 # (the reviewer's 497d6ea). --bad prebin stretches the last pre-herding bin to 351-450, into herding, and must stop.
 # --bad allgoats: herd means from all goats (split's own bad case); --bad jcol: the span column read as J. Each must stop.
+# exp018 (2026-11-24, the steward: HUNT's wild R by 100-year bins beside REF's wild-only R): SCORED.txt may be '-', for a
+# batch with no load_tab scoring: then each run's J is computed as load_tab computes it (jump_tab.herd_series(d, 100)
+# after year 500, jump_tab.jump with herd >= 100 held 400 y) and est is herd >= 100 over 3201-4000 (split_tab.herd); the
+# scored-change check has nothing to read and is skipped. Checked by reading exp017 both ways (the outputs must agree
+# apart from the source named in the header); --bad jthresh computes J at herd >= 60 and must not agree (a 300-year
+# hold, tried first, gave the same J in every exp017 run, so it could not fail).
+# A run with herdingAt >= 1e8 (no herding: HUNT) has no herd goats (the tool stops if any histHerd row or year row
+# has one): its wild R per window is the all-goat R (mean over the window's rows of the histogram mean, every goat
+# wild), which is what F + wild change equals for a herding run; herd R is '-'. --pair A,B: per seed, A's wild R over
+# 3201-4000 beside B's, and how many seeds have A above B: descriptive only (exp018's prediction 4, as amended in
+# 20db6e8, is set-based and scored by tools/density_tab.py).
 import glob, json, os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import split_tab, flow_est
+import split_tab, flow_est, jump_tab
 
 def scored_change(S):
     C = {}
@@ -33,11 +44,12 @@ def scored_change(S):
     return C
 
 def main():
-    a = sys.argv[1:]; bad = None; per = "--perseed" in a; tl = "--timeline" in a
+    a = sys.argv[1:]; bad = None; per = "--perseed" in a; tl = "--timeline" in a; pair = None
     if per: a.remove("--perseed")
+    if "--pair" in a: i = a.index("--pair"); pair = a[i + 1].split(","); del a[i:i + 2]
     if tl: a.remove("--timeline")
     if "--bad" in a: i = a.index("--bad"); bad = a[i + 1]; del a[i:i + 2]
-    dirs, S = a[0], open(a[1], encoding="utf-8").read().splitlines()
+    dirs, S = a[0], (open(a[1], encoding="utf-8").read().splitlines() if a[1] != "-" else [])
     arms = a[2].split(",")
     wins = ([(y, y + 99) for y in range(401, 1601, 100)] + [(3201, 4000)]) if tl else \
         [tuple(int(v) for v in w.split("-")) for w in a[3].split(",")]
@@ -55,6 +67,13 @@ def main():
     for arm in arms:
         for s, f in sorted(R.get(arm, {}).items()):
             d = json.load(open(f, encoding="utf-8"))
+            ha = (d.get("_parameters") or {}).get("herdingAt"); nh = ha is not None and ha >= 1e8
+            if nh and (any(sum(h) for h in d["histHerd"]["R"]) or any(r.get("herded") for r in d["years"])):
+                sys.exit(f"{arm} s{s}: herdingAt {ha} but herd goats in the histograms or year rows")
+            if a[1] == "-":   # J as load_tab computes it; est = herd >= 100 over 3201-4000
+                hs = [r for r in jump_tab.herd_series(d, 100) if r[0] > 500]
+                J.setdefault(arm, {})[s] = jump_tab.jump(hs, (lambda v: v >= 60) if bad == "jthresh" else (lambda v: v >= 100), 400)[0]
+                est[arm] = est.get(arm, 0) + (split_tab.herd(d, 3201, 4000) >= 100)
             if tl:   # before herding every goat is wild: all-goat R by pre-herding bin (humans hunt from humansAt)
                 for b in PRE:
                     ix = [i for i, y in enumerate(d["histYears"]) if b[0] <= y + 1 <= b[1]]
@@ -62,21 +81,34 @@ def main():
                     if ix: PV.setdefault(arm, {}).setdefault(s, {})[b] = sum(split_tab.mc(d["hist"]["R"][i]) for i in ix) / len(ix)
                 HA.setdefault(arm, set()).add((d["_parameters"].get("humansAt"), d["_parameters"].get("herdingAt")))
             for w in wins:
+                fer = [x["wildHerdShare"] for x in d["years"] if w[0] <= x["year"] + 1 <= w[1] and x.get("wildHerdShare") is not None]
+                if nh:   # no herding: every goat wild, wild R = the all-goat R
+                    ix = [i for i, y in enumerate(d["histYears"]) if w[0] <= y + 1 <= w[1]]
+                    fx = [i for i, y in enumerate(d["histYears"]) if 301 <= y + 1 <= 400]
+                    if not ix or not fx: continue
+                    Fr = sum(split_tab.mc(d["hist"]["R"][i]) for i in fx) / len(fx); wr = sum(split_tab.mc(d["hist"]["R"][i]) for i in ix) / len(ix)
+                    V.setdefault(arm, {}).setdefault(s, {})[w] = (wr, None, sum(fer) / len(fer) if fer else None, None, wr - Fr, Fr)
+                    continue
                 r = split_tab.split(d, w[0], w[1], 301, 400, "allgoats" if bad == "allgoats" else None)
                 if r is None: continue
                 out, F, _ = r; hc, wc = out["R"]
-                fer = [x["wildHerdShare"] for x in d["years"] if w[0] <= x["year"] + 1 <= w[1] and x.get("wildHerdShare") is not None]
                 V.setdefault(arm, {}).setdefault(s, {})[w] = (F["R"] + wc, F["R"] + hc, sum(fer) / len(fer) if fer else None, hc, wc, F["R"])
             if (3201, 4000) in V.get(arm, {}).get(s, {}) and arm in SC:
                 hc, wc = V[arm][s][(3201, 4000)][3:5]
                 if (f"{hc:+.3f}", f"{wc:+.3f}") != SC[arm].get(s): sys.exit(f"check failed: {arm} s{s}: herd/wild change R {hc:+.3f}/{wc:+.3f}, scored {SC[arm].get(s)}")
     f3 = lambda x: "-" if x is None else f"{x:.3f}"
-    rng = lambda xs: f"{f3(sum(xs) / len(xs))} ({f3(min(xs))}-{f3(max(xs))})" if xs else "-"
-    mean = lambda xs: f3(sum(xs) / len(xs)) if xs else "-"
+    src = a[1] if a[1] != "-" else "J computed as load_tab computes it"
+    rng = lambda xs: (lambda xs: f"{f3(sum(xs) / len(xs))} ({f3(min(xs))}-{f3(max(xs))})" if xs else "-")([x for x in xs if x is not None])
+    mean = lambda xs: (lambda xs: f3(sum(xs) / len(xs)) if xs else "-")([x for x in xs if x is not None])
+    if pair:   # per seed, A's wild R over 3201-4000 beside B's
+        A, B = pair; w = (3201, 4000); ss = sorted(set(V.get(A, {})) & set(V.get(B, {})))
+        ps = [(s, V[A][s][w][0], V[B][s][w][0]) for s in ss if w in V[A][s] and w in V[B][s]]
+        print(f"Wild R over 3201-4000, {A} beside {B}, per seed (same seed number; descriptive, not prediction 4): " + "; ".join(f"s{s} {f3(x)} / {f3(y)} ({x - y:+.3f})" for s, x, y in ps)
+              + f"\n{A} above {B} in {sum(1 for _, x, y in ps if x > y)} of {len(ps)} seeds\n")
     if tl:
         print("Wild R and herd R (genotype means of R) in 100-year bins over herding years 1-1200 (401-1600), then 3201-4000;"
               " exploratory, added after the exp017 gene-flow entry was read. Per bin: the mean over all seeds (min-max over"
-              f" seeds); established = seeds with J <= the bin's start (from {a[1]}).")
+              f" seeds); established = seeds with J <= the bin's start (from {src}).")
         for arm in arms:
             if arm not in V: continue
             Fs = [v[w][5] for v in V[arm].values() for w in wins[:1] if w in v]
@@ -117,7 +149,7 @@ def main():
         return
     print("Wild R and herd R (genotype means of R) by window, beside feral (the wild genome's share from herd-born goats);"
           " exploratory, added after the exp017 gene-flow entry was read. Established = J <= the window's start (from "
-          f"{a[1]}): mean (min-max); then the mean over all seeds.")
+          f"{src}): mean (min-max); then the mean over all seeds.")
     for w in wins:
         print(f"\nyears {w[0]}-{w[1]}\n| arm | established | wild R est | herd R est | feral est | wild R all | herd R all | feral all | founders R all |\n|---|---|---|---|---|---|---|---|---|")
         for arm in arms:

@@ -7894,6 +7894,309 @@ In note 2's line for Chris, "In half the seeds the recovery is no more than the 
 seeds the recovery within three centuries is no more than the fixed load's noise". Some of those seeds rise later: s1
 goes from 0.567 in 1501-1600 to 0.654 in 3201-4000 (wildr_timeline.txt, per-seed line).
 
+## exp018 — Goats per cell, wild and herd, in established and non-established herds; and hunting without herding (HUNT) as the standing control
+**Pre-registered:** 2026-11-24. Chris: "hunting without herding should be a default control run. how many goats are there
+per grid cell in wild vs herds in both established and non-established herds?" and, on why: "i'm wondering if we make
+spook chance increase with other goats nearby so this is not a herd only rule".
+Mongo animalDomestication.exp018_density-hunt (mint); results/exp018_density-hunt; job list tools/exp018.jsonl (32 runs,
+cpuslot --anywhere); code HEAD at queueing (named in the raw entry). exp019 was claimed in the registry by a mistaken
+second --register call (question "x"); no heading is added for it, so runyears.mjs refuses it and no run uses it.
+**Why:** every spook rule so far acts on herd goats only (the herder's spook, its load, alarmSpread's cascade within a
+herd). Chris is weighing a rule in which the spook chance rises with the goats nearby, for wild and herd goats alike.
+Sizing it needs how crowded each kind of goat lives, which no record holds: the sim keeps per-cell counts (goatCount,
+wildCount) but never saves them. Herd goats graze within keepRadius 2 of the herder and are pulled toward him
+(grazeMove), so a herd sits in at most 25 cells; wild goats spread over the 80 × 50 map. HUNT is the control Chris asked
+to make standard: the reference culture with hunting from humansAt 300 and no herding, so no captures and no herd. It also
+answers the open question from exp017's wild-R timeline: whether hunting, not the herd, sets the level the wild's R
+recovers to.
+**The counter** (src, this commit; output only, no random draws): at the middle day sub-tick (s = daySteps >> 1, after
+that sub-tick's index rebuild) every living goat is sampled once a day, as wild (herd < 0) or herd (herd >= 0, loose
+run-offs included). Per year and class, the record's density field gives: n (goat-samples), own (mean goats of its own
+kind in its cell, itself included, so a lone goat scores 1), all (mean goats of either kind in its cell), perCell (goats
+per cell holding its kind), own9 and all9 (the same two over its 3×3 neighbourhood, the alarmSpread window).
+**Identity:** a 700-year probe at this code (SPR05's arguments, seed 1, recordEvery 3) against exp017's SPR05_seed1,
+tools/cmp_years.py: result in the raw entry, before queueing. Each rerun arm is also checked against its original record
+(REF: exp005 s1-4, exp006 s5-8; SPR05, SPR10: exp017): 0 records differing on shared keys, hist and histHerd identical.
+If REF does not reproduce, the code drift since exp005 is reported and this batch's REF is the one read.
+**Arms** (seeds 1-8, 4000 years): HUNT (REF's arguments with herdingAt 1e9); REF (exp006's REF arguments, herding at
+400); SPR05 and SPR10 (exp017's arguments: herdPerHerder 1e9, minLoad 0.5, alarmSpread 0.5 and 1). REF and SPR05 give
+established herds (8 and 7 of 8 in exp017's scoring); SPR05's seeds all waited first, so they give the small state and
+the established state within the same runs; SPR10 never established (herd 11.8).
+**Measure** (the analysis session, with a committed tool built and checked on the identity probe before any result):
+per arm and seed, wild and herd own, all, perCell, own9, all9, averaged over the year rows (weighted by n) in each state:
+- established: 3201-4000 in seeds with herd >= 100 over that window;
+- small: years after 500 in which the 100-year herd mean is under 60 (load_tab's waited state), each seed's years pooled;
+- HUNT: 3201-4000, and 301-400 (humans' first century) for all arms as the pre-herding baseline.
+Arm means with the seed range. Also HUNT's wild R by 100-year bins (tools/wildr_tab.py --timeline) beside REF's wild-only R.
+**Predictions** (mine):
+1. Herd goats live more crowded than wild goats: herd own > wild own, and herd own9 > wild own9, in every arm-state
+   with a herd, in every seed.
+2. Established herds are more crowded than small ones: in SPR05, herd own over the established state exceeds herd own over
+   the small state in every established seed.
+3. The herd does not change how crowded wild goats live: in REF, SPR05 and SPR10 over 3201-4000, wild own is within 25% of
+   HUNT's.
+4. HUNT's wild R over 3201-4000 is above REF's wild-only R in 6 or more of 8 seeds.
+**Decision rule:** descriptive. The density table goes to Chris to size a nearby-goats spook rule; no rule is chosen from
+this batch alone. Prediction 4 settles exp017's open question only as a reading: if it holds, the wild's lower R in REF is
+the herd's doing, not hunting's.
+**Standing control (from this batch):** HUNT seeds 1-8 is the default control. A batch on code that can change goats,
+wolves or hunting includes it, unless a 700-year HUNT seed 1 probe at that code reproduces the last HUNT record (0 records
+differing), in which case that HUNT is cited.
+
+## exp018 amendment, 2026-11-24 (before any run started: 0 of 32 queued; the reviewer's prereg review, d11cab6)
+notes/review/2026-11-24-exp018-prereg.md, points 1-5 taken in full, 6 and 7 as below. Where this differs from the entry,
+this governs.
+- **The counter is split (point 1; output only, this commit).** The herd class mixed goats out with the herder with
+  goats kept at camp (sheltered kids under shelterAge, tethered goats with R × fearOfHumans >= captureFear 0.35), which
+  sit on the camp cell. density is now {c, cells}: c holds four classes, [wild, with herder (walksWithHerder: the goats a
+  herder can spook), kept at camp (sheltered, tethered or guarded), other herd (kids following a mother, loose run-offs,
+  captives being led)], each {n, own, all, own9, all9}. own counts wild goats for the wild class and herd goats of any
+  class otherwise. cells = occupied cell-samples [wild, herd], so perCell is read for wild and for the herd as a whole
+  only. The entry's "a herd sits in at most 25 cells" is wrong: the 25 cells are the keepRadius 2 box around the herder,
+  and they hold only the with-herder class.
+- **Seen before queueing:** a 30-year smoke run at default arguments (herdingAt 5, humansAt 2, seed 1;
+  results/_scratch, DENsmoke), read only to check that the field is written. In it, the with-herder class's own equalled
+  its own9 in every printed row. Nothing is read from this run.
+- **Identity:** the 700-year probe is rerun on this code. The result goes in the raw entry, before queueing.
+- **States (point 3).**
+  - Established: load_tab's rule as exp017 scored it, the mean of the year rows' herded over 3201-4000 >= 100. The state
+    is read over 3201-4000.
+  - Small: rows after year 500 and before the seed's J (load_tab's J, jump_tab.jump at >= 100 from 400; to 4000 if no
+    J), whose own herded is under 60. Not the trailing mean, and not load_tab's waited state.
+  - Floor: a seed-state is read only with 10 or more such rows, each with a with-herder goat-sample. Otherwise it is
+    "not read".
+  - Baseline: year indices 300-399 (labels 301-400; herding begins at index 400, label 401). It is one run per seed,
+    printed once, not four arms.
+- **Predictions 1-2** are read on the with-herder class, with the kept class's share of herd goat-samples printed
+  beside. Prediction 1 is a mechanism check, true nearly by construction (keepRadius 2 around one person), as exp017's
+  P1 was.
+- **Prediction 3 (point 4)**, replaced: in each of REF, SPR05 and SPR10, the arm mean of wild own over 3201-4000 lies
+  inside HUNT's per-seed range over the same window. Beside it, printed and not part of the prediction: wild all, own9
+  and all9, the wild population (wild n / 360 sample days), and wildNearCamp.
+- **Prediction 4 (point 2)**, replaced. HUNT's wild R is the all-goat R from hist over 3201-4000. The tool stops if
+  any HUNT row has a non-empty histHerd. REF's is the wild-only R (hist − histHerd) from this batch's REF reruns.
+  Prediction: at least 6 of HUNT's 8 per-seed values lie above REF's median per-seed value, and the arm means differ by
+  more than 0.04 (exp017's within-seed plateau drift). A difference of 0.04 or less is "not read". Printed beside it:
+  huntTries over 301-400 and 3201-4000, and the wild population.
+- **Reading, replacing the entry's last sentence:** if prediction 4 holds, the wild's R under REF sits below its level
+  under hunting alone. The difference is herding's doing, which includes its gene flow, captures, and one person per camp
+  moved from hunting to herding. This batch does not separate them.
+- **Standing control (point 5)**, replacing the entry's paragraph. Every batch includes HUNT seeds 1-8, unless the
+  check passes. The check: one 4000-year HUNT seed 1 run at the batch's code reproduces the last HUNT seed 1 record on
+  every year row (0 differing on shared keys, hist identical). If any base argument HUNT carries changes, HUNT reruns at
+  the new base. Each registration that includes HUNT names what it reads against it: by default the wild R (3201-4000
+  and its timeline), the wild population, and huntTries. Otherwise it says "available, not read". When HUNT is cited
+  instead of rerun, the raw entry names its experiment, run and code commit, and the check's result.
+- **Checks (points 6, 7).**
+  - The four arms of each seed agree on every shared key in the year rows before index 400 (tools/cmp_years.py on those
+    rows). A failure stops the reading.
+  - SPR05 and SPR10 must reproduce exp017's records (they differ from it only by the counter). If either does not, the
+    counter is not output only: stop.
+  - If REF does not reproduce exp005/006, the drift is reported, and exp010's and exp017's comparisons against
+    exp005/006's REF are flagged.
+- **The tables** state their scope:
+  - own − 1 is "other goats nearby".
+  - Midday only, so dawn and night crowding is not measured.
+  - The 1×1 and 3×3 windows are what the counter gives. The rule's radius is not chosen (the sim senses company over
+    socialRange 4).
+  - The 3×3 is clipped at the map edge.
+
+## exp018 clarification, 2026-11-24 (before any run queued; the reviewer's 940b5fe, which settles the amendment)
+- **Prediction 2** is printed with the with-herder goats per sample day (n / 360) beside own. If with-herder own is
+  about that head count (the herd standing on the herder's cell), P2 is read as a mechanism check, like P1.
+- **The other-herd class** also holds herd goats whose camp has no herder that day.
+- **J for the small state** is load_tab's, as it computes it: the series after 500, with a 400-year hold.
+
+## exp018 note, 2026-11-24: the identity probe (before queueing)
+At the split counter (src as committed in 20db6e8; the probe ran from the working tree at d11cab6 with that change, id
+commit v0.1.0-328-gd11cab6-dirty), with SPR05's arguments, seed 1, 700 years, and recordEvery 3, histPeriod 15,
+reportingPeriod 1080 (results/_scratch/exp054_probe/DENid_seed1.json). Against exp017's SPR05_seed1, tools/cmp_years.py:
+233 records compared, 76 shared keys, 0 differ; density only in the probe. hist and histHerd are identical over the 46
+shared histogram rows, all 12 traits. The saved parameters are identical apart from id. The counter is output only over
+these years. Queued next.
+
+## exp018 note, 2026-11-24: prediction 1 on the probe (seen before results; no amendment)
+The analysis session ran tools/density_tab.py (9c9e008) on the identity probe (exp054_probe/DENid_seed1, which is
+exp017's SPR05_seed1 over its first 700 years; --late 601-700). Seed 1 has no J there, so every state row is small (67
+rows). With-herder own 5.517 against wild own 1.952 holds. With-herder own9 5.519 against wild own9 6.699 fails: the herd
+stands on one cell, and wild goats in a 3×3 outnumber a herd of about 6. Prediction 1 stands as registered and is scored
+so. These numbers are data seen before results, not a batch reading.
+
+## exp018 results (raw)
+32 of 32 runs are complete (complete: true, last row year 3998). Every run exited 0 (cpuslot-logs/, batch
+1795543753431140600), with no error, exception or warning in any log. Each log carries the db client's packet-size
+advisory (over its 4 MB suggestion), which does not stop the save.
+- Arms as registered, 8 seeds each: HUNT, REF, SPR05, SPR10.
+- Parameters are identical across runs except id, seed, herdingAt (HUNT 1e9), and herdPerHerder, minLoad and
+  alarmSpread (SPR arms).
+- Hosts: 23 on the desktop, 9 on mint. Run times 2065-11923 s.
+**Commits:**
+- 477caad: 6 runs. a6f13b4: 1 run. 70758bf: 25 runs.
+- All three are clean. `git diff 477caad 70758bf` over src, tools/runyears.mjs and load.mjs is empty: the commits
+  between them touched EXPLOG and notes/review only.
+**Identity checks (registered; tools/cmp_years.py and a direct comparison of hist, histHerd and histYears):**
+- SPR05 and SPR10, s1-8, against exp017: 1333 of 1333 records compared, 76 shared keys, 0 differ; density only in
+  exp018. hist, histHerd and histYears are identical (266 rows).
+- REF s1-4 against exp005 and s5-8 against exp006: 1333 of 1333 records compared, 65 shared keys, 0 differ. hist,
+  histHerd and histYears are identical (266 rows).
+- REF reproduces at this code, so no drift is flagged. The counter is output only over the full 4000 years.
+- The four-arms-agree check before index 400 is the analysis tool's, and its result goes in the scored entry.
+**For the scored entry (the reviewer's 383e23d):** SPR05_seed1's small-state rows over its first 700 years were seen
+before results, in the identity probe (note a6f13b4). P1's own9 half in SPR05's small state is therefore close to
+decided by data seen beforehand. Only s1's small rows after year 700, up to its J, could change it. Say so beside P1.
+
+## exp018 results (scored)
+Through cpuslot, tools at 361944d (density_tab.py) and 9c9e008 (wildr_tab.py), scored to the entry as amended (20db6e8)
+and clarified (513c1bc):
+- `python tools/density_tab.py results/exp018_density-hunt HUNT,REF,SPR05,SPR10 --perseed` (density.txt);
+- `python tools/wildr_tab.py results/exp018_density-hunt - HUNT,REF --timeline --perseed` (wildr_timeline.txt);
+- `python tools/wildr_tab.py results/exp018_density-hunt - HUNT,REF 3201-4000 --pair HUNT,REF --perseed` (wildr_pair.txt).
+Tables in results/exp018_density-hunt/. '-' means no SCORED.txt: J is computed as load_tab computes it.
+**Checks:**
+- The four arms agree on every shared key of every year row before index 400, per seed (24 arm pairs). On the probe this
+  check stopped on a planted births+1 at year 201.
+- Every row's density field passed the tool's checks (bounds, cells against samples, own >= perCell, no herd sample
+  before herdingAt or in HUNT). --bad swap, nopool and nohold each stop (bad_*.txt).
+- P4's per-seed values in density_tab equal wildr_tab --pair's, seed for seed, to three places.
+- One fix before this reading: the first output (density_v1.txt) dropped REF s6's small state without a word, because it
+  has no row after 500 before J (588) with herded < 60. 361944d names it as not read. No other line changed.
+- J and established match exp017's scoring: SPR05 established 7 of 8 (s6 not, herded 23.0 over 3201-4000), J
+  1080-2724; REF 8 of 8; SPR10 0. HUNT has no herd goat in any row or histogram.
+
+**Baseline** (301-400, every goat wild, one run per seed): wild own 1.950 (1.898-1.987), own9 6.608 (6.285-6.874),
+perCell 1.468, 515.2 wild goats per sample day.
+
+**Over 3201-4000** (mean over seeds, min-max), with herder / wild:
+| arm | est | wild own | wild own9 | wild per day | with-herder own | with-herder per day | kept share (est) |
+|---|---|---|---|---|---|---|---|
+| HUNT | - | 1.871 (1.761-1.927) | 6.054 (5.325-6.449) | 580.4 | - | - | - |
+| REF | 8 | 1.789 (1.689-1.874) | 5.580 (4.984-6.035) | 471.9 | 103.575 (99.227-111.220) | 260.2 | 0.041 |
+| SPR05 | 7 | 1.840 (1.766-1.888) | 5.860 (5.417-6.194) | 474.8 | 85.623 (10.358-101.003) | 216.4 | 0.040 |
+| SPR10 | 0 | 1.861 (1.781-1.928) | 5.999 (5.343-6.473) | 583.6 | 5.885 (4.581-7.245) | 10.9 | - |
+SPR05's with-herder row is over all 8 seeds; over its 7 established seeds, own 96.375 (90.756-101.003), per day 244.2.
+Small state, with-herder own: REF 18.049 (7 seeds), SPR05 12.134 (8), SPR10 5.478 (8); wild own 1.868-1.881 in all
+three.
+
+**Predictions:**
+1. **Fails** (a mechanism check): 33 of 38 seed-states at the floor. REF s6's small state is not read (no row).
+   - The own half holds in all 38 seed-states read. Every failure is on the own9 half, all in SPR10's small state, in
+     seeds 1, 2, 5, 6 and 8. With-herder own9 there is 4.099-5.613, against wild own9 6.355-6.475.
+   - SPR10's seeds 3, 4 and 7 pass narrowly (with-herder own9 6.642, 5.830, 5.955 against wild 5.620, 5.567, 5.515).
+     Their wild own9 values are the arm's lowest.
+   - **Seen before results (the reviewer's 383e23d):** SPR05_seed1's small-state rows over its first 700 years were
+     seen in the identity probe (note a6f13b4). There the own9 half failed, 5.519 against 6.699 over 67 rows, so that
+     half was close to decided beforehand. Only s1's small rows after 700, up to its J, could change it, and they did.
+     Over its full small state (187 rows, to J 1164) s1 passes: with-herder own9 14.077 against wild 6.432. P1's
+     failure is in SPR10, a run from which no row was seen before results.
+   - Read: with-herder own9 exceeds own by 0.001-0.015 in every per-seed line for SPR05 and SPR10 (derived
+     from printed values). The herd stands on one cell. A wild goat's 3×3 holds about six goats, so a herd of five
+     standing on one cell has fewer goats around it in the 3×3 than a wild goat does. In SPR10 the herd stays that small.
+   - Kept share of herd goat-samples: est 0.041 (REF), 0.040 (SPR05); small 0.043 (REF), 0.055 (SPR05), 0.077 (SPR10).
+2. **Holds**, 7 of 7 established SPR05 seeds. With-herder own over est is 90.756-101.003 against 9.934-14.071 over small;
+   with-herder goats per sample day are 232.3-254.0 against 13.3-28.7. By the clarification's test, est's own is not
+   about the per-day head count: it is under half of it. The per-day figure counts every with-herder goat in the run,
+   whatever its camp, and the number of herds is not printed. So whether own equals one herd's head count is not
+   checked, and P2 is not read as a mechanism check on this evidence.
+3. **Holds.** The arm mean of late wild own lies inside HUNT's per-seed range 1.761-1.927 in each of REF (1.789), SPR05
+   (1.840) and SPR10 (1.861). Beside it, not part of the prediction:
+   - wild own9: REF 5.580, SPR05 5.860, SPR10 5.999, HUNT 6.054;
+   - wild goats per sample day: REF 471.9 and SPR05 474.8, against HUNT 580.4 and SPR10 583.6;
+   - wildNearCamp: REF 8.6, SPR05 11.9, SPR10 38.9.
+   The herd arms that establish carry about 105-110 fewer wild goats a day than HUNT (derived), and their wild goats are a
+   little less crowded. That is within HUNT's seed range on own, the registered measure.
+4. **Holds.** Wild R over 3201-4000: HUNT (all-goat R) 0.826-0.870, REF (wild-only R) 0.696-0.725. HUNT lies above REF's
+   median 0.712 in 8 of 8 seeds, and above REF's same-numbered seed in 8 of 8 (wildr_tab --pair, descriptive). Arm means
+   are 0.854 against 0.712 (+0.142, over the 0.04 band). Beside it:
+   - huntTries over 301-400 are 357.6 in both arms; over 3201-4000, HUNT 279.4 (247.6-311.7), REF 206.6 (184.5-224.4);
+   - wild population late: HUNT 580.4, REF 471.9.
+   **Reading, as amended:** the wild's R under REF sits below its level under hunting alone. The difference is
+   herding's doing, which includes its gene flow, its captures, and one person per camp moved from hunting to herding.
+   This batch does not separate them. The last is visible beside the prediction: REF hunts about a quarter less than
+   HUNT over the late window.
+
+**HUNT's wild R by 100-year bins beside REF's** (registered, descriptive; wildr_timeline.txt). Founders (301-400) are
+0.791 in both. HUNT's wild R rises to 0.849 in 401-500 and holds at 0.856-0.869 through 1600, ending at 0.854 over
+3201-4000. REF's wild R falls to 0.670 at 701-800 and comes back to 0.712-0.732 from 1001 onwards. This answers exp017's
+open question: REF's wild "springs back" to about 0.72, not to the 0.85-0.87 that hunting alone holds. The level it
+recovers to is set below hunting's by about 0.14, by herding (as the reading under P4 says). The founders' 0.791 is not
+the right reference for the recovery either: hunting alone moves the wild above it within a century.
+
+**Standing control:** this batch's HUNT (seeds 1-8; runs at 477caad, a6f13b4 and 70758bf, per the raw entry) is the HUNT
+record a later batch reruns or cites under the amendment's check.
+
+**For Chris (descriptive; the density table is what was asked).** At midday a wild goat shares its cell with about
+0.7-1.0 others (own 1.689-1.987 over arms, states and seeds) and has about 4-6 others in its 3×3. In every arm and state, the with-herder goats stand on
+one cell: about 100 in an established REF or SPR05 herd, 10-20 in a small one, and 4-7 in SPR10's. Kept-at-camp goats sit
+at about 2-19 per cell. A spook chance that rises with goats nearby would rest, for wild goats, on a range of about 1-2 per
+cell. For a herd goat it would be the herd's head count. The 3×3 window adds about four goats for a wild goat and almost
+nothing for a herd goat.
+
+## exp018 results (scored), correction 2026-11-24 (the reviewer's b2dabf0; no verdict changes)
+The reviewer reproduced f1c5f0a byte for byte (density, pair, timeline, the three --bad outputs). Verdicts stand: P1
+fails (33 of 38), P2, P3 and P4 hold. This section replaces the sentences of f1c5f0a named below. Every number here is
+printed by tools/density_tab.py at 8ca8db8. That version appends a "Derived" block; every earlier line of density.txt is
+byte-identical to 361944d's (density_v2.txt is the earlier output).
+
+**1. The herd stands on the herder's cell; that is the model's grazing, not a measured spacing (point 1).**
+- With-herder own9 − own is 0.001-0.033 over every arm, state and seed. The widest is REF s1 est, 0.033. f1c5f0a's
+  "0.001-0.015" left REF out and is withdrawn. Kept: up to 0.161; other herd: up to 0.087. No herd goat stands in the
+  eight cells around a with-herder goat, beyond a few hundredths of a goat on average.
+- Why (src/animals.js:410-421, grazeMove): by day a herd goat that is not alarmed moves to the cell of its 3×3 with the
+  highest need × forage − herdPull × (0.5 + S) × distance to the herder (herdPull 1.0), plus 0.05 noise. When the pull
+  outweighs the forage difference between neighbouring cells, the whole herd stands on the herder's cell. About 100 goats
+  grazing one cell at midday is a property of that rule. Whether it is intended is Chris's call. It also bears on what a
+  herd eats and on how exp017's spread alarm travels within a herd. Asked of Chris, 2026-11-24; the density table does
+  not size a rule until he answers.
+- Reading (the reviewer's, unchecked): with the herd on one cell, a spook chance rising with goats in the cell rises with
+  the herd's head count. REF's herder spook already does that through herdLoad = herdCount / (herdPerHerder × herders),
+  floored at minLoad (src/world.js:224-227). On the herd side, a nearby-goats rule would repeat REF's scaling; only the
+  wild side would be new.
+
+**2. P2 is read as a mechanism check (point 2).** The per-day test in the clarification was the reviewer's (940b5fe), and
+the reviewer withdraws it (b2dabf0). With-herder goats per sample day sum up to three camps (params.js camps 3), so it is
+not one herd's head count. f1c5f0a's "P2 is not read as a mechanism check on this evidence" is withdrawn.
+- One cell: SPR05 with-herder own9 − own is 0.012-0.015 over est and 0.004-0.006 over small.
+- One herd's head count, from herdComp (each camp's herd goats per managed camp-day, summed over its four classes): over
+  est, per seed, 89.7-99.2, against with-herder own 90.756-101.003. Over est, with-herder own is about one herd's head
+  count. Over small, the head count is 5.2-11.1, against own 9.934-14.071. Own is goat-weighted and head count is a
+  camp-day mean; the gap is not examined further.
+- So est own > small own follows from the state definitions (mean herded ≥ 100 against each row's herded < 60) once
+  herds stand on one cell, as the clarification foresaw. P2 holds as a mechanism check.
+
+**3. The recovery level (point 3).** Withdrawn from f1c5f0a: "This answers exp017's open question: ... The level it
+recovers to is set below hunting's by about 0.14, by herding (as the reading under P4 says)." Replaced by: REF's wild
+recovers to 0.712-0.732, below the 0.856-0.869 that hunting alone holds (501-1600). The level it recovers to is not
+hunting alone's. What sets it is not separated: herding's gene flow, its captures, and fewer hunting tries (206.6
+against 279.4 over 3201-4000) are all in the difference. The point on the founders' 0.791 stands.
+Descriptive, no cause: REF's wild is already below HUNT's before any herd is established (0 of 8): 0.836 against 0.849
+over 401-500, and 0.796 against 0.860 over 501-600.
+
+**4. Derived numbers, now printed (point 4).** These replace f1c5f0a's inline figures.
+- Wild goats per sample day, late, against HUNT's 580.4: REF 471.9 (−108.5), SPR05 474.8 (−105.6), SPR10 583.6 (+3.2).
+  This replaces "about 105-110 fewer".
+- Late huntTries against HUNT's 279.4: REF 206.6 (ratio 0.740), SPR05 227.0 (0.813), SPR10 308.8 (1.105). This replaces
+  "about a quarter less".
+- Wild own − 1 (others of its kind in its cell), seed range over every arm and state: 0.689-0.987. Wild own9 − own
+  (others in the eight cells around): 3.295-4.891. These replace "0.7-1.0 others", "4-6 others in its 3×3" and "adds
+  about four goats".
+- P3's "a little less crowded": late wild own, own9 and all9 are REF 1.789, 5.580, 5.874 and SPR05 1.840, 5.860, 6.106,
+  against HUNT's 1.871, 6.054, 6.054.
+
+**5. Wording (point 5).**
+- SPR10 seeds 3, 4 and 7 pass P1; "narrowly" is withdrawn. Their with-herder own9 is 5.830-6.642, against 4.099-5.613
+  in the failing seeds. Their wild own9 is 5.515-5.620, against 6.355-6.475.
+- The counter gives means of goat-weighted counts only. It cannot say how often a wild goat has, say, five or more
+  others in its cell. A rule's effect depends on that spread, not only on the mean.
+
+**For Chris, replacing f1c5f0a's paragraph (descriptive).** At midday a wild goat has 0.689-0.987 others of its kind in
+its cell and 3.295-4.891 more in the eight cells around (seed ranges over every arm and state; means only, not the
+spread). A goat walking with its herder stands on the herder's cell with the rest of the herd. That comes from grazeMove's
+pull against forage, not from a measured herd spacing. So its cell holds about one herd's head count: in REF's
+established herds, with-herder own 99.227-111.220 against a head count per managed camp-day of 96.6-108.7. In SPR10's
+small state, with-herder own is 4.098-6.639. Whether the one-cell herd is intended comes before sizing any nearby-goats rule. If it stays,
+such a rule on herd goats rises with the herd's head count, as herdLoad already does (the reviewer's reading,
+unchecked), and only the wild side is new.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

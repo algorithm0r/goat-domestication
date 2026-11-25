@@ -471,7 +471,31 @@ var World = class World {
     for (const g of this.goats) { if (g.dead) continue; g.step(this, 'day'); g.graze(this); }
     this.keepersRefetch();
     this.buildIndex(false);
+    if (s === PARAMETERS.daySteps >> 1) this.sampleDensity();    // goats per cell at midday (output only: no draws)
     this.humansHunt();
+  }
+
+  // Goats per cell at midday, from the index just built (2026-11-24, Chris: "how many goats are there per grid cell in
+  // wild vs herds"; "make spook chance increase with other goats nearby so this is not a herd only rule"). Output only:
+  // no draws. Classes (the reviewer's exp018 point 1): 0 wild (herd < 0); 1 with the herder (walksWithHerder, the goats a
+  // herder can spook); 2 kept at camp (sheltered kids, tethered or guarded goats); 3 other herd goats (kids following a
+  // mother, loose run-offs, captives being led). ys.density.c[c] = [goat-samples, sum over those goats of own-kind goats
+  // in its cell (wild for class 0, herd goats of any class otherwise), of all goats in its cell, own-kind goats in its
+  // 3×3 neighbourhood (the alarmSpread window; clipped at the map edge), all goats in it]. Counts include the goat itself.
+  // ys.density.cells = [cells holding a wild goat, cells holding a herd goat], summed over sample days.
+  sampleDensity() {
+    const cnt = this.goatCount, wc = this.wildCount, D = this.ys.density, d = D.c, goats = this.goats, W = this.W, H = this.H;
+    for (let k = 0; k < goats.length; k++) {
+      const g = goats[k]; if (g.dead) continue;
+      const c = g.herd < 0 ? 0 : g.walksWithHerder(this) ? 1 : !g.ledBy && (g.isSheltered() || g.isKeptAtCamp()) ? 2 : 3;
+      const i = g.y * W + g.x, w = wc[i], e = d[c];
+      e[0]++; e[1] += c === 0 ? w : cnt[i] - w; e[2] += cnt[i];
+      let a9 = 0, w9 = 0;
+      for (let y = Math.max(0, g.y - 1); y <= Math.min(H - 1, g.y + 1); y++)
+        for (let x = Math.max(0, g.x - 1); x <= Math.min(W - 1, g.x + 1); x++) { const j = y * W + x; a9 += cnt[j]; w9 += wc[j]; }
+      e[3] += c === 0 ? w9 : a9 - w9; e[4] += a9;
+    }
+    for (let i = 0; i < this.N; i++) { const w = wc[i]; if (w > 0) D.cells[0]++; if (cnt[i] > w) D.cells[1]++; }
   }
 
   duskSub(s) {
@@ -1935,7 +1959,7 @@ var World = class World {
       concOrigin: [[0, 0, 0, 0], [0, 0, 0, 0]], wildConc: [0, 0], capIn: [0, 0], capBred: [0, 0], looseDeaths: 0, selfMaintDays: 0, parentAge: [[0, 0, 0], [0, 0, 0]],
       firstSireAge: [[0, 0], [0, 0]],
       cohortBirth: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))), cohortBreed: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))),
-      selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, spooked: 0, alarmCaught: 0, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
+      selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, spooked: 0, alarmCaught: 0, density: { c: [0, 1, 2, 3].map(() => [0, 0, 0, 0, 0]), cells: [0, 0] }, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
       dried: 0, driedLost: 0, fodderLost: 0, gatherScored: 0, meatHunted: 0, huntScored: 0, shots: 0, shotKills: 0, altKills: 0, unmetQ: [0, 0, 0, 0], slaughterQ: [0, 0, 0, 0], herdQ: [0, 0, 0, 0], labourQ: [0, 0, 0, 0],
       roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0,
       herdBirths: 0, wildSired: 0, herdSires: this.camps.map(() => new Set()), herdConceptions: 0, chosenSired: 0,
