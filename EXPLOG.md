@@ -8660,6 +8660,300 @@ LOAD05, fixed load 0.5:
 - Over B, REF's captured / herd-born loss ratio is 1.756-2.890, against LOAD05's read median of 1.342.
 - No model change follows (descriptive batch).
 
+## exp020 follow-up, 2026-11-25: what happens after the spook (descriptive; no runs; exp020's 16 runs)
+**Question** (Chris, 2026-11-25: "check the run-off, rejoin and refetch R"). In REF's small herd (A) and climb (T), the
+herd-born goats that are lost have high R. Yet spooked herd-born goats have about the walking goats' R (spooked −
+walking A −0.0004, T +0.0010; the scored entry above). So which step after the spook selects them?
+
+**The chain, from the code** (src at 7cf6888; refetchRunOffs 2, runOffLoss 1, as in both arms):
+1. **Spook** (animals.js:368-371): at the rule's rate, herderAlarm × R × fear × load. It is logged as 'spooked'.
+2. **Bolt** (animals.js:394-407): the goat moves fleeSteps 3 cells straight away from the herder. Beyond keepRadius 2
+   it is loose, logged as 'ranOff'. **This step does not read R.**
+3. **While loose** (animals.js:286-295): it moves as a wild goat. checkAlarm (animals.js:259-263) makes it flee people
+   nearby at rate R × fearOfHumans. It rejoins, logged as 'rejoined', once it is back within keepRadius of the herder.
+   **Flight reads R and keeps a goat from rejoining.**
+4. **A keeper's attempt** (world.js:894-913): after chaseDelay 2 sub-ticks, within searchRange 6.
+   - If the goat is already within keepRadius, it is let go; this is not logged.
+   - Otherwise there is the approach test (world.js:875-878): at each step it bolts with chance min(1, stalkDetect
+     0.6 × R × fearOfHumans).
+   - It is 'refetched' if it passes and 'lostRun' if it bolts.
+5. **At dusk** (world.js:976-985): a herd goat beyond keepRadius is a stray. The herder makes the same approach test:
+   'lostNight' if it fails, brought back if it passes. Being brought back is not logged. lostNight also includes strays
+   that never ran off.
+
+**Measures** (a new committed tool, analysis's): exp020's 16 runs; phases A, T, B, C as exp020 (J from each run's
+annual rows); captured (o0) and herd-born (o1) apart. Per seed, and the median over seeds, per arm, phase and origin:
+- Counts and mean R of: walking goat-days (midday walk), spooked, ranOff, rejoined, refetched, lostRun and lostNight.
+- Mean R × fear where the ledger logs it: walking, spooked, ranOff, rejoined, refetched. The two loss flows log R
+  only.
+- Fates as shares of run-offs: rejoined, refetched and lostRun per ranOff. The remainder, 1 − their sum, covers the
+  unlogged fates: let go near a keeper, brought back at dusk, lost at dusk, died while loose, or still loose at year end.
+- The steps, as mean R differences:
+  - d1 = spooked − walking;
+  - d2 = ranOff − spooked;
+  - d3 = rejoined − ranOff;
+  - d4 = refetched − ranOff;
+  - d5 = lostRun − ranOff;
+  - d6 = lostNight − walking.
+- Checks before any reading:
+  - The counts equal the year rows' spooked, ranOff, rejoined, refetched and runOffLost.
+  - The ledger walk R equals what ledger_tab prints.
+  - The tool must fail on a planted case: one lostRun goat's R raised by 1 in one row moves d5 by the expected amount.
+
+**Expectation, written before reading** (from the chain above; descriptive, scored, no model change follows):
+- E1. d2 is near 0: |d2| < 0.01 in each phase, by origin, in 6+ of 8 REF seeds. The bolt does not read R.
+- E2. In REF's A and T, herd-born: d5 > 0 and d3 < 0, each in 6+ of 8 seeds. The goats that get away are lost above the
+  run-offs' mean, and the ones that come back on their own are below it.
+- E3. In REF's A and T, herd-born: d5 > d1 in 6+ of 8 seeds. The R that separates the lost is chosen after the spook,
+  not by it.
+- Reported beside these, not scored: d4; d6; the fate shares; LOAD05 by the same measures; R × fear by step.
+
+**What has been seen.** The scored entry above gave, on seed means, lost (run-off and night pooled) above walking in
+every phase and origin, and spooked − walking by phase. Nothing has been read by event (ranOff, rejoined, refetched) or
+by loss channel apart.
+
+## exp020 follow-up, note 2026-11-25 (analysis; before the tool reads any data): what had been seen is wider
+The prereg's "Nothing has been read by event" is wrong. ledger_tab's spook-filter table, in exp020's scored work,
+already printed:
+- per phase and origin, as seed means with ranges, the mean R of goats refetched and of goats that rejoined;
+- lostRun per ranOff by phase and origin.
+For example, REF herd-born: in A, refetched 0.706, rejoined 0.709, walking 0.710; in T, 0.498, 0.503 and 0.501. The J
+probe printed the same for REF s6 alone.
+
+These bear on E2's d3 and on the reported d4:
+- E1-E3 were written before the steward saw these numbers. Analysis sent them after fe1ba0d was committed.
+- E1-E3 stand unchanged, and the scored entry gives this disclosure beside E2.
+- Not yet seen: ranOff's R; lostRun's and lostNight's R apart; event R × fear; per-seed event R in the 15 runs other than
+  REF s6.
+
+## exp020 follow-up amendment, 2026-11-25 (before any event R is read; the reviewer's 580106a)
+**The chain, corrected** (src at 7cf6888, unchanged to HEAD; penning 1, alarmSpread 0, economy 0 in all 16 runs):
+- **Spook** (animals.js:368-371). Reads R × fearOfHumans × load.
+- **Bolt** (animals.js:394-407). Three steps, each to the neighbouring cell farthest from the herder by Chebyshev
+  distance, with 0.1 noise; river and edges block it. It reads no R. A goat beyond keepRadius 2 at the end is
+  'ranOff'. With alarmSpread 0, every ranOff is a spooked goat. Where it starts can still go with R.
+- **While loose** (animals.js:286-295, 312-322):
+  - The goat forages as a wild goat. The term that always acts is the escape preference, escapePrefW 0.1 × R ×
+    escape terrain (320).
+  - It flees people only near a hunter: humanField is set by hunters alone (world.js:466-472) and cleared at dusk
+    (553).
+  - It flees wolves at R × fearOfWolves (261).
+  - It rejoins on coming back within keepRadius of the herder.
+- **The herder's attempts** (world.js:894-913). With economy 0 the keeper is the herder himself (252). He makes one
+  attempt per day or dusk sub-tick (475, 560), on the nearest loose goat that has been loose chaseDelay 2 sub-ticks.
+  - A goat beyond searchRange 6 of him gets no attempt and stays loose (909).
+  - A goat within keepRadius is let go, unlogged.
+  - Otherwise the approach test reads R × fearOfHumans (875-878): the goat is 'refetched' or 'lostRun'.
+- **Dusk, penned** (world.js:976-985):
+  - A loose goat does not move at dusk (animals.js:290-291). The herd walks home.
+  - A herd goat off the camp cell is a stray (977). Its distance is measured from the camp (983).
+  - Beyond searchRange 6 of the camp it is lost without the test, whatever its R (984). Otherwise the approach test
+    reads R × fear, and it is lost ('lostNight') or brought in (unlogged).
+  - Goats kept at camp or sheltered that night, or of a camp with no herder that day, are cleared without the test
+    (976).
+  - Every surviving herd goat ends the night not loose (988), so no goat is loose at year end.
+- **Unlogged or unmarked fates of a run-off** (the remainder):
+  - let go near the herder;
+  - brought in at dusk;
+  - cleared without the stray test;
+  - lost at dusk (lostNight, which does not mark run-offs);
+  - died while loose (in 'died', unmarked; wolves hunt at dawn and dusk too, world.js:454, 559).
+
+**Measures, added and changed:**
+- **d0** = walking R − the herd-born stock's mean R at the previous year end (the ledger's stock; for o0 the captured
+  stock). Then lostRun − R̄₀ = d0 + d1 + d2 + d5, and lostNight − R̄₀ = d0 + d6. The loss channel's R
+  contribution is thereby split into steps.
+- **d7** = lostRun − refetched: the approach test, among goats the herder reached.
+- **d8** = (refetched + lostRun pooled) − ranOff: who stays loose until the herder goes after them.
+- **R × fear by step** is printed beside every d where the ledger logs it, since the spook, flight and approach test
+  read the product, not R.
+
+**Count floor.** A channel's mean R is read for a seed, phase and origin only with n ≥ 20 events (goat-days for
+walking; goats for the stock). A d is read only when both of its terms are read. A seed with a d unread counts as not
+holding. The tool prints how many seeds are read beside each verdict. Medians over seeds are descriptive; verdicts are
+per seed.
+
+**Expectations, as now scored** (REF; herd-born; A and T each; 6+ of 8 seeds, unread counting against):
+- **E1** is reported, not scored. It is a code check on the bolt, and the start position can go with R, so no
+  threshold is set.
+- **E2** stands as written in fe1ba0d: d5 > 0 and d3 < 0. The c4dd5dd disclosure (rejoined and refetched R had been
+  seen) goes beside it.
+- **E3** is replaced. **E3a:** d7 > 0; the approach test reads R × fear. **E3b:** d8 > 0; the escape preference reads
+  R while loose.
+- d5 > d1 is reported, not scored: it is nearly decided by the seen d1.
+- Reported, not scored: d0, d4, d6, fate shares, R × fear by step, the same for captured goats, and LOAD05.
+
+**Checks, added:**
+- lostNight count = escaped − runOffLost, from the year rows. In src, `escaped++` occurs only at world.js:887, 913
+  and 984.
+- The planted cases print the expected shift beside the observed one: one lostRun goat raised by 1 moves d5 by
+  1/n(lostRun). One planted on ranOff as well.
+- A phase-boundary bad case, as ledger_tab has.
+
+## exp020 follow-up amendment 2, 2026-11-25 (before any event R is read; the reviewer's 5145194 and 4aca6af)
+**a. How the cells combine.** A seed holds a scored expectation only if every one of its cells holds:
+- E2: d5 > 0 and d3 < 0, each in A and in T, herd-born;
+- E3a: d7 > 0 in A and in T;
+- E3b: d8 > 0 in A and in T.
+The verdict is the count of seeds that hold, 6+ of 8 needed, with any unread cell counting against. This is what
+fate_tab computes. The n ≥ 20 floor replaces analysis's reading choice 3. Choice 5 is moot: alarmLearn is 0 in all 16
+runs, so no spook teaches fear.
+
+**b. What d0 + d1 + d2 + d5 splits.** It splits the phase-pooled mean gap lostRun − R̄₀. It does not split the loss
+channel's printed contribution, which is summed per year over N. R̄₀ is pooled over a phase's years by goats:
+- the summed R of the origin's year-end stock in each year Y−1, over the phase's years Y;
+- divided by the summed stock count.
+d0 and d6 use the same R̄₀, so the identities are exact.
+
+**c. E2's d3 and E3b are read as one finding.** ranOff splits into rejoined, attempted (refetched + lostRun), let go
+near the herder, and the remainder. Unless the last two are large, d3 < 0 nearly forces d8 > 0. The fate shares are
+printed beside them.
+
+**d. E3b's sign is not fixed by the code.** The escape preference can push attempted goats' R either way:
+- up: high-R goats are pulled away and rejoin less;
+- down: high-R goats get beyond 6 of the herder and receive no attempt.
+It is a fair test because either direction is possible.
+
+**e. What was seen, extended.** The seed means already printed refetched R and pooled lost R (c4dd5dd). E2's d5 and
+d3, E3a's d7 and E3b's d8 are all built on those seen terms, so their signs on seed means were largely visible
+beforehand. The test is the per-seed count. The scored text says so beside each verdict.
+
+**f. What the floor does.** n ≥ 20 guards against near-empty cells, not against noise in the hundredths. The evidence
+is the count of seeds, 6 of 8.
+
+## exp020 follow-up note, 2026-11-25 (before any event R is read; the reviewer's 21c9249)
+Amendment 2's "This is what fate_tab computes" was wrong. fate_tab's working copy scored each cell separately: a cell
+held if it held in 6+ of 8 seeds. The rule registered in point a stands: **per seed**. A seed holds only if all its cells
+hold, and 6+ of 8 such seeds are needed. It is the stricter rule. fate_tab is to be changed to it before any event R is
+read.
+
+## exp020 follow-up results (scored): what happens after the spook
+Scored by the analysis session, 2026-11-26, as registered: fe1ba0d, its note c4dd5dd, amendment ecc681e, and
+amendment 2 f0e1d2e (with the steward's d5e3c57). Every number below is printed by a committed tool. Values are the
+median over seeds (min to max), or a count of seeds, as the tool prints them. Where a sentence compares two printed
+values, the comparison is mine; no derived number is computed.
+
+**Command** (tools/fate_tab.py at abf22cc; the reviewer passed 77fdfa4 in 48aa5c7, and 87b7bd5 and abf22cc add its
+two minors and one label; through cpuslot):
+`python tools/fate_tab.py results/exp020_ledger-early REF,LOAD05 --perseed`.
+The output is in results/exp020_ledger-early/analysis/fate_tab.txt.
+
+**Checks** (the tool stops on any failure; outputs in analysis/fate3_*.txt and fate4_*.txt):
+- On all 16 runs:
+  - per row, the ledger's spooked, caught, ranOff, rejoined, refetched and lostRun counts equal the year row's
+    spooked, alarmCaught, ranOff, rejoined, refetched and runOffLost;
+  - lostNight = escaped − runOffLost in every row;
+  - ledger_tab's row checks pass;
+  - walking mean R equals ledger_tab's in every seed, phase and origin, to 1e-12;
+  - the phases cover 401 to the last year, with no gaps or overlaps.
+- Settings in both arms: alarmSpread 0, so every ranOff is a spooked goat; alarmLearn 0, so no spook teaches fear;
+  penning 1; economy 0.
+- J and phases are ledger_tab's, the same as the exp020 scored entry.
+- The selftest passes. Each of its five bad cases fails: a camp dropped, d5 taken against the wrong step, the floor
+  lowered to 1, phase B starting at J, and the verdict rule. The rule case has two cells each holding in 6 of 8 seeds,
+  but in different seeds, so only 4 seeds hold both.
+- On the data, four bad cases stop the tool: walk R shifted by 1e-6, one ranOff count added, one lostNight count
+  added, and B starting at J.
+- Two plants on REF s1, phase A, herd-born, each move the steps by exactly the 1/n printed beside them:
+  - one lostRun goat's R raised by 1 (n 4525) moves d5 and d7 by +0.000221;
+  - one ranOff goat's R raised by 1 (n 34236) moves d2 by +0.000029, and d3, d4, d5 and d8 by −0.000029.
+
+**The floor.** A channel's mean R is read for a seed, phase and origin only with n ≥ 20: goat-days for walking, goats
+for an event or flow, and for the year-end stock the summed year-end count over the phase (goat-years). That is the
+same sum amendment 2 b uses to pool R̄₀. A step is read only when both its terms are. In REF every channel is read in
+every seed, phase and origin. In LOAD05, phase A is mostly unread: its herd is near-empty there.
+
+**R̄₀** is pooled by goats (amendment 2 b): the summed R of the origin's stock at each year Y−1 end, over the phase's
+years Y, divided by the summed count.
+
+**Verdicts** (REF, herd-born; a seed holds only if every cell holds; 6+ of 8 seeds; an unread cell counts against; all
+8 seeds are read in every cell):
+- **E2 fails: 0 of 8 seeds hold.**
+  - d5 > 0 holds in A in 8 of 8 seeds and in T in 8 of 8.
+  - d3 < 0 holds in A in only 3 of 8 (s3, s4, s6) and in T in only 1 of 8 (s1).
+  - Beside it, as amendment 2 e asks: refetched and rejoined R, as seed means, and lost R pooled over run-off and
+    night had been printed before scoring (c4dd5dd), so the signs on seed means were largely visible. The per-seed
+    count is the test.
+- **E3a holds: 8 of 8 seeds.** d7 > 0 in A and in T in every seed.
+  - Beside it: refetched R on seed means and lost R pooled had been printed; lostRun apart had not. The per-seed count
+    is the test.
+- **E3b fails: 2 of 8 seeds hold** (s4 and s8).
+  - d8 > 0 holds in A in 4 of 8 seeds and in T in 5 of 8.
+  - Beside it: refetched R and pooled lost R had been printed; ranOff R had not. The per-seed count is the test.
+- **The fates beside d3 and d8** (amendment 2 c), herd-born, per seed:
+  - rejoined per ranOff is 0.201-0.211 in A and 0.197-0.205 in T;
+  - attempted (refetched + lostRun) is 0.694-0.703 in A and 0.691-0.701 in T;
+  - the rest is 0.092-0.097 in A and 0.097-0.105 in T.
+  - d3 and d8 are both near 0. Their signs differ in A s8 and in T s2, s4, s7 and s8, so the two failures are not one
+    sign read twice.
+- **Reported, not scored:**
+  - E1: d2 (ranOff − spooked) lies between −0.0009 and +0.0008 in every REF seed, phase and origin. Herd-born: A
+    −0.0001 to +0.0003, T −0.0003 to +0.0002. ecc681e struck the threshold.
+  - d5 > d1 in A in 8 of 8 seeds and in T in 8 of 8.
+
+**Where the lost herd-born goats are selected** (Chris's question; descriptive). REF, herd-born, the steps over A and T
+(median, with the min to max over seeds):
+
+| step | A | T |
+|---|---|---|
+| d0 walk − R̄₀ | −0.0005 (−0.0017 to −0.0002) | −0.0012 (−0.0020 to −0.0003) |
+| d1 spooked − walk | −0.0000 (−0.0119 to +0.0090) | +0.0013 (−0.0084 to +0.0075) |
+| d2 ranOff − spooked | +0.0000 (−0.0001 to +0.0003) | +0.0000 (−0.0003 to +0.0002) |
+| d3 rejoined − ranOff | +0.0014 (−0.0039 to +0.0023) | +0.0011 (−0.0017 to +0.0027) |
+| d8 (refetched + lostRun) − ranOff | −0.0002 (−0.0008 to +0.0017) | +0.0001 (−0.0007 to +0.0005) |
+| d7 lostRun − refetched | +0.0172 (+0.0095 to +0.0258) | +0.0273 (+0.0149 to +0.0573) |
+| d5 lostRun − ranOff | +0.0141 (+0.0068 to +0.0216) | +0.0235 (+0.0122 to +0.0498) |
+| d4 refetched − ranOff | −0.0034 (−0.0057 to −0.0014) | −0.0039 (−0.0075 to −0.0027) |
+| d6 lostNight − walk | +0.0026 (−0.0075 to +0.0169) | +0.0077 (−0.0055 to +0.0133) |
+
+- Walking goats sit slightly below the herd-born stock's mean, in every seed (d0).
+- The spooked goats sit at the walking goats' R (d1). In R × fear they sit above, in every seed: d1 in R × fear is
+  +0.0024 (+0.0004 to +0.0037) in A and +0.0016 (+0.0003 to +0.0031) in T. So the spook takes the more fearful
+  walkers, not the higher-R ones.
+- The bolt changes nothing (d2).
+- The goats that come back on their own are not below the run-offs: d3 < 0 in only 3 of 8 seeds in A and 1 of 8 in T.
+  The goats the herder reaches are at the run-offs' mean (d8).
+- The separation comes after the herder reaches a goat. Those lost there are above those fetched back in every seed
+  (d7). This is the approach test (world.js:875-878), whose bolt chance reads R × fear at each step, over the steps to
+  the goat (world.js:912).
+- These measures do not split d7 between R, fear and distance: lostRun logs R only, and the distance is not logged.
+- Mean R, A / T: ranOff 0.713 / 0.498, refetched 0.708 / 0.494, lostRun 0.731 / 0.525.
+- R × fear: the ledger logs it for refetched but not for lostRun. Refetched − ranOff in R × fear is −0.0014 (−0.0016 to
+  −0.0012) in A and −0.0010 (−0.0014 to −0.0008) in T.
+- Night strays lost (d6) sit above walking on the median, but the range spans zero in A and T. lostNight also counts
+  strays that never ran off, and strays beyond 6 cells are lost whatever their R (ecc681e).
+- Later phases (descriptive):
+  - The same pattern holds in B and C: d7 is +0.0307 in B and +0.0698 in C.
+  - The spook itself starts to select: d1 is +0.0160 in B and +0.0464 in C, against A −0.0000 and T +0.0013.
+
+**LOAD05** (descriptive):
+- In A, the herd is too small for most cells to be read: 0 to 7 seeds per cell.
+- In T and B, herd-born, the pattern is the same and smaller:
+  - d7 is +0.0070 (+0.0051 to +0.0180) in T and +0.0105 (+0.0032 to +0.0209) in B;
+  - d5 is +0.0056 in T and +0.0087 in B;
+  - d3 is +0.0008 in T and +0.0001 in B;
+  - d8 is −0.0001 in T and −0.0000 in B.
+- Spooked goats already sit above walking in T: d1 is +0.0071 (+0.0032 to +0.0141) in T and +0.0078 in B.
+
+**For Chris:**
+- In REF's small herd (A) and climb (T), of the goats lost on the run, the step that picks out the high-R herd-born
+  ones is the herder's attempt to fetch a run-off.
+- Among the run-offs he reaches, the ones that bolt and are lost are higher in R than the ones he brings back, in every
+  seed. These measures do not say how much of that is R itself, fear, or the distance he has to close.
+- The spook, the bolt, which run-offs come back on their own, and which ones he reaches do not separate them in R. The
+  spook does take the more fearful walkers.
+- Night losses are a separate channel and are not covered by this answer: lostNight is 1007 against lostRun 1884 in A,
+  and 1343 against 1887 in T (medians). Its d6 spans 0.
+- E2 and E3b therefore fail, and E3a holds.
+- After the herd takes off (B, C), the spook itself also starts to favour high-R goats.
+
+## exp020 follow-up, correction 2026-11-26 (steward; after results; no verdict changes)
+Amendment 2 point c (f0e1d2e) said that unless the let-go and remainder fates are large, d3 < 0 nearly forces d8 > 0,
+and read the two as one finding. That is false. The remainder is 0.09-0.11 of run-offs. With d3 and d8 both near 0,
+their signs differ in five cells: A s8; T s2, s4, s7 and s8 (scored entry above). The point came from the reviewer's
+4aca6af c and was registered by me without a check. E2 and E3b were scored separately, as the rule in point a says, so
+no verdict depends on it.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
