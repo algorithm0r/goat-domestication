@@ -808,7 +808,7 @@ var World = class World {
         h.meat += P.meatYield * prey.size;
         h.attemptsLeft = 0;                                        // one carcass a day
         const kid = prey.orphan();                                  // her orphaned kid is taken home alive (one of a litter)
-        if (managing && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id))) this.capture(kid, h);
+        if (managing && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id))) this.capture(kid, h, true);
       } else { prey.alarmed = true; prey.learnFear('fearOfHumans', 1); }
     }
   }
@@ -839,7 +839,7 @@ var World = class World {
       h.meat += P.meatYield * prey.size;
       h.attemptsLeft = 0;                                        // one carcass a day
       const kid = prey.orphan();
-      if (this.managing() && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id))) this.capture(kid, h);
+      if (this.managing() && P.captureOrphans && this.year < P.captureUntil && kid && !kid.dead && kid.herd < 0 && this.herdCount[h.camp.id] < P.herdTarget && !(P.captureTaper && this.selfMaint(h.camp.id))) this.capture(kid, h, true);
       return true;
     }
     prey.learnFear('fearOfHumans', 1);
@@ -931,12 +931,16 @@ var World = class World {
   }
 
   // A captive joins the camp's herd and is led home by the hunter (walking with him).
-  capture(g, h) {
+  capture(g, h, orphan = false) {   // orphan: a hunted doe's kid (output counters only)
     const c = h.camp;
     g.herd = c.id; g.capturedYear = this.year; g.gsc = 0; g.pgs = 0; g.wv = null; g.ledBy = h; this.ys.captured++; this.ledgerFlow(c.id, 'cap', g);
     g._kidsAtYearStart = g.kids;                                 // the camp record counts only kids born in the herd
     g.seen = [0, 0, 0]; g.seenFrom = this.year * PARAMETERS.yearDays + this.day;   // the herder starts watching it
-    this.ys.capturedR += g.tr[T_R];
+    this.ys.capturedR += g.tr[T_R]; this.ys.capturedFear += g.fearOfHumans;   // fear it brings from the wild (output only)
+    if (orphan) { this.ys.capturedOrphans++; this.ys.capturedFearOrphan += g.fearOfHumans; }
+    if (g.tr[T_R] * g.fearOfHumans >= PARAMETERS.captureFear) this.ys.capturedHi++;   // would be tethered on arrival, before the switch
+    if (PARAMETERS.capturedFearSet >= 0) g.fearOfHumans = PARAMETERS.capturedFearSet;   // exp021's switch; no draw
+    if (g.tr[T_R] * g.fearOfHumans >= PARAMETERS.captureFear) this.ys.capturedHiAfter++;   // after it
     g.capBred = false; this.ys.capIn[g.sex]++;                    // captive fate (2026-11-20, output only): bred yet, at conception below
     h.captive = g; h.hunting = false; h.attemptsLeft = 0; this.herdCount[c.id]++;
   }
@@ -986,6 +990,7 @@ var World = class World {
         }
       }
       g.loose = false;
+      if (g.isTethered()) ys.tetheredDays++;                     // goat-nights tethered (output only; exp021)
       g.habituate();
       if ((P.cullRule === 'attack' || P.sireRule === 'gentle') && rand() < P.buttRate * g.tr[T_A]) g.seen[2]++;   // butts the herder (seen only; no draw otherwise)
       members[g.herd].push(g);
@@ -2014,7 +2019,7 @@ var World = class World {
       cohortBirth: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))), cohortBreed: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))),
       selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, spooked: 0, alarmCaught: 0, density: { c: [0, 1, 2, 3].map(() => [0, 0, 0, 0, 0]), cells: [0, 0] }, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
       dried: 0, driedLost: 0, fodderLost: 0, gatherScored: 0, meatHunted: 0, huntScored: 0, shots: 0, shotKills: 0, altKills: 0, unmetQ: [0, 0, 0, 0], slaughterQ: [0, 0, 0, 0], herdQ: [0, 0, 0, 0], labourQ: [0, 0, 0, 0],
-      roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0,
+      roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0, capturedFear: 0, capturedOrphans: 0, capturedFearOrphan: 0, capturedHi: 0, capturedHiAfter: 0, tetheredDays: 0,
       herdBirths: 0, wildSired: 0, herdSires: this.camps.map(() => new Set()), herdConceptions: 0, chosenSired: 0,
       killoff: CAUSE_NAMES.map(() => [new Array(16).fill(0), new Array(16).fill(0)]),
       herdKilloff: [new Array(16).fill(0), new Array(16).fill(0)], herdDeaths: new Array(CAUSE_NAMES.length).fill(0), wolfAtk: {},

@@ -8954,6 +8954,181 @@ their signs differ in five cells: A s8; T s2, s4, s7 and s8 (scored entry above)
 4aca6af c and was registered by me without a check. E2 and E3b were scored separately, as the rule in point a says, so
 no verdict depends on it.
 
+## exp021 — Does the fear a captive brings to the herd decide whether the herd closes: REF with captives arriving habituated, LOAD05 with captives arriving naive?
+**Pre-registered:** 2026-11-26. Mongo animalDomestication.exp021_capture-fear; results/exp021_capture-fear; job list
+tools/exp021.jsonl.
+
+**Why.** Chris: "why does REF domesticate and LOAD not?" The selection is not what separates the arms:
+- Both arms have the retrieval filter. Lost run-offs sit above those fetched back in both (exp020 follow-up: d7, REF
+  T +0.027, LOAD05 T +0.007).
+- What differs is closure. REF's captive-sire share is 0.064 and its depth 14.69; LOAD05's are 0.333 and 3.95 (exp010).
+- In REF, captives are lost 1.8-2.9 times as fast as herd-born goats over B; in LOAD05, about 1.3 times (exp020 P3).
+- "Captives are lost faster because they have high R" is circular (Chris). A cause outside the loop is learned fear
+  of humans (not genetic):
+  - A captive arrives with whatever fear it learned in the wild, and as an adult habituates at habAdult 0.02 a day
+    toward fearMin 0.05 (animals.js:526-528).
+  - A herd kid starts from its mother's fear (animals.js:68) and habituates at habKid 0.1 inside its window.
+  - The spook and the retrieval test both read R × fearOfHumans.
+- **Hypothesis H:** the load decides whether captives get through their fearful months.
+  - At a low load they settle and breed, so the herd stays open.
+  - At a high load they are lost first, so it closes.
+  - REF starts at the low load and rises, so it builds a calm core, then closes.
+- **Chris's objection:** H works only if the wild is already separate from the herd.
+  - With alarmLearn 0, as in these runs, fear of humans never rises again (learnFear, animals.js:558, is the only path
+    up).
+  - Kids copy their mother's fear.
+  - So an escaped herd goat and its wild-born line stay tame. LOAD05's wild is 84% herd-descended (wildHerdShare
+    0.844), against REF's 0.128, so LOAD05's captives may arrive tame.
+  - The two arms below set captive fear by hand at capture, so it no longer depends on the wild.
+
+**The code change** (output and one switch; src/params.js, src/world.js capture(), src/datamanager.js):
+- capturedFearSet (default -1, off): when it is 0 or more, a captive's fearOfHumans is set to it at capture. This
+  includes orphans taken with their mother. There is no draw either way.
+- A new year-row field, capturedFear: the mean fearOfHumans that captives bring at capture, before the switch. It is
+  output only.
+- A probe checks before queueing that, with the switch off, runs are identical to exp020's REF s1 and LOAD05 s1 over
+  their common years.
+
+**Arms** (seeds 1-8, 4000 years; settings as exp018 REF and exp010 LOAD05, as in tools/exp020.jsonl without the
+exp020 log switches):
+- **REFc:** REF at this code, with the switch off. This is the baseline and the identity check against exp018's REF.
+- **LOAD05c:** LOAD05 (herdPerHerder 1e9, minLoad 0.5) at this code, with the switch off. This is the baseline and the
+  identity check against exp010's LOAD05.
+- **CAPTAME:** REF with capturedFearSet 0.05. Captives arrive habituated.
+- **CAPWILD:** LOAD05 with capturedFearSet 1. Captives arrive naive.
+The baselines are rerun because only runs at this code record capturedFear.
+
+**A confound, named.** tetherNew is 1 in both arms. A goat with R × fear ≥ captureFear 0.35 stays tethered at camp
+until it habituates, and can't be spooked meanwhile (animals.js:251-253).
+- In CAPTAME a captive is never tethered.
+- In CAPWILD nearly every captive is tethered at first.
+So each arm changes both how spookable captives are once walking and how long they are kept at camp first. This batch
+does not separate the two.
+
+**Measures** (analysis; window 3201-4000, the standing measures as exp010): load_tab, jump_tab, split_tab and
+flow_tab, giving:
+- establishment and herd size;
+- R gap and breadth;
+- captive-sire share (csire), depth and wildHerdShare;
+- run-off, fetched-back and lost rates per herd goat-year.
+Each treatment arm is paired by seed against its own baseline. Also printed, from the year rows:
+- capturedFear over 401-1000 and over 3201-4000, per arm;
+- wild fear of humans, (goats × learnedFear.humans − herded × herdFearOfHumans) / (goats − herded), if the analysis
+  tool confirms those field meanings.
+
+**Predictions** (under H; a seed is read only if both it and its baseline seed are established):
+- **P1, CAPTAME against REFc:** in 6+ of 8 seeds, csire is higher and the R gap is less negative by 0.20 or more.
+- **P2, CAPWILD against LOAD05c:** in 6+ of the seeds read, csire is lower and the R gap is more negative by 0.05 or
+  more. If CAPWILD establishes in 2 or fewer seeds, P2 is not read, and that outcome is reported as "naive captives
+  prevent a herd at load 0.5".
+- **P3, descriptive, not scored:** capturedFear over 3201-4000 is lower in LOAD05c than in REFc. This is Chris's
+  point: LOAD05's captives come from a tame wild.
+
+**Decision rule:**
+- P1 and P2 both hold: captive fear is a lever on closure, and closure, not the filter, separates REF from LOAD05. The
+  tether confound is then the next question.
+- Neither holds: learned captive fear is not what closes REF's herd. Look next at captive R or at capture inflow.
+- One holds: report which, and do not read H as settled.
+No model change follows from this batch.
+
+## exp021 amendment, 2026-11-26 (before any run queued; the reviewer's ca1b186, 9931e0d)
+**1. Fear of humans does rise again. The prereg was wrong.**
+- forgetFear (animals.js:555-558) relaxes every goat's fear toward 1 each day, at forgetRate 0.002 (world.js:1595), a
+  half-life of about a year.
+- learnFear for humans fires without the alarmLearn gate:
+  - after a failed capture, 0.5 (world.js:778, 785);
+  - after being hunted and missed, 1 (812, 845);
+  - on witnessing a kill, 0.5 (807).
+- So an escaped goat and its wild line regain fear within a year or two. wildHerdShare 0.844 is a share of the genome,
+  not of tameness.
+- A herd adult settles where nightly habituation, habAdult 0.02 toward fearMin 0.05 (world.js:990), meets daily
+  forgetting toward 1. That is above fearMin.
+- Chris's objection is restated: captives come from the wild LOAD05 has, whatever its fear is; it is not assumed tame.
+  P3 measures captive fear directly and is the test of it.
+
+**2. Tethering, and what CAPWILD can show.**
+- isTethered is recomputed every sub-tick (animals.js:253), and a goat kept at camp is never spooked (273-275).
+- So a captive arriving with R × fear ≥ captureFear 0.35 starts walking at about 0.35, whatever its arrival fear.
+  Fear above the threshold changes only how long it is kept at camp.
+- CAPTAME puts captives straight into the walking herd at fear 0.05 and tests H directly.
+- CAPWILD changes walking fear only for captives that would have arrived below 0.35.
+- **Registered:** CAPWILD is read against H only if, in LOAD05c over 3201-4000, fewer than half of captives arrive at
+  or above 0.35 (capturedHi / captured < 0.5). Otherwise a failed P2 is "not read against H", and P2 is reported as
+  descriptive.
+- The confound is not split in this batch: no tetherNew 0 pairs. CAPTAME carries the test. A split is a later batch if
+  CAPTAME bears H out.
+- **New output fields,** with no draw (world.js capture(), herdNight; datamanager.js):
+  - capturedHi and capturedHiAfter: captives at R × fear ≥ captureFear at capture, before and after the switch;
+  - tetheredDays: goat-nights tethered per year;
+  - capturedOrphans and capturedFearOrphan: orphans, reported apart, since they are taken when the hunter kills the
+    mother (world.js:811, 842).
+
+**3. Thresholds, on one scale.** REF's R gap is −0.636 and LOAD05's −0.104, a difference of 0.532.
+- P1 and P2 each ask the treatment arm to move its R gap by 0.20 or more toward the other arm (about 38% of the
+  difference), in 6+ of 8 seeds.
+- csire must move in the predicted direction by 0.05 or more (the difference is 0.333 − 0.064 = 0.269).
+- An unestablished CAPTAME seed counts against P1. P2 reads only seeds that are established in both arms.
+
+**4. The decision rule, narrowed.** If P1 and P2 hold, captive fear is a lever on closure and on the R gap. The
+prereg's "closure, not the filter, separates REF from LOAD05" is struck. The filter's size also differs between the
+arms (d7 T +0.027 against +0.007).
+
+**5-7.**
+- The wild-fear formula's fields hold (datamanager.js:121, 150, 151, 178).
+- 4000 years. A treatment seed and its baseline seed share settings and seed until the first capture, and diverge
+  after it, so the pairs are effectively independent.
+- The job list is tools/exp021.jsonl, committed with this amendment.
+- The figures quoted from exp020 are its P3 ratios: REF 1.756-2.890 against LOAD05's read median 1.342.
+
+## exp021 results (raw)
+32 of 32 runs are complete (complete: true, 1333 rows each, years 2-3998, kept every 3rd year). Every run exited 0
+(cpuslot-logs/, batch 1795719333013382200). No log has an error, exception or warning; each carries the db client's
+packet-size advisory (over its 4 MB suggestion), which does not stop the save. No run went extinct.
+- Arms as registered, 8 seeds each: REFc, LOAD05c, CAPTAME, CAPWILD. Across the 32, parameters differ only in id,
+  seed, capturedFearSet (REFc and LOAD05c −1, CAPTAME 0.05, CAPWILD 1), and herdPerHerder and minLoad (REFc and
+  CAPTAME 20 and 0.25; LOAD05c and CAPWILD 1e9 and 0.5).
+- Against exp018's REF s1 and exp010's LOAD05 s1, the only parameter differences are keys added since, at their
+  defaults: capturedFearSet −1, the log switches (logLedger 0, the five of exp020 amendment 3 at 1), and in LOAD05
+  alarmSpread 0, spookFixed 0 and spookSchedule "". The identity check below shows none of them changes a run.
+- Hosts: 21 on the desktop, 11 on mint (REFc s6-8, LOAD05c s2, s3 and s5, CAPTAME s4, s7 and s8, CAPWILD s7 and s8).
+  Run times 9215-15026 s.
+- Ten of the eleven mint logs also say "NOT copied" for sibling files that earlier mint runs had already copied back. Each run's own
+  file was copied back, and every baseline passes the identity check below.
+
+**Commit.** All 32 are stamped v0.1.0-398-gfe2f739, dirty false. `git diff --stat 7b0346a fe2f739` over src,
+tools/runyears.mjs and tools/load.mjs is empty: fe2f739 touched notes/review only. So the code is the amendment's.
+
+**Packet size.** Each packet is 9.7 MB of BSON (the db client's measure in each log). No packet carries storeError.
+The JSON copies are 6,228,482-6,270,059 bytes on disk.
+
+**Identity** (registered; tools/cmp_years.py --by-year, which also pairs hist and histHerd by histYears; output in
+results/exp021_capture-fear/checks/identity.txt):
+- REFc s1-8 against exp018's REF: 1333 records each (years 2-3998), 77 shared keys, 0 differ.
+- LOAD05c s1-8 against exp010's LOAD05: 1333 records each (years 2-3998), 68-74 shared keys, 0 differ.
+- hist and histHerd: 266 rows each (years 14-3989), 12 traits, 0 differ, in all 16.
+- Only in this batch: capturedFear, capturedFearOrphan, capturedHi, capturedHiAfter, capturedOrphans and tetheredDays,
+  and in LOAD05c also the fields exp010 predates.
+- So the baselines are exp018's REF and exp010's LOAD05 runs, with the new counters added.
+
+**The treatment arms depart from their baselines at the first capture** (tools/cmp_years.py --by-year; output in
+results/exp021_capture-fear/checks/divergence.txt): in every seed, CAPTAME against REFc and CAPWILD against LOAD05c
+agree on the 133 records over years 2-398 and differ on all 1200 from year 401 on.
+
+**The probes** (results/_scratch/exp021_probe; 470 years, seed 1, at 7b0346a; output in
+results/exp021_capture-fear/checks/probes.txt):
+- REFc470 against exp020's REF s1 and LOAD05c470 against exp020's LOAD05 s1: 470 records (years 0-469), 72 shared
+  keys, 0 differ; hist and histHerd 94 rows, 0 differ.
+- Each of the four probes against the batch's seed 1 of its arm: 156 records (years 2-467), 83 shared keys, 0 differ;
+  hist and histHerd 31 rows, 0 differ. The batch reproduces the probes.
+- The folder also holds LOAD2prov_seed3.json (v0.1.0-157), an older unrelated file.
+
+**Disclosure for the scored entry.** The steward read the probes' new counters over years 401-469 in seed 1 before
+the batch was queued, with an inline script (so no number from it is recorded here). Seen:
+- In both baselines, most captives arrived at or above captureFear (capturedHi close to captured).
+- CAPTAME's capturedHiAfter was 0 and its tetheredDays near 0; CAPWILD's capturedHiAfter equalled its captured.
+- The steward told Chris the first point, as early and seed 1 only. The CAPWILD reading rule is read over 3201-4000,
+  which no one has seen.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

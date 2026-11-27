@@ -251,6 +251,8 @@ var PARAMETERS = {
   offtakeRate: 0.1,       // share of the herd slaughtered for meat per year (chosen by cullRule); an experimental variable
   captureRate: 0.2,       // chance per hunting attempt that a hunter tries to take a goat alive instead (from herdingAt)
   captureFear: 0.35,      // tethering: a herd goat with R × fearOfHumans at or above this stays tethered
+  capturedFearSet: -1,    // >= 0: a captive's learned fearOfHumans is set to this at capture (2026-11-26, exp021: 0.05 = arrives
+                          // habituated, 1 = arrives naive); -1 (default) keeps what it learned in the wild. No draw either way
   captureSteps: 3,        // approach steps to seize a goat alive (each: bolt with stalkDetect × R × fearOfHumans)
   searchRange: 6,         // cells a herder will go back for a stray; beyond it the stray is lost
   captureOrphans: 1,      // a doe's nursing kid is taken alive when she is hunted
