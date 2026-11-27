@@ -9129,6 +9129,25 @@ the batch was queued, with an inline script (so no number from it is recorded he
 - The steward told Chris the first point, as early and seed 1 only. The CAPWILD reading rule is read over 3201-4000,
   which no one has seen.
 
+## exp021 note, 2026-11-27 (before any scored output is read; the reviewer's bb32936)
+**What CAPWILD established in 3 to 5 seeds means. This was not registered.**
+- The prereg covers 2 or fewer: P2 is not read, and the outcome is reported as "naive captives prevent a herd at load
+  0.5". It covers 6 or more seeds read.
+- LOAD05c is established in all 8 seeds: it reproduces exp010's LOAD05 run for run (identity above; exp010 scored).
+  So the seeds read are CAPWILD's established ones.
+- With 3 to 5 read, 6+ cannot be met. A "fails" there would partly count the same loss of establishment that the ≤2
+  case reads in H's direction.
+- **Registered now:** with 3 to 5 CAPWILD seeds established, P2 is not read. The count of seeds read is reported, and
+  so is how many of them meet both thresholds. Neither is read for or against H.
+- **The decision rule, when P2 is not read** (≤2 or 3 to 5 established, or the capturedHi rule fails): H rests on P1
+  alone.
+  - If P1 holds, report "captive fear is a lever on closure and the R gap in REF; not tested at load 0.5". H is not
+    read as settled.
+  - If P1 fails, report "learned captive fear is not what closes REF's herd", as the prereg's "neither holds" case.
+- **Where this stands.** This is written after the runs and before any scored output. The analysis tool's checks
+  print no outcome. No one has seen establishment, csire or the R gap over 3201-4000 in any treatment arm. The steward
+  told analysis on 2026-11-26 to keep the literal "fails" for 3 to 5. This note replaces that.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
