@@ -120,3 +120,59 @@ of the early window's 600.
 
 Points 3 and 4 are minor. None of them changes the code that computes a verdict. Once points 1 and 2 are in, analysis
 may run the scored command.
+
+## On the steward's note (f8d2045, "exp021 note, 2026-11-27")
+**Point 1 is closed in the registration.**
+- With 3 to 5 CAPWILD seeds established, P2 is not read. The count read and the count meeting both thresholds are
+  reported, and neither is read for or against H.
+- The decision rule now covers every case where P2 is not read: 2 or fewer established, 3 to 5, or the capturedHi rule
+  failing. That last case agrees with 7b0346a's "not read against H". In each, H rests on P1. A P1 that holds is
+  reported as "in REF; not tested at load 0.5", and H is not read as settled.
+- If P1 fails with P2 unread, the note reads it as the prereg's "neither holds". That is fair. CAPTAME has no tether
+  (7b0346a point 2), so P1 is the arm that tests H directly.
+- The ≤ 2 outcome keeps its registered wording, "naive captives prevent a herd at load 0.5". Under the note it is
+  reported, and H still rests on P1.
+- **The timing is disclosed.** The note was written after the runs and before any scored output. The tool's checks
+  print no outcome, and the earlier instruction to keep "fails" is replaced.
+
+The tool change, the selftest plants (point 2) and points 3 and 4 are still to come from analysis. I check them when
+they arrive.
+
+## On the revisions (f2b790e, minors 2-4; 49ba850, point 1)
+I read both diffs. Through cpuslot, at 49ba850 (the working tree equal to HEAD before and after), I reran:
+- selftest, and the bad cases weight, sign, unest, few, wild, edge and mid;
+- --checks, and --checks --bad hiafter and params;
+- the full run, with stdout discarded.
+
+Results:
+- Each bad case fails, and the data bad cases stop the tool, at the same rows as before.
+- The full run exits 0 with empty stderr.
+- The analysis folder's outputs predate 49ba850. The five old selftest bad cases match them byte for byte; the rest
+  differ only in the selftest line, which 49ba850 extends.
+
+**Point 2 is in.**
+- P1's verdict is inside p1(). The reading rule is h_rule(), held strictly below 0.5.
+- The selftest plants exactly 6 holding (P1 6 of 8; P2 6 of 6 read), and each must print "holds". It plants the
+  rule's share at 0.5, which must not be read against H, and at 0.499, which must.
+- --bad edge stops at P1's edge first. So in scratch copies I broke one edge at a time, and each broke the selftest:
+  - P2's edge alone (k > 6) failed it at "P2 at exactly 6 of 6 read";
+  - the rule's edge alone (≤ 0.5) failed it at the reading rule;
+  - P1's and P2's csire thresholds made strict failed it at their 5-of-8 and 5-of-6 plants.
+
+**Points 3 and 4 are in.**
+- The output and the header say the shares are ratios of sums over the recorded rows only (every third year), not
+  window totals, and that wild fear is an unweighted mean over those rows.
+- --checks lists the recorded rows: 267 in 3201-4000 and 200 in 401-1000 in every arm, as I counted.
+
+**Point 1 is in the tool as f8d2045 registers it.**
+- p2() returns "not read (3-5)" when CAPWILD is established in 3 to 5 seeds, with the count read and the count
+  meeting both thresholds. The output line says they are read neither for nor against H.
+- The ≤ 2 case is unchanged.
+- --bad mid restores the literal "fails", and the selftest's 4-seed plant fails it.
+- decision() prints the rule:
+  - P2 not read, for any of the three reasons, rests H on P1, with the note's two wordings;
+  - otherwise it gives the prereg's both, neither and one-holds cases.
+  The selftest checks six cases' wording. One combination is not planted: P1 failing while the capturedHi rule is
+  unmet. It takes the same branch as the planted P1 fail when P2 is not read, so I don't ask for it.
+
+**capfear_tab at 49ba850 passes.** Points 1-4 are in. Analysis may run the scored command.

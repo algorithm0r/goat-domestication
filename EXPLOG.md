@@ -9148,6 +9148,145 @@ the batch was queued, with an inline script (so no number from it is recorded he
   print no outcome. No one has seen establishment, csire or the R gap over 3201-4000 in any treatment arm. The steward
   told analysis on 2026-11-26 to keep the literal "fails" for 3 to 5. This note replaces that.
 
+## exp021 results (scored)
+Scored by the analysis session, 2026-11-27, as registered: 1acdee5, as amended by 7b0346a, with the note f8d2045 and
+the reviewer's fe2f739 notes. Every number below is printed by a committed tool. Where a sentence compares two printed
+values, the comparison is mine; no derived number is computed.
+
+**Command** (through cpuslot): `python tools/capfear_tab.py results/exp021_capture-fear`, at b431a85. The output is in
+results/exp021_capture-fear/analysis/capfear_tab.txt.
+
+How the tool reached b431a85:
+- The reviewer passed b7585bb in bb32936.
+- f2b790e adds that review's minors.
+- 49ba850 adds the note f8d2045.
+- b431a85 changes the output only: tethered is printed to three places, and each criterion's count is printed alone.
+  Against 49ba850's run, every other line is the same.
+
+**Checks** (each stops the tool; outputs in analysis/):
+- On all 32 runs:
+  - every run's parameters match its arm: capturedFearSet, herdPerHerder and minLoad;
+  - in every row, capturedHi, capturedHiAfter and capturedOrphans are each at most captured;
+  - with the switch off (REFc, LOAD05c), capturedHiAfter = capturedHi in every row;
+  - in CAPTAME, capturedHiAfter = 0 in every row.
+- Every arm has 267 recorded rows in 3201-4000 and 200 in 401-1000 (every third year).
+- The selftest passes. It covers:
+  - shares weighted by captured;
+  - the wild-fear formula;
+  - P1 and P2 at their thresholds and at exactly 6 seeds;
+  - the reading rule at exactly 0.5;
+  - P2 not read at 2, and at 3-5, established CAPWILD seeds;
+  - the decision rule's six cases.
+- Its seven bad cases each fail: weight, sign, unest, few, wild, edge and mid.
+- On the data, two bad cases stop the tool:
+  - --bad hiafter, on the switch-off equality, at LOAD05c s1 year 426;
+  - --bad params, on CAPTAME's capturedFearSet.
+
+**How the measures are read:**
+- **Established** means a herd of 100 or more over 3201-4000. This is load_tab's reading, which exp010's predictions
+  used. jump_tab's J is printed beside it.
+- R gap, csire, depth, wildHerdShare and the run-off, fetched-back and lost rates come from load_tab.score and
+  flow_tab, unchanged.
+- **The counters' shares** are ratios of sums over the recorded rows only, every third year; they are not window
+  totals.
+- **capturedFear** is weighted by captured. It is the fear a captive brings from the wild, read before the switch.
+- **Wild fear** is the registered formula, (goats × learnedFear.humans − herded × herdFearOfHumans) / (goats − herded).
+  It is an unweighted mean over the recorded rows. Fear of humans can exceed 1: learnFear caps it at fearMax 3
+  (animals.js:544), while forgetting pulls it toward 1 (555-558).
+
+**Disclosure** (from the raw entry):
+- Before the batch was queued, the steward read the probes' new counters for seed 1, years 401-469, with an inline
+  script. In both baselines most captives arrived at or above captureFear. CAPTAME's capturedHiAfter was 0; CAPWILD's
+  equalled its captured.
+- No one had seen 3201-4000.
+- The note f8d2045 was written after the runs and before any scored output.
+
+**Establishment and the baselines:**
+- All 32 runs are established: 8 of 8 in each arm.
+- Herd, the mean herded over 3201-4000, pooled per arm: REFc 287.8, CAPTAME 275.3, LOAD05c 261.9, CAPWILD 261.3.
+- Breadth, the core traits whose mean gap over the established seeds is 0.10 or more in size: REFc 6, CAPTAME 3,
+  LOAD05c 1, CAPWILD 0. Breadth is one count per arm at a threshold, with no spread over seeds and no per-trait gaps
+  printed, so the change from 6 to 3 is not read as a finding.
+- The baselines give REFc an R gap of −0.636 and csire 0.064, and LOAD05c −0.104 and 0.333. These are exp010's values
+  as the prereg quotes them (REF −0.636 and 0.064; LOAD05 −0.104 and 0.333). That fits the identity check: the
+  baselines are exp018's REF and exp010's LOAD05 runs.
+
+**P1 fails: 0 of 8 seeds** (CAPTAME against REFc; csire up by 0.05 or more and the R gap up by 0.20 or more).
+- Each criterion alone (descriptive):
+  - csire rises by 0.05 or more in 6 of 8 seeds, by +0.035 to +0.100 per seed;
+  - the R gap rises by 0.20 or more in none, with moves of −0.003 to +0.055 per seed.
+- Pooled over the established seeds: CAPTAME's R gap is −0.604 against REFc's −0.636, and its csire 0.130 against
+  0.064.
+- Beside it, per seed:
+  - depth is 10.8-12.9 in CAPTAME against 12.5-15.8 in REFc;
+  - wildHerdShare is 0.279-0.361 against 0.102-0.175;
+  - run-offs per herd goat-year are 0.961-1.139 against 0.727-1.075;
+  - goats lost per herd goat-year are 0.095-0.114 against 0.070-0.101.
+- CAPTAME's tethered goat-nights per herd goat are 0.000 to three places, pooled, against REFc's 0.529. tetheredDays
+  counts every herd goat, so this means essentially no herd goat in CAPTAME is tethered, not only that captives aren't.
+- So P1 fails on the R gap alone. The closure measures move toward LOAD05c's: the csire criterion is met in 6 of 8
+  seeds, and depth and wildHerdShare move in every seed. Captive fear moves REF's closure measures but not its R gap.
+- CAPTAME stays far from LOAD05c in printed values: csire 0.130 against 0.333; depth 10.8-12.9 against 3.7-4.4 per
+  seed; wildHerdShare 0.279-0.361 against 0.826-0.863 per seed.
+
+**P2 is not read against H; descriptive, 0 of 8 seeds** (CAPWILD against LOAD05c).
+- The reading rule (7b0346a point 2): LOAD05c's pooled hi share over 3201-4000 is 0.594, which is not below 0.5. So P2
+  is reported as descriptive.
+- The orphan share beside it is 0.255 (the reviewer's fe2f739 note 1).
+- CAPWILD is established in 8 of 8 seeds, so all 8 are read. None meets both thresholds (csire down by 0.05 or more,
+  and the R gap down by 0.20 or more). Neither criterion is met alone in any seed.
+- Pooled over the established seeds: CAPWILD's R gap is −0.089 against −0.104, and its csire 0.341 against 0.333.
+- CAPWILD's hiAfter share is 0.983-1.000 per seed, so nearly every captive arrives at or above captureFear and is
+  tethered first. Its tethered goat-nights per herd goat are 1.152, pooled, against LOAD05c's 0.723.
+
+**Decision rule** (7b0346a point 4, f8d2045): P2 is not read against H, because the capturedHi rule is not met. So H
+rests on P1 alone. P1 fails, so the registered wording applies: **"learned captive fear is not what closes REF's
+herd"**, the prereg's neither-holds case. It says to look next at captive R or at capture inflow.
+- Beside the registered wording: P1 fails on the R gap alone. The csire criterion is met in 6 of 8 seeds, and depth and
+  wildHerdShare move toward LOAD05c's in every seed. The registered wording cannot tell "closure does not move" from
+  "closure moves and the R gap does not". Here it is the second: captive fear moves REF's closure measures but not its
+  R gap.
+
+**P3** (descriptive): capturedFear, LOAD05c against REFc.
+- Over 401-1000, LOAD05c's captives arrive more fearful than REFc's: 0.742 against 0.664.
+- Over 3201-4000 they arrive slightly less fearful: 0.745 against 0.769. Per seed:
+
+  | seed | LOAD05c | REFc |
+  |---|---|---|
+  | s1 | 0.736 | 0.755 |
+  | s2 | 0.753 | 0.744 |
+  | s3 | 0.762 | 0.812 |
+  | s4 | 0.725 | 0.780 |
+  | s5 | 0.764 | 0.802 |
+  | s6 | 0.770 | 0.764 |
+  | s7 | 0.751 | 0.699 |
+  | s8 | 0.692 | 0.803 |
+
+- The hi share, the share arriving at or above captureFear, is 0.611 against 0.452 early, and 0.594 against 0.589 late.
+- Wild fear over 3201-4000 is 1.014 in LOAD05c and 1.038 in REFc.
+- So, early on, LOAD05c's captives arrive more fearful than REFc's. Late on, LOAD05c's captives and its wild are both
+  slightly less fearful than REFc's (0.745 against 0.769; wild 1.014 against 1.038), and the per-seed order goes both
+  ways.
+
+**For Chris:**
+- Making captives arrive tame in REF (CAPTAME) does not move the herd's R gap: it moves by −0.003 to +0.055 per seed,
+  against the 0.20 registered.
+- It does open the herd. The share of kids sired by captured bucks rises by 0.05 or more in 6 of 8 seeds (pooled
+  0.130 against 0.064). Lineage depth falls (10.8-12.9 against 12.5-15.8 per seed), and more of the wild is
+  herd-descended (wildHerdShare 0.279-0.361 against 0.102-0.175), in every seed.
+- So captive fear moves REF's closure, but not its R gap. CAPTAME is still far from LOAD05's open herd: csire 0.130
+  against 0.333, depth 10.8-12.9 against 3.7-4.4.
+- The registered reading is "learned captive fear is not what closes REF's herd". Read with the two facts above: the
+  fear captives bring changes how closed REF's herd is, but making captives arrive tame does not move REF's R gap
+  (−0.003 to +0.055 against the 0.20 registered).
+- Making captives arrive naive at load 0.5 (CAPWILD) changes neither the R gap nor csire by the registered amounts. As
+  registered, CAPWILD is not read against H, because 0.594 of LOAD05c's captives already arrive at or above the
+  tether threshold.
+- LOAD05's captives arrive more fearful than REF's early on, and slightly less fearful late on, with the seeds going
+  both ways.
+- So the fear a captive brings moves REF's closure toward LOAD05's, though not far, and leaves REF's R gap where it
+  was. The registered next places to look are the captives' R and the inflow of captures.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
