@@ -474,7 +474,7 @@ var World = class World {
     for (const g of this.goats) { if (g.dead) continue; g.step(this, 'day'); g.graze(this); }
     this.keepersRefetch();
     this.buildIndex(false);
-    if (s === PARAMETERS.daySteps >> 1) { this.sampleDensity(); if (this.ys.ledger) this.sampleLedger(); }   // midday samples (output only: no draws)
+    if (s === PARAMETERS.daySteps >> 1) { this.sampleDensity(); this.sampleLoad(); if (this.ys.ledger) this.sampleLedger(); }   // midday samples (output only: no draws)
     this.humansHunt();
   }
 
@@ -530,6 +530,16 @@ var World = class World {
   ledgerEv(camp, k, g) {
     const L = this.ys.ledger; if (!L || camp < 0) return;
     const e = L[camp].ev[k][g.gsc >= 1 ? 1 : 0], R = g.tr[T_R]; e[0]++; e[1] += R; e[2] += R * g.fearOfHumans;
+  }
+
+  // exp022 (2026-11-27): the load a herd actually works at, without the ledger. Output only, no draws: at midday, each
+  // camp with a herder and a herd adds one camp-day, its herdLoad and its herd count.
+  sampleLoad() {
+    const ys = this.ys;
+    for (const c of this.camps) {
+      const i = c.id; if (!this.herders[i] || this.herdCount[i] <= 0) continue;
+      ys.loadDays++; ys.loadSum += this.herdLoad(i); ys.loadHerd += this.herdCount[i];
+    }
   }
 
   sampleLedger() {
@@ -2019,7 +2029,7 @@ var World = class World {
       cohortBirth: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))), cohortBreed: [0, 1].map(() => [0, 1].map(() => new Float64Array(NT + 1))),
       selSire: new Float64Array(NT), selDam: new Float64Array(NT), selN: [0, 0], escaped: 0, runOffLost: 0, refetched: 0, ranOff: 0, rejoined: 0, spooked: 0, alarmCaught: 0, density: { c: [0, 1, 2, 3].map(() => [0, 0, 0, 0, 0]), cells: [0, 0] }, culledValue: 0, foodGathered: 0, slop: 0, heap: 0, sitesSeeded: 0, cropEaten: 0, cropEatenHerd: 0, culledHerd: 0, demand: 0, meatEaten: 0, plantEaten: 0, unmet: 0, offtakeFu: 0, stock: 0,
       dried: 0, driedLost: 0, fodderLost: 0, gatherScored: 0, meatHunted: 0, huntScored: 0, shots: 0, shotKills: 0, altKills: 0, unmetQ: [0, 0, 0, 0], slaughterQ: [0, 0, 0, 0], herdQ: [0, 0, 0, 0], labourQ: [0, 0, 0, 0],
-      roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0, capturedFear: 0, capturedOrphans: 0, capturedFearOrphan: 0, capturedHi: 0, capturedHiAfter: 0, tetheredDays: 0,
+      roleDays: { gather: 0, hunt: 0, herd: 0 }, roleRet: { gather: 0, hunt: 0, herd: 0 }, taskDays: { keep: 0, guard: 0, feed: 0, capture: 0 }, milk: 0, wolvesKilled: 0, wolvesChased: 0, fodder: 0, foraged: 0, capturedR: 0, capturedFear: 0, capturedOrphans: 0, capturedFearOrphan: 0, capturedHi: 0, capturedHiAfter: 0, tetheredDays: 0, loadDays: 0, loadSum: 0, loadHerd: 0,
       herdBirths: 0, wildSired: 0, herdSires: this.camps.map(() => new Set()), herdConceptions: 0, chosenSired: 0,
       killoff: CAUSE_NAMES.map(() => [new Array(16).fill(0), new Array(16).fill(0)]),
       herdKilloff: [new Array(16).fill(0), new Array(16).fill(0)], herdDeaths: new Array(CAUSE_NAMES.length).fill(0), wolfAtk: {},

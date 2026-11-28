@@ -9287,6 +9287,166 @@ herd"**, the prereg's neither-holds case. It says to look next at captive R or a
 - So the fear a captive brings moves REF's closure toward LOAD05's, though not far, and leaves REF's R gap where it
   was. The registered next places to look are the captives' R and the inflow of captures.
 
+## exp022 — Sweep the goats one herder watches (herdPerHerder 5-160, REF otherwise): does the herd's R gap follow the load, or does herd size adjust so the load settles alike?
+**Pre-registered:** 2026-11-27. Mongo animalDomestication.exp022_herd-per-herder; results/exp022_herd-per-herder; job
+list tools/exp022.jsonl.
+
+**Why.** Chris: "the 20 number is arbitrary. maybe now we sweep it?" He also said that a closed herd is a description
+of the outcome, concluded from the gap itself, and explains nothing. So the one cause from outside the herd in the
+account so far is the load rule, which is human behaviour, the controlled variable. What the record shows:
+- Fixed loads of 0.25 to 1 give a herd, with an R gap of −0.055 to −0.247 (exp007 LOADLO, exp010).
+- Fixed loads of 2 and above give no herd, 4.8 included (exp010 LOAD2, LOAD3; exp007 LOADHI).
+- Only REF's rule, load = max(minLoad 0.25, camp herd / (herdPerHerder 20 × herders)) (world.js:227-230), gives a herd
+  and a large gap: −0.636, breadth 6, herd 287.8 over three camps (exp010 scored).
+- herdPerHerder has never been varied. Every run so far used 20, or 1e9 (rule off).
+
+**Hypothesis L:** the gap follows how hard the herder's filter runs, and herdPerHerder sets that through the load.
+**The alternative A:** herd size adjusts to herdPerHerder, so the load a herd settles at is about the same in every arm.
+Then herdPerHerder sets herd size, not the gap.
+
+**The code change** (output only, no draw; src/world.js sampleLoad(), called at midday beside sampleDensity;
+src/datamanager.js): each camp-day with a herder and a herd adds to three year-row fields:
+- loadDays, the camp-days;
+- loadMean, the mean herdLoad over them;
+- loadHerd, the mean herd count over them.
+A probe checks before queueing that runs are unchanged: HPH20 s1 over 470 years against exp021's REFc s1, with
+cmp_years --by-year, hist and histHerd included.
+
+**Arms** (seeds 1-8, 4000 years, herding at 400; REF's arguments as tools/exp021.jsonl REFc, with herdPerHerder set):
+HPH5, HPH10, HPH20, HPH40, HPH80, HPH160. That is 48 runs, cpuslot --anywhere.
+- HPH20 is REF at this code. It is the identity check against exp018's REF s1-8, and it gives REF's loadMean.
+- exp007's LOADLO (herdPerHerder 1e9, load fixed at 0.25) is the context at the far end. It is not rerun: its
+  loadMean is 0.25 by construction.
+
+**Measures** (analysis; window 3201-4000; the standing measures as exp010):
+- established (herd ≥ 100 over the window, load_tab's reading) and jump_tab's J;
+- herd, R gap, breadth and csire, over the established seeds;
+- run-off and lost rates per herd goat-year (flow_tab);
+- loadMean and loadHerd, pooled by loadDays over the recorded rows, per arm and per seed.
+
+**Predictions** (under L; seeds read only where established):
+- **P1, the gap follows herdPerHerder.** Both parts must hold:
+  - Over the established arms from HPH160 down to the smallest established herdPerHerder, the pooled R gap is ordered
+    (less negative at larger herdPerHerder) at every adjacent pair.
+  - Seed-paired, HPH160's R gap is above HPH20's by 0.20 or more in 6+ of 8 seeds. An unestablished seed in either arm
+    counts against.
+- **P2, the load differs.** Both parts must hold:
+  - Pooled loadMean over the established arms is ordered (higher at smaller herdPerHerder) at every adjacent pair.
+  - HPH160's loadMean is below half of HPH20's.
+  - If P2 fails because the loadMeans of the established arms lie within ±25% of HPH20's, report A: "herd size adjusts
+    and the load settles alike".
+- **Descriptive, not scored:** the low end. At HPH5 and HPH10, a herd of 10-20 goats per camp already works at load 1-2,
+  where fixed loads stop herds forming. Report establishment, J and herd for HPH5 and HPH10, with no prediction.
+
+**Decision rule:**
+- P1 and P2 hold: the gap follows the load the herder's labour limit sets. The paper reports the R gap against
+  herdPerHerder and loadMean as a dose-response, with 20 as one point on it.
+- P2 holds and P1 fails: the load differs but the gap does not follow it. The load rule's effect is then not its level,
+  so look at its rise with herd size (the order: low while small, high once large).
+- P2 fails as A: herdPerHerder sets herd size. Read the gap against loadMean, not herdPerHerder, and report A.
+No model change follows from this batch.
+
+## exp022 amendment, 2026-11-27 (before any run queued; the reviewer's bf2d18f)
+**1. P2 becomes a manipulation check, and the alternative A is dropped.**
+- Above the floor, loadMean = loadHerd / herdPerHerder. So "HPH160 below half of HPH20" fails only if HPH160's herd is
+  at least four times HPH20's.
+- Across loads, herd size barely moves in the record: LOADLO 261.6, LOAD05 261.9, LOAD1 245.8, REF 287.8 (exp010
+  scored). So A, with herd size tracking herdPerHerder from 5 to 160, is not a live alternative.
+- **P2, restated:** a check that the sweep moved the load, not a test of L. It reads as before: loadMean ordered over
+  the arms read (point 4), and HPH160's below half of HPH20's.
+- loadHerd is reported per arm as a description. If it does move with herdPerHerder, that is said beside P2, not read
+  as A.
+
+**2. Level against rise: a registered comparison with the fixed-load arms. No new runs.**
+- In this batch each arm moves the load's level, its slope with herd size and the floor's breakpoint together. No
+  contrast inside exp022 separates level from rise.
+- Fixed-load runs have loadMean = minLoad by construction. Their pooled R gaps over established seeds (exp007,
+  exp010, exp015 scored): 0.25 −0.055, 0.5 −0.104, 0.6 −0.112, 0.7 −0.167, 0.8 −0.214, 0.9 −0.244, 1 −0.247. At 2
+  and above there is no herd.
+- **Matching rule:** for each HPH arm read, with pooled loadMean L between 0.25 and 1, the fixed-load gap at L is
+  linearly interpolated between the two fixed levels either side of L.
+- **Near:** the HPH arm's pooled R gap is within 0.10 of that gap. **Below:** it is more negative by more than 0.10.
+  **Above:** it is less negative by more than 0.10.
+- **An HPH arm read with loadMean above 1** has no fixed-load match. If it is established, a herd persists at a mean
+  load where no fixed-load herd has formed. That is reported as the rise mattering for persistence, and its gap is not
+  matched.
+- **Q, the level-or-rise reading** (scored on the arms read):
+  - "level" if every matched arm is near;
+  - "rise" if every matched arm is below;
+  - "mixed" otherwise, each arm named.
+  - With no arm matched, Q is not read.
+
+**3. The decision rule, rewritten** (P2 first, then P1 and Q):
+- P2 fails: the sweep did not move the load as built. Nothing is read on L. The tool's arithmetic and the arms'
+  parameters are checked first.
+- P2 holds, P1 holds: the gap follows herdPerHerder. Q then says whether the load's level sets it ("level"), or more
+  than its level ("rise"), or neither cleanly ("mixed").
+- P2 holds, P1 fails: the gap does not follow herdPerHerder over the arms read. Q is reported. "Rise" reads as the gap
+  being set by the rule's rise with herd size more than by its level.
+- The prereg's ±25% band and its "herd size adjusts" branch are struck (point 1).
+
+**4. Which arms are read, and the low end.**
+- **An arm is established** if 2 or more of its 8 seeds are, as exp010 read it.
+- **P1's ordering, P2 and Q** are read over the established arms among HPH20, HPH40, HPH80 and HPH160 only. HPH5 and
+  HPH10 stay descriptive, and the orderings do not take them in.
+- If HPH20 or HPH160 is not established, P1 fails.
+- The prereg's low-end sentence is corrected. A herd of 10-20 goats per camp is at load 1-2 at HPH10, and at load 2-4
+  at HPH5.
+
+**5. Orderings.** A reversal of any size at an adjacent pair fails the ordering. The 0.20 seed-paired threshold stays.
+If HPH160 settles near load 0.5, that part is near-certain either way, and point 2 carries the test.
+
+**6. The baseline.**
+- HPH20 is the comparison arm, since loadMean exists only at this code.
+- The identity baseline is exp018's REF. The probe compares HPH20 s1 with exp021's REFc s1, which is exp018's REF s1
+  (exp021 raw).
+- The raw entry carries a 4000-year identity check of HPH20 s1-8 against exp018 REF s1-8 (cmp_years --by-year, hist
+  and histHerd included). If any seed differs, that is reported, and HPH20 stays the comparison.
+
+## exp023 — not used
+A second `--register herd-per-herder` on 2026-11-27, with the question "x", was the steward's mistake: it claimed exp023
+and made an empty results/exp023_herd-per-herder folder. Nothing ran under it. The folder was removed the same day; the
+registry entry is left in place. The next experiment is exp024.
+
+## exp022 results (raw)
+48 of 48 runs are complete (complete: true, 1333 rows each, years 2-3998, kept every 3rd year). Every run exited 0
+(cpuslot-logs/, batch 1795800817825525000). No log has an error, exception or warning; each carries the db client's
+packet-size advisory (over its 4 MB suggestion), which does not stop the save. No run went extinct.
+- Arms as registered, 8 seeds each: HPH5, HPH10, HPH20, HPH40, HPH80, HPH160. Against exp021's REFc s1, the 48 differ
+  only in id, seed and herdPerHerder (5, 10, 40, 80 or 160; HPH20 keeps 20).
+- Hosts: 33 on the desktop, 15 on mint (HPH5 s1-3, HPH10 s7-8, HPH20 s1, s7 and s8, HPH40 s1 and s6-8, HPH80 s7-8,
+  HPH160 s1). Run times 6286-12082 s; the HPH5 runs are the shortest (6286-9302 s).
+- Thirteen of the fifteen mint logs also say "NOT copied" for sibling files that earlier mint runs had already copied
+  back. Each run's own file was copied back: all 48 JSON copies are present and complete, and HPH20 passes the identity
+  check below.
+
+**Commit.** All 48 are stamped v0.1.0-414-gc2fed28, dirty false. `git diff --stat 69e3109 c2fed28` over src,
+tools/runyears.mjs and tools/load.mjs is empty: 53ee45e and c2fed28 touched EXPLOG.md and notes/review only. So the
+code is the prereg's.
+
+**Packet size.** Each packet is 9.1-9.8 MB of BSON (the db client's measure in each log; HPH5's are 9.1-9.5). No
+packet carries storeError. The JSON copies are 5,614,044-6,342,061 bytes on disk.
+
+**Identity** (registered, amendment point 6; tools/cmp_years.py --by-year, which also pairs hist and histHerd by
+histYears; output in results/exp022_herd-per-herder/checks/identity.txt):
+- HPH20 s1-8 against exp018's REF s1-8: 1333 records each (years 2-3998), 77 shared keys, 0 differ.
+- HPH20 s1-8 against exp021's REFc s1-8: 1333 records each, 83 shared keys, 0 differ.
+- hist and histHerd: 266 rows each (years 14-3989), 12 traits, 0 differ, in all 16 comparisons.
+- Only in this batch: loadDays, loadHerd and loadMean, and against exp018 also exp021's six counters.
+- So HPH20 is exp018's REF run for run, with the new counters added.
+
+**The probe** (results/_scratch/exp022_probe/HPH20probe470_seed1.json; 470 years, seed 1, at v0.1.0-411-g69e3109):
+- Against exp021's REFc s1 (results/exp022_herd-per-herder/checks/probe.txt): 156 records (years 2-467), 83 shared
+  keys, 0 differ; hist and histHerd 31 rows, 0 differ.
+- Against the batch's HPH20 s1 (checks/probe_vs_batch.txt): 156 records, 86 shared keys (the load counters included),
+  0 differ; hist and histHerd 31 rows, 0 differ. The batch reproduces the probe.
+- The folder also holds LOAD05prov_seed8.json, an older unrelated file.
+
+**Disclosure for the scored entry.** Before the batch was queued, the steward read the probe's load counters for seed
+1 in the first years of herding (from year 400), with an inline script, so no number from it is recorded here. Seen:
+loadMean sat at the floor, minLoad 0.25, with herds of a goat or two. No one has read the load counters past year
+469 in any run, nor establishment, herd size or the R gap in any arm. The checks above print no outcome.
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and

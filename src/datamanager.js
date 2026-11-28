@@ -168,6 +168,7 @@ var DataManager = class DataManager {
       capturedR: ys.captured ? +(ys.capturedR / ys.captured).toFixed(4) : null,
       capturedFear: ys.captured ? +(ys.capturedFear / ys.captured).toFixed(4) : null,   // mean fearOfHumans at capture, before capturedFearSet
       capturedOrphans: ys.capturedOrphans, capturedFearOrphan: ys.capturedOrphans ? +(ys.capturedFearOrphan / ys.capturedOrphans).toFixed(4) : null,
+      loadDays: ys.loadDays, loadMean: ys.loadDays ? +(ys.loadSum / ys.loadDays).toFixed(4) : null, loadHerd: ys.loadDays ? +(ys.loadHerd / ys.loadDays).toFixed(2) : null,   // exp022: camp-days with a herder and a herd (midday); mean herdLoad and herd count over them
       capturedHi: ys.capturedHi, capturedHiAfter: ys.capturedHiAfter, tetheredDays: ys.tetheredDays,   // exp021: captives at R x fear >= captureFear before / after the switch; goat-nights tethered
       herdGSC: nh ? +(gscs / nh).toFixed(2) : null,
       // generations since wild, bins 0 | 1 | 2-4 | 5-9 | 10-19 | 20+: herd goats by maternal line and herd males by
