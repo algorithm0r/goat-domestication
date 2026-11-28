@@ -31,20 +31,25 @@
 #       established, P1 fails.
 #   P2 (manipulation check): (a) over the arms read, pooled loadMean is higher at the smaller herdPerHerder at every
 #       adjacent pair (strict); and (b) HPH160's pooled loadMean is below half of HPH20's.
-#   Q: each arm read with pooled loadMean L in 0.25-1 is matched to the fixed-load gap at L, linearly interpolated between
+#   Q: each arm read with L in 0.25-1 is matched to the fixed-load gap at L, linearly interpolated between
 #       the fixed levels either side (the level itself if L is one). near: |R gap - fixed| <= 0.10; below: more negative by
-#       more than 0.10; above: less negative by more than 0.10. An arm read with L above 1 is not matched (if established,
-#       a herd persists at a mean load where no fixed-load herd has formed). Q: "level" if every matched arm is near,
+#       more than 0.10; above: less negative by more than 0.10. L is the arm's loadMean pooled over its established seeds,
+#       the seeds its R gap covers (the reviewer's 945ba80 point 2); Q on the all-seed loadMean is printed beside it. An arm
+#       read with L above 1 is not matched. For 1 < L < 2 no fixed-load run exists, so it is "not matched; no fixed-load run
+#       at that load", with no persistence reading. At L >= 2 it is established at a mean load where no fixed-load herd has
+#       formed (LOAD2, LOAD3 and LOADHI establish none), reported as the rise mattering for persistence (945ba80 point 1).
+#       Q: "level" if every matched arm is near,
 #       "rise" if every matched arm is below, "mixed" otherwise (each named); not read with no arm matched. The matched-arm
 #       count is printed beside Q (c2fed28 note 1).
 #   Decision rule (53ee45e point 3): P2 first, then P1 with Q.
 # selftest: pooled loadMean weighted by loadDays (a row mean differs), the load bounds, P1 and P2 on planted arms (strict
 # orderings, an unestablished intermediate arm skipped, HPH160 unestablished failing P1, the 6-seed and 0.20 edges, the
-# half edge), the interpolation, the band edges, an arm above load 1, the Q readings and the decision rule's cases.
+# half edge), the interpolation, the band edges, an arm at 1 < L < 2 and one at L >= 2 (not matched, each with its note),
+# Q on the established seeds' loadMean, the Q readings and the decision rule's cases.
 # Bad cases, each must fail: weight (row-mean loadMean), order (a reversal under 0.01 tolerated), unest (an unestablished
 # HPH160 not failing P1; unestablished seeds dropped from P1 b), edge (the 0.20 and 6-seed edges read strict), half (b read
 # as <=), interp (the nearest fixed level instead of interpolation), band (near read as < 0.10), above (an arm above load
-# 1 matched to load 1).
+# 1 matched to load 1), split (the persistence note given for 1 < L < 2), qall (Q on the all-seed loadMean).
 import glob, json, os, re, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
@@ -149,14 +154,20 @@ def band(R, F, bad=None):
     if (abs(d) < BAND - EPS) if bad == "band" else (abs(d) <= BAND + EPS): return "near"
     return "below" if d < 0 else "above"
 
-def q_read(S, bad=None):
+NORUN = "not matched; no fixed-load run at that load (between 1 and 2)"
+PERSIST = "not matched; established at a mean load where no fixed-load herd has formed (LOAD2, LOAD3, LOADHI establish none)"
+
+def q_read(S, bad=None, key="Le"):
     """Returns (Q, per arm {arm: (L, fixed gap or None, band or None, note)}, matched count)."""
     per = {}
     for a in READ:
         if not S[a]["est"]: continue
-        L, R = S[a]["L"], S[a]["R"]; F = fixed_at(L, bad) if L is not None else None
+        L, R = S[a]["L" if bad == "qall" else key], S[a]["R"]; F = fixed_at(L, bad) if L is not None else None
         if F is None:
-            per[a] = (L, None, None, "above load 1: not matched; established at a mean load where no fixed-load herd has formed" if L is not None and L > 1 else "not matched")
+            if L is not None and (L >= 2 or (bad == "split" and L > 1)): note = PERSIST
+            elif L is not None and L > 1: note = NORUN
+            else: note = "not matched"
+            per[a] = (L, None, None, note)
         else: per[a] = (L, F, band(R, F, bad), "")
     m = [(a, v[2]) for a, v in per.items() if v[2]]
     if not m: return "not read", per, 0
@@ -182,7 +193,7 @@ def selftest(bad):
     if check_bounds([{"year": 0, "loadDays": 10, "loadMean": 0.30, "loadHerd": 6.0}, {"year": 3, "loadDays": 10, "loadMean": 0.55, "loadHerd": 6.0}], "HPH20", "plant") != 2:
         sys.exit("selftest failed: bounds count")
     # planted arms: R pooled, loadMean, est, seeds
-    def mk(est, R, L, seeds=None): return {"est": est, "R": R, "L": L, "seeds": seeds or {s: (True, R) for s in range(1, 9)}}
+    def mk(est, R, L, seeds=None, Le=None): return {"est": est, "R": R, "L": L, "Le": L if Le is None else Le, "seeds": seeds or {s: (True, R) for s in range(1, 9)}}
     def arms(**kw):
         S = {"HPH5": mk(False, None, 3.0), "HPH10": mk(True, -0.70, 2.0),
              "HPH20": mk(True, -0.64, 1.40, {s: (True, -0.64) for s in range(1, 9)}), "HPH40": mk(True, -0.40, 0.73),
@@ -221,15 +232,23 @@ def selftest(bad):
     if (q, m) != ("level", 3): sys.exit(f"selftest failed: Q gives {q} ({m}); planted level (3)")
     q, _, m = q_read(arms(HPH40=mk(True, -0.40, 0.73), HPH80=mk(True, -0.30, 0.55), HPH160=mk(True, -0.25, 0.40)), bad)
     if (q, m) != ("rise", 3): sys.exit(f"selftest failed: Q gives {q} ({m}); planted rise (3)")
-    q, _, m = q_read(arms(HPH40=mk(True, -0.40, 1.5), HPH80=mk(True, -0.30, 1.2), HPH160=mk(True, -0.25, 1.05)), bad)
+    q, per, m = q_read(arms(HPH40=mk(True, -0.40, 2.5), HPH80=mk(True, -0.30, 1.2), HPH160=mk(True, -0.25, 1.05)), bad)
     if (q, m) != ("not read", 0): sys.exit(f"selftest failed: Q with no arm at or under load 1 gives {q} ({m})")
+    if per["HPH40"][3] != PERSIST or per["HPH80"][3] != NORUN or per["HPH20"][3] != NORUN:
+        sys.exit(f"selftest failed: the notes above load 1: {per}; planted L 2.5 persistence, L 1.2 and 1.40 no fixed-load run")
+    if q_read(arms(HPH40=mk(True, -0.40, 2.0)), bad)[1]["HPH40"][3] != PERSIST: sys.exit("selftest failed: L exactly 2 not given the persistence note")
+    # Q on the established seeds' loadMean: HPH80 all-seed L 0.30 (an unestablished seed's rows near the floor), Le 0.55;
+    # R -0.20 against the gap at 0.55 (-0.108) is near; at 0.30 (-0.0648) it would be below
+    q, per, m = q_read(arms(HPH40=mk(True, -0.27, 0.73), HPH80=mk(True, -0.20, 0.30, Le=0.55)), bad)
+    if per["HPH80"][0] != 0.55 or per["HPH80"][2] != "near" or q != "level": sys.exit(f"selftest failed: Q on the established seeds' loadMean: {per}, {q}")
     dd = [decision("fails", "holds", "level"), decision("holds", "holds", "level"), decision("holds", "fails", "rise"), decision("holds", "fails", "mixed (x)")]
     if not ("Nothing is read" in dd[0] and "follows herdPerHerder. Q: level" in dd[1] and "more than by its level" in dd[2]
             and "Q: mixed (x)." in dd[3] and "more than by its level" not in dd[3]): sys.exit(f"selftest failed: decision wording {dd}")
     print("selftest: pooled loadMean weighted by loadDays (0.60 where a row mean gives 0.50), the load bounds, P1 (6 of 8 at the"
           " 0.20 edge with an unestablished seed against; 5 of 8 fails; a 0.001 reversal fails; an unestablished middle arm"
           " skipped; HPH160 unestablished fails), P2 (ordered; exactly half fails; a tie fails), the interpolation (0.73 ->"
-          " -0.1811), the 0.10 band edges, an arm above load 1 not matched, Q level / rise / mixed / not read, the decision"
+          " -0.1811), the 0.10 band edges, arms above load 1 not matched (1.05, 1.2 and 1.40 with no fixed-load run; 2.0 and 2.5"
+          " with the persistence note), Q on the established seeds' loadMean (0.55 where all seeds give 0.30), Q level / rise / mixed / not read, the decision"
           " rule's cases: ok")
 
 def fixed_check(folders, W):
@@ -324,13 +343,13 @@ def main():
         print(f"   s{s}: HPH160 {'est' if e1 else 'not est'} {fs(r1)}, HPH20 {'est' if e0 else 'not est'} {fs(r0)} ({fs(dr)}): {'holds' if per[s] else 'no'}")
     print(f"P1 {v1}" + (f" ({'; '.join(notes)})" if notes else "") + ".")
     q, qp, m = q_read(S)
-    print(f"Q (level or rise; matched to the fixed-load gap at the arm's pooled loadMean, linearly interpolated; near = within 0.10):")
+    print(f"Q (level or rise; matched to the fixed-load gap at the arm's loadMean pooled over its established seeds, linearly interpolated; near = within 0.10):")
     for a, (L, F, b, note) in qp.items():
         print(f"   {a}: loadMean {f3(L)}, R gap {fs(S[a]['R'])}" + (f", fixed-load gap at {f3(L)} {F:+.4f}: {b}" if F is not None else f": {note}"))
     print(f"Q: {q}; {m} arm{'s' if m != 1 else ''} matched (c2fed28 note 1).")
-    qe = q_read({a: dict(S[a], L=S[a]["Le"]) for a in S})[0]; v2e = p2({a: dict(S[a], L=S[a]["Le"]) for a in S})[0]
-    print(f"Reading choice (loadMean over all 8 seeds): with the established seeds' loadMean instead, P2 {v2e} and Q {qe}:"
-          + (" the same reads." if (qe, v2e) == (q, v2) else " the reads DIFFER."))
+    qa = q_read(S, key="L")[0]; v2e = p2({a: dict(S[a], L=S[a]["Le"]) for a in S})[0]
+    print(f"Beside them: Q on the all-seed loadMean {qa} ({'the same' if qa == q else 'DIFFERS'}); P2 on the established seeds' loadMean {v2e}"
+          f" ({'the same' if v2e == v2 else 'DIFFERS'}).")
     print(f"Decision rule (53ee45e point 3): {decision(v2, v1, q)}")
 
 if __name__ == "__main__":

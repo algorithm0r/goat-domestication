@@ -9464,6 +9464,149 @@ as a manipulation check.
 selftests print no outcome, and no scored output exists in results/exp022_herd-per-herder/analysis/. The reviewer
 reports reading no exp022 outcome. The steward has read none past the probe's first herding years (raw entry).
 
+## exp022 results (scored)
+Scored by the analysis session, 2026-11-28, as registered: 69e3109, as amended by 53ee45e, with the note 03d0858 and
+the reviewer's c2fed28 notes. Every number below is printed by a committed tool. Where a sentence compares two printed
+values, the comparison is mine; no derived number is computed.
+
+**Command** (through cpuslot): `python tools/hph_tab.py results/exp022_herd-per-herder`, at 9c31d3e. The output is in
+results/exp022_herd-per-herder/analysis/hph_tab.txt.
+
+How the tool reached 9c31d3e:
+- The reviewer checked 0b8eb8e in 945ba80: faithful to exp022 as amended, apart from two moderate points.
+- 9c31d3e adds them, with the note 03d0858:
+  - an arm read with a loadMean between 1 and 2 is "not matched; no fixed-load run at that load";
+  - the persistence reading is given only at 2 or above;
+  - Q matches each arm's gap at its established seeds' loadMean, with the all-seed Q printed beside it.
+
+**Checks** (each stops the tool; outputs in analysis/):
+- On all 48 runs:
+  - each run's herdPerHerder is its arm's, with minLoad 0.25 and economy 0;
+  - every other parameter equals HPH20's run of the same seed;
+  - each run's stamp has HPH20's commit, dirty false, its seed and its run name;
+  - every recorded row with loadDays > 0 lies within the load rule's bounds, max(0.25, loadHerd / herdPerHerder) to
+    0.25 + loadHerd / herdPerHerder (world.js:227-230).
+- Every arm has 267 recorded rows in 3201-4000 (every third year).
+- The fixed-load gaps are recomputed from exp007's, exp010's and exp015's runs with load_tab's parameter guard on. Each
+  equals the value 53ee45e registers, to three places: 0.25 −0.055, 0.5 −0.104, 0.6 −0.112, 0.7 −0.167, 0.8 −0.214,
+  0.9 −0.244, 1 −0.247. Each of these arms is established in 8 of 8 seeds.
+- The selftest passes. It covers:
+  - loadMean pooled by loadDays;
+  - the load bounds;
+  - P1 and P2 at their edges;
+  - the interpolation;
+  - the 0.10 band edges;
+  - an arm at a loadMean between 1 and 2, and one at 2 or above;
+  - Q on the established seeds' loadMean;
+  - the Q readings and the decision rule.
+- Its ten bad cases each fail: weight, order, unest, edge, half, interp, band, above, split and qall.
+- On the data, two bad cases stop the tool:
+  - --bad params, at HPH40 s1;
+  - --bad bounds, at HPH160 s1 year 402.
+- The identity check is the raw entry's: HPH20 s1-8 equal exp018's REF s1-8 over 4000 years, 0 differ
+  (checks/identity.txt).
+
+**How the measures are read:**
+- **Established** means a herd of 100 or more over 3201-4000, load_tab's reading. An arm is established if 2 or more
+  of its 8 seeds are. jump_tab's J is printed beside it.
+- **The standing measures** come from load_tab.score, unchanged: herd, R gap, breadth, csire, and run-offs, fetched
+  back and lost per herd goat-year. R gap, breadth and csire are read over the established seeds.
+- **loadMean and loadHerd** are pooled by loadDays over the recorded rows, every third year.
+  - loadHerd is one camp's herd on a herded camp-day. herd is the three camps' mean herded.
+  - P2 reads loadMean over all 8 seeds of each arm.
+  - Q reads each arm's loadMean pooled by loadDays over its established seeds' rows, the seeds its R gap covers
+    (03d0858).
+  - Every arm read is established in 8 of 8 seeds, so the two loadMeans are the same here.
+
+**Disclosure** (from the raw entry and the note):
+- Before the batch was queued, the steward read the probe's load counters for seed 1, in the first years of herding,
+  with an inline script. loadMean sat at the floor, 0.25, with herds of a goat or two.
+- Before scoring, no one had read the load counters past year 469 in any run, nor establishment, herd size or the R
+  gap in any arm (raw entry). The reviewer's full run of hph_tab at 0b8eb8e sent its stdout to /dev/null.
+- The --checks output prints each run's count of rows with loadDays > 0, which is 1197-1200. It shows that some herd
+  exists in almost every recorded row from year 400 on, but not its size.
+- The note 03d0858 was written after the runs and after the tool was checked, before any scored output.
+
+**Establishment and the baseline:**
+- HPH10 to HPH160 are established in 8 of 8 seeds each. HPH5 is established in none.
+- The arms read are HPH20, HPH40, HPH80 and HPH160, so every arm read is established.
+- HPH20 gives:
+  - an R gap of −0.636, csire 0.064, breadth 6 and herd 287.8;
+  - these are exp010's REF values (−0.636, 0.064, breadth 6, herd 287.8);
+  - that fits the identity check.
+
+**P2 holds** (the manipulation check):
+- Pooled loadMean is ordered, higher at the smaller herdPerHerder, over the arms read: HPH20 5.067, HPH40 2.362, HPH80
+  1.166, HPH160 0.595.
+- HPH160's 0.595 is below half of HPH20's 5.067.
+- Beside it, as 53ee45e point 1 asks: loadHerd, one camp's herd on a herded day, is 101.3, 94.5, 93.3 and 95.2 in the
+  arms read, and 112.4 in HPH10. Herd size moves little across the arms, so the load follows herdPerHerder as built.
+
+**P1 holds: 8 of 8 seeds.**
+- (a) The pooled R gap is ordered, less negative at the larger herdPerHerder, at every adjacent pair: HPH20 −0.636,
+  HPH40 −0.569, HPH80 −0.364, HPH160 −0.140.
+- (b) Seed-paired, HPH160's R gap is above HPH20's by 0.20 or more in 8 of 8 seeds. The differences are +0.368 (s4) to
+  +0.569 (s6).
+- Per seed, HPH20's gap is −0.658 to −0.611, and HPH160's −0.271 to −0.078.
+- Beside it, over the arms read (descriptive):
+  - csire rises 0.064, 0.118, 0.231, 0.333;
+  - breadth falls 6, 3, 1, 1. Breadth is one count per arm at a threshold, with no spread over seeds, so it is not
+    read as a finding;
+  - goats lost per herd goat-year are 0.082, 0.085, 0.124 and 0.134;
+  - run-offs are 0.859, 0.738, 0.822 and 0.717.
+
+**Q: "level", on 1 matched arm** (the reviewer's c2fed28 note 1).
+- HPH160 is the only arm read with a loadMean in 0.25-1.
+  - Its loadMean is 0.595, and the fixed-load gap there, linearly interpolated, is −0.1116.
+  - Its R gap of −0.140 is within 0.10 of that, so it is near.
+- HPH80, at loadMean 1.166, is "not matched; no fixed-load run at that load" (03d0858).
+- HPH20 (5.067) and HPH40 (2.362) are established at a mean load where no fixed-load herd has formed. LOAD2, LOAD3 and
+  LOADHI establish none.
+  - For HPH20 this is not new: REF's herd persisting at such a load is exp007's and exp010's LOADHI result (c2fed28
+    note 2).
+  - HPH40 is a second arm that shows it.
+  - As 53ee45e point 2 registers, this is reported as the rise mattering for persistence. Neither gap is matched.
+- The near band is wide against the fixed-load curve (c2fed28 note 3). Within 0.10 either side covers most of the
+  fixed-load gaps' span, −0.055 to −0.247. So "level" says that HPH160 sits with the fixed-load arms, not that it sits
+  at the gap of a particular load.
+- The tool prints the all-seed Q beside it: "level", the same.
+
+**Decision rule** (53ee45e point 3): P2 holds and P1 holds, so **"the gap follows herdPerHerder"**. Q reads "level",
+which 53ee45e words as "the load's level sets the gap". Here that rests on one arm, HPH160, in a band that covers most
+of the fixed-load span. Q does not read the gaps of HPH20, HPH40 and HPH80, which have no fixed-load match. HPH20 and
+HPH40 carry only the persistence reading.
+
+**The low end** (descriptive; 53ee45e point 4):
+- **HPH5:** established in 0 of 8 seeds.
+  - Herd, over the three camps, is 5.4 to 13.9 per seed.
+  - One camp's herd on a herded day (loadHerd) is 2.5 to 5.2.
+  - loadMean is 0.510 to 1.048.
+  - No seed has a J.
+- **HPH10:** established in 8 of 8 seeds.
+  - Herd is 283.8 to 344.3 per seed.
+  - J is 1092 to 2766, upper median 1365, against HPH20's 588 to 957, upper median 717.
+  - The R gap is −0.659, csire 0.065 and breadth 8.
+  - Its pooled loadMean is 11.236, with loadHerd 112.4.
+- So HPH10's herd persists at a mean load of 11.236, against LOADHI's 4.8, the highest fixed load run, where no herd
+  forms.
+
+**For Chris:**
+- The R gap follows how many goats a herder can watch before spooking rises (herdPerHerder). It is −0.636 at 20 (REF), −0.569 at 40, −0.364 at 80 and
+  −0.140 at 160. HPH160 is above HPH20 by 0.368 to 0.569 in every seed.
+- Herd size barely changes across the sweep: one camp's herd is 93.3 to 101.3 goats in the arms read. So the load falls as
+  herdPerHerder rises: 5.067, 2.362, 1.166, 0.595.
+- Only HPH160 has a load that a fixed-load run covers, and its gap sits with theirs: −0.140 against −0.1116 at that
+  load. That is the registered "level" reading. It is one arm in a wide band, so it says that HPH160 behaves like a
+  fixed-load herd. It does not say what sets the gap at 20, 40 or 80.
+- At 20 and 40, herds persist at mean loads of 5.067 and 2.362, where no fixed load gives a herd. That was already known
+  for 20.
+- At 5 no herd forms in any seed. At 10 every seed forms one, later than at 20, and it persists at a mean load of 11.236,
+  with an R gap of −0.659.
+- So 20 is one point on a dose-response: from 20 to 160, the more goats a herder can watch before spooking rises, and
+  so the lower the load, the smaller the R gap.
+- HPH10, which the registration leaves out of the orderings, has an R gap of −0.659 (−0.680 to −0.622 per seed),
+  against HPH20's −0.636 (−0.658 to −0.611).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
