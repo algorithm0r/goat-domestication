@@ -9447,6 +9447,23 @@ histYears; output in results/exp022_herd-per-herder/checks/identity.txt):
 loadMean sat at the floor, minLoad 0.25, with herds of a goat or two. No one has read the load counters past year
 469 in any run, nor establishment, herd size or the R gap in any arm. The checks above print no outcome.
 
+## exp022 note, 2026-11-28 (before any scored output is read; the reviewer's 945ba80)
+**An arm read with a mean load between 1 and 2.**
+- 53ee45e point 2 reads an established arm with loadMean above 1 as "a herd persists at a mean load where no
+  fixed-load herd has formed", reported as the rise mattering for persistence.
+- No fixed load between 1 and 2 has been run. LOAD1 establishes 8 of 8; LOAD2, LOAD3 and LOADHI establish none (exp010
+  scored). exp010 puts the edge between loads 1 and 2.
+- **Registered now:** an arm read with 1 < loadMean < 2 is reported as "not matched; no fixed-load run at that load",
+  with no persistence reading. At loadMean ≥ 2, point 2's reading stands. Both cases count as unmatched for Q.
+
+**Q's load is read on the same seeds as its gap** (945ba80 point 2). An arm's R gap is the mean over its established
+seeds. Q matches it at the mean loadMean of those same seeds, not of all 8. P2 still reads loadMean over all 8 seeds,
+as a manipulation check.
+
+**Where this stands.** This note was written after the runs, and after hph_tab was built and checked. Its checks and
+selftests print no outcome, and no scored output exists in results/exp022_herd-per-herder/analysis/. The reviewer
+reports reading no exp022 outcome. The steward has read none past the probe's first herding years (raw entry).
+
 ## [RETROSPECTIVE 2026-10-25] Trials before this ledger existed (not pre-registered)
 
 Backfilled from `results/*/batch.log` launch times matched to the git history, the settings files, and
